@@ -1,5 +1,6 @@
 const User = require("../../models/userSchema")
 const nodemailer = require("nodemailer")
+const bcrypt = require("bcrypt")
 const env = require("dotenv").config()
 const loadHomepage = async (req,res)=>{
     try{
@@ -67,12 +68,13 @@ async function sendVerificationEmail(email,otp,name){
             from:process.env.NODEMAILER_EMAIL,
             to:email,
             subject: "Verify your account",
-            text:`HIYour OTP is ${otp}`,
-            html: `<h1> Hi, ${name} </h1>
-           <h3> Someone tried to log in to your Expansy account.</h3>
-            <h3>If this was you, please use the following code 
-            to conform your identity:</h3> 
-            <h1>${otp} </h1>`
+            html:`<div style="font-family: Arial, sans-serif; color:rgb(69, 63, 63); ">
+            <h2 style="color: rgb(88, 85, 85);">Hi, ${name}</h2>
+            <p style="color: rgb(88, 85, 85);">Someone tried to log in to your Expansy account.</p>
+            <p style="color: rgb(88, 85, 85);">If this was you, please use the following code to confirm your identity:</p>
+            <h1 style="color:rgb(56, 51, 51);">${otp}</h1>
+            <p style="color: rgb(88, 85, 85);">If you did not make this request, please ignore this email or contact our support team.</p>
+        </div>`
         })
 
         return info.accepted.length>0
@@ -85,7 +87,7 @@ async function sendVerificationEmail(email,otp,name){
 
 const signup = async (req,res)=>{
     try{
-        const {name, email, password, cpassword} = req.body
+        const {name, phone, email, password, cpassword} = req.body
         // console.log(name,email,password)
         if(password !== cpassword){
             return res.render("signup",{message: "Password is not matching"})
@@ -104,14 +106,59 @@ const signup = async (req,res)=>{
         }
 
         req.session.userOtp = otp
-        req.session.userData = {email,password}
+        req.session.userData = {name, phone, email, password}
 
-        // res.render("verify-otp")
+        res.render("otpverification")
         console.log("Otp sent",otp)
 
     }catch(error){
         console.error("signup error",error)
         res.redirect("/pageNotFound")
+    }
+}
+
+const securePassword = async (password)=>{
+    try{
+        const passwordHash = await bcrypt.hash(password,10)
+        return passwordHash
+    }catch(error){
+
+    }
+}
+
+const verifyOtp = async (req,res)=>{
+    try{
+        const {otp} = req.body
+        console.log(otp)
+        console.log("sdfghjkl"+req.session.userOtp)
+        if(otp == req.session.userOtp){
+            console.log("1")
+            const user = req.session.userData
+            const passwordHash = await securePassword(user.password)
+            console.log(passwordHash)
+            console.log("2")
+            
+            
+            
+
+            const saveUserData = new User({
+                
+                name: user.name,
+                email:user.email,
+                phone:user.phone,
+                password:passwordHash
+            })
+            console.log("3")
+            await saveUserData.save()
+            console.log("4")
+            req.session.user = saveUserData._id;
+           res.status(200).json({success:true})
+            
+        }else{
+            console.log("asdfghjjdsxfkj")
+        }
+    }catch(error){
+       console.log(error)
     }
 }
 
@@ -132,5 +179,6 @@ module.exports = {
     verification,
     loadsignup,
     signup,
-    loadPageNotFound
+    loadPageNotFound,
+    verifyOtp
 }

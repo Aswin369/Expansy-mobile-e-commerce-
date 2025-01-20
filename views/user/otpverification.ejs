@@ -11,19 +11,82 @@
         <div class="otp-section">
             <div class="logo">
                 <img src="/images/BrandName.png" alt="Expansy">
-                
-              </div>
+            </div>
             <h2 class="verify-otp">Verify Your OTP</h2>
             
-            <form action="#">
-                <input type="text" placeholder="Enter your OTP" required>
-                <button type="submit">verify</button>
+          
+                <input id="otp" type="text" placeholder="Enter your OTP" required>
+                <button id="btn" type="submit">Verify</button>
                 <a href="#" class="resend-otp"><p>Resend OTP</p></a>
-            </form>
+        
+            <div class="otp-timer">
+                <span id="timer">01:00</span>
+            </div>
         </div>
         <div class="image-section">
             <img src="/images/enter-otp-concept-illustration_86047-735.jpg" alt="Perfume Bottle with Cherry Blossoms">
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let timerDisplay = document.getElementById("timer");
+        let timeLeft = 60; // 1 minute
+
+        function updateTimer() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+            }
+
+            timerDisplay.textContent = `${minutes}:${seconds}`;
+
+            // Change color from green to red as time decreases
+            let percentage = (timeLeft / 60);
+            if (percentage < 0.3) {
+                timerDisplay.style.color = 'red';
+            } else {
+                timerDisplay.style.color = 'green';
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerDisplay.textContent = "Time's up!";
+                timerDisplay.style.color = 'red'; // Ensure color is red when time is up
+            } else {
+                timeLeft--;
+            }
+        }
+
+        let timerInterval = setInterval(updateTimer, 1000);
+
+    
+
+
+document.getElementById("btn").addEventListener("click", async function(event){
+    event.preventDefault()
+    const otp =  document.getElementById("otp").value
+
+    const response  = await fetch("/otpverification",{
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({otp})
+    })
+    const data = await response.json()
+    if(data.success){
+        Swal.fire({
+            title: "OTP Verified Successfully",
+            showConfirmButton: false,
+            timer: 1500,
+            icon: "success"
+        }).then(() => {
+            window.location.href = "/";
+        });
+    }
+})
+    </script>
 </body>
 </html>
