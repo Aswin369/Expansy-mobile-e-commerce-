@@ -4,6 +4,7 @@ const path = require("path")
 const env = require("dotenv").config()
 const session = require("express-session")
 const userRouter = require("./routes/userRouter")
+const passport = require("./config/passport")
 const db = require("./config/db")
 db()
 const PORT = process.env.PORT 
@@ -22,9 +23,13 @@ app.use(session({
     }
 }))
 
+
 app.set("views",[path.join(__dirname, "views/user"),path.join(__dirname,"views/admin")])
 app.set("view engine", "ejs")
 app.use(express.static("public"))
+app.use(userRouter)
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use("/",userRouter)
 app.use("/*",userRouter)

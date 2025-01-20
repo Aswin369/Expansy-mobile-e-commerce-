@@ -126,53 +126,106 @@ const securePassword = async (password)=>{
     }
 }
 
-const verifyOtp = async (req,res)=>{
-    try{
-        const {otp} = req.body
-        if(otp == req.session.userOtp){
-            const user = req.session.userData
-            const passwordHash = await securePassword(user.password)
-            console.log(passwordHash);
+const verifyOtp = async (req, res) => {
+    try {
+        const { otp } = req.body; // Get the OTP from the request body
+        
+
+        // Safely destructure OTP and expiry from session
+        const { otp: storedOtp, expiry } = req.session.userOtp || {};
+        
+        // Check if OTP is missing or expired
+        if (!storedOtp || Date.now() > expiry) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP expired. Please request a new OTP.",
+            });
+        }
+
+        // Compare the input OTP with the stored OTP
+        if (otp == storedOtp) {
+            const user = req.session.userData;
+
+            // Hash the user's password
+            const passwordHash = await securePassword(user.password);
             
+
+            // Save the user to the database
             const saveUserData = new User({
                 name: user.name,
-                email:user.email,
-                phone:user.phone,
-                password:passwordHash
-            })
-            await saveUserData.save()
-            req.session.user = saveUserData._id;
-           res.status(200).json({success:true})
-        }else{
-           res.status(400).json({success:false , message:"OTP not verified, Please check again"})
-        }
-    }catch(error){
-       console.log(error)
-    }
-}
+                email: user.email,
+                phone: user.phone,
+                password: passwordHash,
+            });
 
-const resendOtp = async (req,res) => {
-    try {
-        const {email} = req.session.userData;
-        if (!email) {
-            return res.status(400).json({success: false, message: "Email not found in session"});
-        }
-        
-        const otp = generateOtp(); 
-        req.session.userOtp = otp;
-        const emailSent = await sendVerificationEmail(email, otp);
-        console.log(req.session.userOtp)
-        if (emailSent) {
-            console.log("Resent OTP:", otp);
-            res.status(200).json({success: true, message: "OTP Resent Successfully!"});
+            await saveUserData.save();
+
+            // Set the user ID in session after successful verification
+            req.session.user = saveUserData._id;
+
+            res.status(200).json({
+                success: true,
+                message: "OTP verified successfully!",
+            });
         } else {
-            res.status(500).json({success: false, message: "Failed to resend OTP. Please try again"});
+            res.status(400).json({
+                success: false,
+                message: "OTP not verified. Please check again.",
+            });
         }
     } catch (error) {
-        console.error("Error resending OTP", error);
-        res.status(500).json({success: false, message: "Internal server error. Please try again"});
+        console.error("Error verifying OTP:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error. Please try again.",
+        });
     }
 };
+
+const resendOtp = async (req, res) => {
+    try {
+        const { email } = req.session.userData;
+        
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Email not found in session.",
+            });
+        }
+
+        // Generate a new OTP and set its expiry time
+        const otp = generateOtp();
+        const otpExpiry = Date.now() + 1 * 60 * 1000; // 1 minute expiry
+
+        // Store the OTP and expiry in session
+        req.session.userOtp = { otp, expiry: otpExpiry };
+
+        // Log the OTP for debugging (remove in production)
+        
+
+        // Send the OTP via email
+        const emailSent = await sendVerificationEmail(email, otp);
+
+        if (emailSent) {
+            res.status(200).json({
+                success: true,
+                message: "OTP resent successfully!",
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: "Failed to resend OTP. Please try again.",
+            });
+        }
+    } catch (error) {
+        console.error("Error resending OTP:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error. Please try again.",
+        });
+    }
+};
+
 
 
 const loadPageNotFound = async (req,res)=>{
