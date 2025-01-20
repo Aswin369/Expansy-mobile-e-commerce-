@@ -129,38 +129,51 @@ const securePassword = async (password)=>{
 const verifyOtp = async (req,res)=>{
     try{
         const {otp} = req.body
-        console.log(otp)
-        console.log("sdfghjkl"+req.session.userOtp)
         if(otp == req.session.userOtp){
-            console.log("1")
             const user = req.session.userData
             const passwordHash = await securePassword(user.password)
-            console.log(passwordHash)
-            console.log("2")
+            console.log(passwordHash);
             
-            
-            
-
             const saveUserData = new User({
-                
                 name: user.name,
                 email:user.email,
                 phone:user.phone,
                 password:passwordHash
             })
-            console.log("3")
             await saveUserData.save()
-            console.log("4")
             req.session.user = saveUserData._id;
            res.status(200).json({success:true})
-            
         }else{
-            console.log("asdfghjjdsxfkj")
+           res.status(400).json({success:false , message:"OTP not verified, Please check again"})
         }
     }catch(error){
        console.log(error)
     }
 }
+
+const resendOtp = async (req,res) => {
+    try {
+        const {email} = req.session.userData;
+        if (!email) {
+            return res.status(400).json({success: false, message: "Email not found in session"});
+        }
+        
+        const otp = generateOtp(); 
+        req.session.userOtp = otp;
+        const emailSent = await sendVerificationEmail(email, otp);
+        console.log(req.session.userOtp)
+        if (emailSent) {
+            console.log("Resent OTP:", otp);
+            res.status(200).json({success: true, message: "OTP Resent Successfully!"});
+        } else {
+            res.status(500).json({success: false, message: "Failed to resend OTP. Please try again"});
+        }
+    } catch (error) {
+        console.error("Error resending OTP", error);
+        res.status(500).json({success: false, message: "Internal server error. Please try again"});
+    }
+};
+
 
 const loadPageNotFound = async (req,res)=>{
     try{
@@ -180,5 +193,6 @@ module.exports = {
     loadsignup,
     signup,
     loadPageNotFound,
-    verifyOtp
+    verifyOtp,
+    resendOtp
 }
