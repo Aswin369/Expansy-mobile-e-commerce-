@@ -1,58 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="/css/signup.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/css/signup.css" />
+  </head>
+  <body>
     <div class="container">
-        <div class="form-section">
-          <div class="logo">
-            <img src="/images/BrandName.png" alt="Fresh Store Logo">
-            <!-- <h1>FRESH STORE</h1> -->
+      <div class="form-section">
+        <div class="logo">
+          <img src="/images/BrandName.png" alt="Fresh Store Logo" />
+        </div>
+        <h2 class="heading">Your Smart Choice Begins Here!</h2>
+
+        <button class="google-signup">
+          <img src="/images/google-logo.png" alt="Google Icon" />
+          Sign up with Google
+        </button>
+
+        <p class="or">Or use Email</p>
+
+        <form id="signupform" method="post" action="/signup">
+          <label for="fullname">USERNAME</label>
+          <input type="text" id="fullname" name="name" />
+          <div id="error1" class="error-message"></div>
+
+          <label for="phone">PHONE NUMBER</label>
+          <input type="tel" id="phone" name="phone" />
+          <div id="error3" class="error-message"></div>
+
+          <label for="email">EMAIL</label>
+          <input type="email" id="email" name="email" />
+          <div id="error2" class="error-message"></div>
+
+          <label for="password">PASSWORD</label>
+          <div class="password-wrapper" style="position: relative;">
+            <input type="password" name="password" id="password" style="padding-right: 30px;" />
+            <span id="toggle-password" style="cursor: pointer; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+              <img id="password-eye" src="images/hide (1).png" alt="Show Password" width="20" height="20" />
+            </span>
           </div>
-          <!-- <h2>Start Your</h2> -->
-          <h2 class="heading">Your Smart Choice Begins Here!</h2>
-          <!-- <p class="subheading">Your Smart Choice Begins Here!</p> -->
-    
-          <button class="google-signup">
-            <img src="/images/google-logo.png" alt="Google Icon">
-            Sign up with Google
-          </button>
-    
-          <p class="or">Or use Email</p>
-    
-          <form>
-            <label for="fullname">FULLNAME</label>
-            <input type="text" id="fullname" placeholder="johndoe">
-    
-            <label for="phone">PHONE NUMBER</label>
-            <input type="tel" id="phone" placeholder="**********">
-    
-            <label for="email">EMAIL</label>
-            <input type="email" id="email" placeholder="johndoe@email.com">
-    
-            <label for="password">PASSWORD</label>
-            <input type="password" id="password" placeholder="***************">
-    
-            <label for="confirm-password">CONFIRM PASSWORD</label>
-            <div class="password-wrapper">
-              <input type="password" id="confirm-password" placeholder="***************">
-              <span id="toggle-password">👁️</span>
-            </div>
-    
-            <button type="submit" class="submit-btn">SIGNUP</button>
-          </form>
-    
-          <p class="terms">
-            By Signing up to uBrand, means you agree to our <a href="#">Privacy Policy</a> and <a href="#">Terms of Service</a>
-          </p>
-        </div>
-        <div class="image-section">
-          <img src="/images/online-registration-sign-up-concept-with-man-character_268404-98.jpg" alt="Fresh Vegetables">
-        </div>
+          <div id="error4" class="error-message"></div>
+
+          <label for="confirm-password">CONFIRM PASSWORD</label>
+          <div class="password-wrapper" style="position: relative;">
+            <input type="password" name="cpassword" id="confirm-password" style="padding-right: 30px;" />
+            <span id="toggle-confirm-password" style="cursor: pointer; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+              <img id="confirm-password-eye" src="images/hide (1).png" alt="Show Confirm Password" width="20" height="20" />
+            </span>
+          </div>
+          <div id="error5" class="error-message"></div>
+
+          <button type="submit" class="submit-btn">SIGNUP</button>
+        </form>
+
+        <p class="terms">
+          By Signing up to uBrand, means you agree to our
+          <a href="#">Privacy Policy</a> and <a href="#">Terms of Service</a>
+        </p>
       </div>
-</body>
+      <div class="image-section">
+        <img src="/images/online-registration-sign-up-concept-with-man-character_268404-98.jpg" alt="Fresh Vegetables" />
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      const nameid = document.getElementById("fullname");
+      const emailid = document.getElementById("email");
+      const phoneid = document.getElementById("phone");
+      const passid = document.getElementById("password");
+      const cpassid = document.getElementById("confirm-password");
+      const signupform = document.getElementById("signupform");
+
+      const togglePasswordButton = document.getElementById("toggle-password");
+      const toggleConfirmPasswordButton = document.getElementById("toggle-confirm-password");
+
+      const passwordEyeIcon = document.getElementById("password-eye");
+      const confirmPasswordEyeIcon = document.getElementById("confirm-password-eye");
+
+      function nameValidateChecking(e) {
+        const nameVal = nameid.value;
+        const namepattern = /^[A-Za-z\s]+$/;
+        if (nameVal.trim() === "") {
+          Swal.fire({
+            title: "Error",
+            text: "Name cannot be empty.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        } else if (!namepattern.test(nameVal)) {
+          Swal.fire({
+            title: "Error",
+            text: "Name can only contain alphabets and spaces.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      }
+
+      function emailValidateChecking(e) {
+        const emailVal = emailid.value;
+        const emailpattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (emailVal.trim() === "") {
+          Swal.fire({
+            title: "Error",
+            text: "Email cannot be empty.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        } else if (!emailpattern.test(emailVal)) {
+          Swal.fire({
+            title: "Error",
+            text: "Invalid email format.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      }
+
+      function phoneValidateChecking(e) {
+        const phoneVal = phoneid.value;
+        const phonepattern = /^(?!1234567890$)\d{10}$/;
+        if (phoneVal.trim() === "") {
+          Swal.fire({
+            title: "Error",
+            text: "Phone number cannot be empty.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        } else if (!phonepattern.test(phoneVal)) {
+          Swal.fire({
+            title: "Error",
+            text: "Invalid phone number.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      }
+
+      function passValidateChecking(e) {
+        const passval = passid.value;
+        const cpassval = cpassid.value;
+        if (passval.trim() === "") {
+          Swal.fire({
+            title: "Error",
+            text: "Password cannot be empty.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        } else if (
+          !/[A-Z]/.test(passval) ||
+          passval.length < 8 ||
+          !/[a-z]/.test(passval) ||
+          !/\d/.test(passval) ||
+          !/[@$!%*?&]/.test(passval)
+        ) {
+          Swal.fire({
+            title: "Error",
+            text:
+              "Password must be at least 8 characters, include an uppercase letter, a lowercase letter, a number, and a special character.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        signupform.addEventListener("submit", (e) => {
+          nameValidateChecking();
+          emailValidateChecking();
+          phoneValidateChecking();
+          passValidateChecking();
+
+          if (
+            !nameid ||
+            !emailid ||
+            !phoneid ||
+            !passid ||
+            !cpassid ||
+            !signupform
+          ) {
+            console.error("One or more elements not found");
+          }
+
+          // Prevent form submission if any validation fails
+          if (
+            !nameid.value ||
+            !emailid.value ||
+            !phoneid.value ||
+            !passid.value ||
+            !cpassid.value
+          ) {
+            e.preventDefault();
+          }
+        });
+
+        
+        togglePasswordButton.addEventListener("click", () => {
+          const type = passid.type === "password" ? "text" : "password";
+          passid.type = type;
+
+          // Change icon based on visibility
+          passwordEyeIcon.src = type === "password" ? "images/hide (1).png" : "images/unhide.png";
+        });
+
+        // Toggle confirm password visibility
+        toggleConfirmPasswordButton.addEventListener("click", () => {
+          const type = cpassid.type === "password" ? "text" : "password";
+          cpassid.type = type;
+
+          // Change icon based on visibility
+          confirmPasswordEyeIcon.src = type === "password" ? "images/hide (1).png" : "images/unhide.png";
+        });
+      });
+    </script>
+  </body>
 </html>

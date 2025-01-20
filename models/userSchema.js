@@ -8,8 +8,8 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
-        unique: true,
+        required: true
+        // unique: true,
     },
     phone: {
         type: String,
@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
     googleId:{
         type: String,
         unique: true,
+        sparse: true,
     },
     password: {
         type: String,
@@ -55,14 +56,17 @@ const userSchema = new mongoose.Schema({
         default:Date.now,
     },
     referalCode:{
-        type:String
+        type:String,
+        // required: true
     },
     redeemed:{
-        type:Boolean
+        type:Boolean,
+        // default: false
     },
     redeemedUsers:[{
         type: Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        // required: true
     }],
     searchHistory:[{
         category:{
