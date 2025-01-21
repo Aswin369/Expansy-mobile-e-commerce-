@@ -98,7 +98,8 @@ const signup = async (req,res)=>{
         }
 
         const otp = generateOtp()
-
+        const otpExpiry = Date.now() + 1 * 60 * 1000;
+        
         const emailSent = await sendVerificationEmail(email,otp, name)
 
         if(!emailSent){
@@ -107,7 +108,8 @@ const signup = async (req,res)=>{
 
         req.session.userOtp = otp
         req.session.userData = {name, phone, email, password}
-
+        console.log("This is userdata from signup", req.session.userData)
+        console.log("This is userOtp from signup", req.session.userOtp)
         res.render("otpverification")
         console.log("Otp sent",otp)
 
@@ -128,14 +130,17 @@ const securePassword = async (password)=>{
 
 const verifyOtp = async (req, res) => {
     try {
-        const { otp } = req.body; // Get the OTP from the request body
-        
+        const { otp } = req.body; // OTP entered by the user
+        console.log("Input OTP:", otp);
 
-        // Safely destructure OTP and expiry from session
+        // Retrieve OTP and expiry from session
         const { otp: storedOtp, expiry } = req.session.userOtp || {};
-        
+        console.log("Stored OTP:", storedOtp, "Expiry:", expiry);
+        console.log("Current Time:", Date.now());
+
         // Check if OTP is missing or expired
-        if (!storedOtp || Date.now() > expiry) {
+        if (!storedOtp || !expiry || Date.now() > expiry) {
+            console.log("OTP expired or missing.");
             return res.status(400).json({
                 success: false,
                 message: "OTP expired. Please request a new OTP.",
@@ -143,12 +148,14 @@ const verifyOtp = async (req, res) => {
         }
 
         // Compare the input OTP with the stored OTP
-        if (otp == storedOtp) {
+        if (String(otp) === String(storedOtp)) {
+            console.log("OTP verified successfully.");
+
+            // Retrieve user data from session
             const user = req.session.userData;
 
             // Hash the user's password
             const passwordHash = await securePassword(user.password);
-            
 
             // Save the user to the database
             const saveUserData = new User({
@@ -168,7 +175,8 @@ const verifyOtp = async (req, res) => {
                 message: "OTP verified successfully!",
             });
         } else {
-            res.status(400).json({
+            console.log("OTP mismatch.");
+            return res.status(400).json({
                 success: false,
                 message: "OTP not verified. Please check again.",
             });
@@ -185,6 +193,7 @@ const verifyOtp = async (req, res) => {
 const resendOtp = async (req, res) => {
     try {
         const { email } = req.session.userData;
+        console.log("Email is defined or not", email);
         
         if (!email) {
             return res.status(400).json({
@@ -195,13 +204,12 @@ const resendOtp = async (req, res) => {
 
         // Generate a new OTP and set its expiry time
         const otp = generateOtp();
-        const otpExpiry = Date.now() + 1 * 60 * 1000; // 1 minute expiry
+        const otpExpiry = Date.now() + 1 * 60 * 1000; // 1-minute expiry
 
         // Store the OTP and expiry in session
         req.session.userOtp = { otp, expiry: otpExpiry };
 
-        // Log the OTP for debugging (remove in production)
-        
+        console.log("New OTP:", otp, "Expiry:", new Date(otpExpiry).toISOString());
 
         // Send the OTP via email
         const emailSent = await sendVerificationEmail(email, otp);
@@ -209,7 +217,7 @@ const resendOtp = async (req, res) => {
         if (emailSent) {
             res.status(200).json({
                 success: true,
-                message: "OTP resent successfully!",
+                message: "OTP resent successfully! Expires in 1 minute.",
             });
         } else {
             res.status(500).json({
@@ -225,6 +233,7 @@ const resendOtp = async (req, res) => {
         });
     }
 };
+
 
 
 

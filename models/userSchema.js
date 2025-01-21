@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        required: true,
+        required: false,
         unique: false,
         sparse: true,
         default:null,
@@ -21,8 +21,7 @@ const userSchema = new mongoose.Schema({
     },
     googleId:{
         type: String,
-        unique: true,
-        sparse: true,
+        unique: true
     },
     password: {
         type: String,
