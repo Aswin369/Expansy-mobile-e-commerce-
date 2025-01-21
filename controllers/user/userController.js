@@ -2,30 +2,13 @@ const User = require("../../models/userSchema")
 const nodemailer = require("nodemailer")
 const bcrypt = require("bcrypt")
 const env = require("dotenv").config()
+
 const loadHomepage = async (req,res)=>{
     try{
         return res.render("home")
     }catch(error){
         console.log("Home page not found")
         res.status(500).send("Server error")
-    }
-}
-
-const pageNotFound = async (req,res) =>{
-    try{
-        return res.render("404")
-    }catch(error){
-        res.redirect("/pageNotFound")
-        res.status(500).send("Server Error")
-    }
-}
-
-const login = async (req,res)=>{
-    try{
-        return res.render("login")
-    }catch(error){
-        console.log("Login page not found")
-        res.status(500).send("Server Error")
     }
 }
 
@@ -50,6 +33,8 @@ const loadsignup = async (req,res)=>{
 function generateOtp(){
     return Math.floor(100000+Math.random()*900000).toString()
 }
+
+
 
 async function sendVerificationEmail(email,otp,name){
     try{
@@ -106,7 +91,8 @@ const signup = async (req,res)=>{
             return res.json("email-error")
         }
 
-        req.session.userOtp = otp
+        req.session.userOtp = {otp, otpExpiry}
+        
         req.session.userData = {name, phone, email, password}
         console.log("This is userdata from signup", req.session.userData)
         console.log("This is userOtp from signup", req.session.userOtp)
@@ -134,12 +120,13 @@ const verifyOtp = async (req, res) => {
         console.log("Input OTP:", otp);
 
         // Retrieve OTP and expiry from session
-        const { otp: storedOtp, expiry } = req.session.userOtp || {};
-        console.log("Stored OTP:", storedOtp, "Expiry:", expiry);
+        const { otp: storedOtp, otpExpiry } = req.session.userOtp || {};
+        console.log("Stored OTP:", storedOtp, "Expiry:", otpExpiry);
         console.log("Current Time:", Date.now());
+        console.log("This is from verify otp session",req.session.userOtp )
 
         // Check if OTP is missing or expired
-        if (!storedOtp || !expiry || Date.now() > expiry) {
+        if (!storedOtp || !otpExpiry || Date.now() > otpExpiry) {
             console.log("OTP expired or missing.");
             return res.status(400).json({
                 success: false,
@@ -234,13 +221,47 @@ const resendOtp = async (req, res) => {
     }
 };
 
+const loadlogin = async (req,res)=>{
+    try{
+        if(!req.session.user){
+            return res.render("login")
+        }else{
+            res.redirect("/")
+        }
+    }catch(error){
+        console.log("Login page not found")
+        res.redirect('/404')
+    }
+}
 
+const login = async (req, res)=>{
+    try {
+        const {email, password} = req.body
+        console.log(email,password)
+        const findUser = await User.findOne({isAdmin:0, email:email})
+        if(!findUser){
+            return res.render("login",{message: "User not found"})
+        }
+        if(findUser.isBlocked){
+            return res.render("login",{message: "User is blocked by admin"})
+        }
+        const passwordMatch = await bcrypt.compare(password, findUser.password)
 
+        if(!passwordMatch){
+            return res.render("login", {message: "Incorrect Password"})
+        }
+        req.session.user = findUser._id;
+        res.redirect('/')
+    } catch (error) {
+        console.error("Login error",error)
+        res.render("login",{message: "login failed. Please try again"})
+    }
+}
 
 const loadPageNotFound = async (req,res)=>{
     try{
 
-        res.render("404")
+        return res.render("404")
     }catch(error){
         console.error("Page not found page error")
         res.status(500).send("Internal server error")
@@ -249,12 +270,13 @@ const loadPageNotFound = async (req,res)=>{
 
 module.exports = {
     loadHomepage,
-    pageNotFound,
-    login,
     verification,
     loadsignup,
+    login,
+    loadlogin,
     signup,
     loadPageNotFound,
     verifyOtp,
     resendOtp
+    
 }

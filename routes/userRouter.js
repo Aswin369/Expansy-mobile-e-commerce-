@@ -4,10 +4,11 @@ const userController = require("../controllers/user/userController")
 const passport = require("../config/passport.js")
 
 router.get("/",userController.loadHomepage)
-router.get("/pageNotFound",userController.pageNotFound)
-router.get("/login",userController.login)
 router.get("/signup",userController.loadsignup)
 router.post("/signup",userController.signup)
+router.get("/login",userController.loadlogin)
+router.post("/login",userController.login)
+
 router.get("/otpverification",userController.verification)
 router.post("/otpverification",userController.verifyOtp)
 router.post("/resendOtp",userController.resendOtp)

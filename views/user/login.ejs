@@ -21,27 +21,43 @@
           </button>
           <p class="or">Or use Email</p>
           
-          <form>
+          <form method="post" action="/login">
             <div class="input-group">
               <label for="email">EMAIL</label>
-              <input type="email" id="email" placeholder="johndoe@email.com" required>
+              <input type="email" name="email" id="email"  required>
             </div>
             <div class="input-group">
               <label for="password">PASSWORD</label>
-              <div class="password-container">
-                <input type="password" id="password" placeholder="••••••••" required>
-                <span id="toggle-password">👁️</span>
+              <div class="password-container ">
+                <input type="password" name="password" id="password"  required>
+                <span id="toggle-password" style="cursor: pointer; position: absolute; right: 10px; top: 57%; transform: translateY(-50%);">
+                  <img id="password-eye" src="images/hide (1).png" alt="Show Password" width="20" height="20" />
+                </span>
               </div>
             </div>
             <a href="#" class="forgot-password"><p>forgot password?</p></a>
             <button type="submit" class="continue-btn">LOGIN</button>
           </form>
-          <p class="newbie">Do you have account? <a href="#">GET STARTED</a></p>
+          <p class="newbie">Do you have an account? <a href="#">GET STARTED</a></p>
         </div>
         
         <div class="image-section">
           <img src="/images/online-registration-sign-up-concept-with-man-character_268404-98.jpg" alt="Vegetables"> <!-- Add your vegetable image here -->
         </div>
       </div>
+      <script>
+          const passid = document.getElementById("password");
+          const passwordEyeIcon = document.getElementById("password-eye");
+          const togglePasswordButton = document.getElementById("toggle-password");
+
+          document.addEventListener("DOMContentLoaded",()=>{
+            togglePasswordButton.addEventListener("click", () => {
+          const type = passid.type === "password" ? "text" : "password";
+          passid.type = type;
+          passwordEyeIcon.src = type === "password" ? "images/hide (1).png" : "images/unhide.png";
+        })
+          })
+        
+      </script>
 </body>
 </html>
