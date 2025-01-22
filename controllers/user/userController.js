@@ -3,14 +3,21 @@ const nodemailer = require("nodemailer")
 const bcrypt = require("bcrypt")
 const env = require("dotenv").config()
 
-const loadHomepage = async (req,res)=>{
-    try{
-        return res.render("home")
-    }catch(error){
-        console.log("Home page not found")
-        res.status(500).send("Server error")
+const loadHomepage = async (req, res) => {
+    try {
+        const user = req.session.user;
+        if (user) {
+            // Fetch the user data from the database
+            const userData = await User.findOne({ _id: user._id });
+            res.render("home", { user: userData }); // Pass user data to the view
+        } else {
+            res.render("home", { user: null }); // Pass null if no user is logged in
+        }
+    } catch (error) {
+        console.error("Error loading home page:", error);
+        res.status(500).send("Server error");
     }
-}
+};
 
 const verification = async (req,res)=>{
     try{
@@ -240,7 +247,7 @@ const login = async (req, res)=>{
         console.log(email,password)
         const findUser = await User.findOne({isAdmin:0, email:email})
         if(!findUser){
-            return res.render("login",{message: "User not found"})
+            return res.render("login",{message: "Invalid credantials"})
         }
         if(findUser.isBlocked){
             return res.render("login",{message: "User is blocked by admin"})

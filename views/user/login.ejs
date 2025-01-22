@@ -34,6 +34,11 @@
                   <img id="password-eye" src="images/hide (1).png" alt="Show Password" width="20" height="20" />
                 </span>
               </div>
+              <%if(locals.message && message.length>0){%>
+                <div class="text-danger text-center">
+                  <%=message%>
+                </div>
+              <%}%>
             </div>
             <a href="#" class="forgot-password"><p>forgot password?</p></a>
             <button type="submit" class="continue-btn">LOGIN</button>

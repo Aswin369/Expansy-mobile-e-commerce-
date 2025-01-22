@@ -34,6 +34,10 @@
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 <!--===============================================================================================-->
+<!-- Add these in your head -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
 </head>
 <body class="animsition">
 	
@@ -73,10 +77,24 @@
 							<li>
 								<a href="/">Contact</a>
 							</li>
-		
-							<li>
-								<a href="/login">Login</a>
-							</li>
+                            <li>
+                                <% if (user) { %>
+                                    <!-- If the user is logged in -->
+                                    <div class="dropdown">
+                                        <a class="dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <%= user.name %> <!-- Display the user's name -->
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                            <a class="dropdown-item" href="/userProfile">Profile</a> <!-- Link to user profile -->
+                                            <a class="dropdown-item" href="/logout">Logout</a> <!-- Logout option -->
+                                        </div>
+                                    </div>
+                                <% } else { %>
+                                    <!-- If the user is not logged in -->
+                                    <a href="/login">Login</a>
+                                <% } %>
+                            </li>
+                            
 						</ul>
 					</div>	
 		

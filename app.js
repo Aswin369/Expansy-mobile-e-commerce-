@@ -5,6 +5,7 @@ const env = require("dotenv").config()
 const session = require("express-session")
 const passport = require("./config/passport")
 const userRouter = require("./routes/userRouter")
+const adminRouter = require("./routes/adminRouter")
 const db = require("./config/db")
 db()
 const PORT = process.env.PORT 
@@ -31,7 +32,8 @@ app.set("view engine", "ejs")
 app.use(express.static("public"))
 
 app.use("/",userRouter)
-app.use(userRouter);
+app.use("/admin",adminRouter)
+// app.use(userRouter);
 app.listen(PORT,()=>console.log("Server is running"))
 
 module.exports = app

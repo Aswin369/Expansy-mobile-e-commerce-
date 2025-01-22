@@ -17,6 +17,6 @@ router.get("/auth/google",passport.authenticate('google',{scope:["profile","emai
 router.get("/auth/google/callback",passport.authenticate("google",{failureRedirect:"/signup"}), (req, res)=>{
     res.redirect("/")
 })
-router.use("*",userController.loadPageNotFound)
+// router.use("*",userController.loadPageNotFound)
 
 module.exports = router 
