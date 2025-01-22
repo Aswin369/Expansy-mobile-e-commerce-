@@ -16,6 +16,41 @@ const loadLogin = async (req,res)=>{
     }
 }
 
+const login = async (req,res)=>{
+    try {
+        const {name, password} = req.body
+        console.log(name,password)
+        console.log("this is from admin login", name, password)
+        const admin = await User.findOne({name, isAdmin:true})
+        if(admin){
+            const passwordMatch = await bcrypt.compare(password,admin.password)
+            if(passwordMatch){
+                req.session.admin = true
+                return res.redirect("/admin")
+            }else{
+                return res.redirect("/login")
+            }
+        }else{
+            return res.render("admin-login", { message: "Admin not found" })
+        }
+    } catch (error) {
+        console.error("Admin login error",error)
+        return res.redirect("/pageerror")
+    }
+}
+
+const loadDashboard = async (req,res)=>{
+    if(req.session.admin){
+        try {
+            res.render("dashboard")
+        } catch (error) {
+            res.redirect("/pageerror")
+        }
+    }
+}
+
 module.exports = {
-    loadLogin
+    loadLogin,
+    login,
+    loadDashboard
 }

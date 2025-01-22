@@ -244,7 +244,6 @@ const loadlogin = async (req,res)=>{
 const login = async (req, res)=>{
     try {
         const {email, password} = req.body
-        console.log(email,password)
         const findUser = await User.findOne({isAdmin:0, email:email})
         if(!findUser){
             return res.render("login",{message: "Invalid credantials"})

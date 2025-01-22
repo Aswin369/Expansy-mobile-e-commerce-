@@ -15782,7 +15782,7 @@ html[data-menu-size=hidden] .topbar {
   transition: all 0.3s ease-in-out;
   min-height: calc(100vh - var(--bs-topbar-height));
   padding-bottom: var(--bs-footer-height);
-  /* margin-left: var(--bs-main-nav-width); */
+  margin-left: var(--bs-main-nav-width);
 }
 
 html[data-topbar-color=dark]:not([data-bs-theme=dark]) .page-content {
