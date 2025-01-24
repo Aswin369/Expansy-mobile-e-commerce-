@@ -23,7 +23,7 @@ const login = async (req,res)=>{
     try {
         const {name, password} = req.body
         console.log(name,password)
-        console.log("this is from admin login", name, password)
+        // console.log("this is from admin login", name, password)
         const admin = await User.findOne({name, isAdmin:true})
         if(admin){
             const passwordMatch = await bcrypt.compare(password,admin.password)
@@ -71,6 +71,5 @@ module.exports = {
     loadLogin,
     login,
     loadDashboard,
-    // pageerror
     logout
 }
