@@ -1,0 +1,65 @@
+<footer class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 text-center">
+                <script>document.write(new Date().getFullYear())</script> &copy; Expansy. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
+                    href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Aswin Variyath</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- ========== Footer End ========== -->
+
+</div>
+<!-- ==================================================== -->
+<!-- End Page Content -->
+<!-- ==================================================== -->
+
+</div>
+<!-- END Wrapper -->
+
+<script>
+// Frontend logout function
+async function handleLogout() {
+try {
+// Make a request to the backend logout route
+const response = await fetch('/admin/logout', {
+ method: 'GET', // Ensure the method matches your backend route
+ credentials: 'include', // Include cookies/session in the request
+});
+
+if (response.ok) {
+ // Redirect to the login page after successful logout
+ window.location.href = '/admin/login';
+} else {
+ // Handle error if logout fails
+ alert('Failed to logout. Please try again.');
+ console.error('Error logging out:', response.statusText);
+}
+} catch (error) {
+// Handle unexpected errors
+alert('An unexpected error occurred.');
+console.error('Error in handleLogout:', error);
+}
+}
+</script>
+
+<!-- Vendor Javascript (Require in all Page) -->
+<script src="/assets/js/vendor.js"></script>
+
+<!-- App Javascript (Require in all Page) -->
+<script src="/assets/js/app.js"></script>
+
+<!-- Vector Map Js -->
+<script src="/assets/vendor/jsvectormap/js/jsvectormap.min.js"></script>
+<script src="/assets/vendor/jsvectormap/maps/world-merc.js"></script>
+<script src="/assets/vendor/jsvectormap/maps/world.js"></script>
+
+<!-- Dashboard Js -->
+<script src="/assets/js/pages/dashboard.js"></script>
+
+</body>
+
+
+<!-- Mirrored from techzaa.in/larkon/admin/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:42:46 GMT -->
+</html>
