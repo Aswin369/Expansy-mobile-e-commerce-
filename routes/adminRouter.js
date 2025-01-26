@@ -3,6 +3,7 @@ const router = express.Router()
 const adminController = require("../controllers/admin/adminController")
 const customerController = require("../controllers/admin/customerController")
 const {userAuth,adminAuth} = require("../middlewares/auth")
+const upload = require("../middlewares/multer")
 const categoryController = require("../controllers/admin/categoryController")
 
 // router.get("/pageerror",adminController.pageerror)
@@ -19,7 +20,7 @@ router.get("/customerdetails",adminAuth,customerController.customerdetail)
 router.get("/admin/customerdetails", adminAuth, customerController.customerdetail);
 // Category management
 router.get("/category",adminAuth,categoryController.categoryInfo)
-router.post("/addCategory", adminAuth, categoryController.addCategory);
+router.post("/addCategory", upload.single('file'),adminAuth, categoryController.addCategory);
 router.get("/addCategory", adminAuth,categoryController.loadAddCategory)
 
 

@@ -28,8 +28,7 @@ const categorySchema = new mongoose.Schema({
         default: Date.now 
     },
     image: {
-        type: String, 
-        required: false
+        type:String
     }
 });
 

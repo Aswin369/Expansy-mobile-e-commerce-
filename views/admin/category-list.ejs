@@ -1281,19 +1281,17 @@
                                                           <td><%= index + 1 %></td>
                                                           <td>
                                                               <div class="d-flex align-items-center gap-2">
-                                                                  <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                                      <% if (category.image) { %>
-                                                                      <img src="<%= category.image %>" alt="<%= category.name %>" class="avatar-md">
-                                                                      <% } else { %>
-                                                                      <img src="/assets/images/default.png" alt="Default Image" class="avatar-md">
-                                                                      <% } %>
+                                                                 <div class="d-flex align-items-center gap-2">
+                                                                      <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
+                                                                          <img src="<%= category.image %>" alt="<%= category.name %>" class="avatar-md">
+                                                                      </div>
                                                                   </div>
                                                               </div>
                                                           </td>
                                                           <td>
                                                               <p class="text-dark fw-medium fs-15 mb-0"><%= category.name %></p>
                                                           </td>
-                                                          <td><%= category.description %>></td>
+                                                          <td><%= category.description %></td>
                                                           <td><%= category.createdAt %></td>
                                                           <td><%= category.updatedAt %></td>
                                                           <td>
