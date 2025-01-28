@@ -856,43 +856,46 @@ class ThemeLayout {
 
           //TopBar Light Dark
           var themeColorToggle = document.getElementById('light-dark-mode');
-          if (themeColorToggle) {
-               themeColorToggle.addEventListener('click', function (e) {
-                    if (self.config.theme === 'light') {
-                         self.changeThemeMode('dark');
-                    } else {
-                         self.changeThemeMode('light');
-                    }
-               });
-          }
+if (themeColorToggle) {
+    themeColorToggle.addEventListener('click', function (e) {
+        // Always set the theme to 'dark'
+        self.changeThemeMode('dark');
+    });
 
-          var resetBtn = document.querySelector('#reset-layout')
-          if (resetBtn) {
-               resetBtn.addEventListener('click', function (e) {
-                    self.resetTheme();
-               });
-          }
+    // Force the theme to 'dark' on page load (optional)
+    self.changeThemeMode('dark');
+}
 
-          var menuToggleBtn = document.querySelector('.button-toggle-menu');
-          if (menuToggleBtn) {
-               menuToggleBtn.addEventListener('click', function () {
-                    var configSize = self.config.menu.size;
-                    var size = self.html.getAttribute('data-menu-size', configSize);
+// Reset Button - Ensure reset always applies dark theme
+var resetBtn = document.querySelector('#reset-layout');
+if (resetBtn) {
+    resetBtn.addEventListener('click', function (e) {
+        // Reset to 'dark' theme instead of default
+        self.changeThemeMode('dark');
+    });
+}
 
-                    if (size !== 'hidden') {
-                         if (size === 'condensed') {
-                              self.changeMenuSize(configSize == 'condensed' ? 'default' : configSize, false);
-                         } else {
-                              self.changeMenuSize('condensed', false);
-                         }
-                    } else {
-                         self.showBackdrop();
-                    }
+var menuToggleBtn = document.querySelector('.button-toggle-menu');
+if (menuToggleBtn) {
+    menuToggleBtn.addEventListener('click', function () {
+        var configSize = self.config.menu.size;
+        var size = self.html.getAttribute('data-menu-size', configSize);
 
-                    // Todo: old implementation
-                    self.html.classList.toggle('sidebar-enable');
-               });
-          }
+        if (size !== 'hidden') {
+            if (size === 'condensed') {
+                self.changeMenuSize(configSize === 'condensed' ? 'default' : configSize, false);
+            } else {
+                self.changeMenuSize('condensed', false);
+            }
+        } else {
+            self.showBackdrop();
+        }
+
+        // Keep sidebar behavior
+        self.html.classList.toggle('sidebar-enable');
+    });
+}
+
 
           var hoverBtn = document.querySelectorAll('.button-sm-hover');
           hoverBtn.forEach(function (element) {

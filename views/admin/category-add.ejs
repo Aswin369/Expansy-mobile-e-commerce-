@@ -551,300 +551,314 @@
           <!-- ========== Topbar End ========== -->
 
           <!-- ========== App Menu Start ========== -->
-          <%-include("../../views/partials/admin/nav")%>
-           <!-- ========== App Menu End ========== -->
+          <%-include(".. /../views/partials/admin/nav")%>
+               <!-- ========== App Menu End ========== -->
 
-           <!-- ==================================================== -->
-           <!-- Start right Content here -->
-           <!-- ==================================================== -->
-           <div class="page-content">
+               <!-- ==================================================== -->
+               <!-- Start right Content here -->
+               <!-- ==================================================== -->
+               <div class="page-content">
 
-               <!-- Start Container Fluid -->
-               <div class="container-xxl">
+                    <!-- Start Container Fluid -->
+                    <div class="container-xxl">
 
-                    <div class="row">
-                         <div class="col-xl-3 col-lg-4">
-                              <div class="card">
+                         <div class="row">
+                              <div class="col-xl-3 col-lg-4">
+                                   <div class="card">
 
+                                   </div>
                               </div>
-                         </div>
 
-                         <div class="col-xl-12 col-lg-8 ">
-                              <div class="card">
-                                   <div class="card-header d-flex align-items-center justify-content-between gap-3">
-                                        <h4 class="card-title mb-0">Add Category Image</h4>
-                                   </div>
+                              <div class="col-xl-12 col-lg-8 ">
+                                   <div class="card">
+                                        <div
+                                             class="card-header d-flex align-items-center justify-content-between gap-3">
+                                             <h4 class="card-title mb-0">Add Category Image</h4>
+                                        </div>
 
-                                   <div class="card-body">
-                                        <!-- File Upload -->
-                                        <form method="post" action="/admin/addCategory"
-                                             onsubmit="return handleFormSubmit(event)" enctype="multipart/form-data">
-                                             <div class="fallback">
-                                                  <input id="imageInput" name="file" type="file" accept="image/*" />
-                                             </div>
-                                             <div id="cropContainer" style="display:none;">
-                                                  <img id="imagePreview" style="max-width: 100%; display: block;" />
-                                                  <button type="button" id="cropButton"
-                                                       class="btn btn-primary mt-3">Crop</button>
-                                             </div>
-                                             <div class="dz-message needsclick">
-                                                  <i class=" fs-48 text-primary"></i>
-                                                  <h3 class="mt-4"><span class="text-primary"></span>
-                                                  </h3>
-                                             </div>
-                                             <input type="hidden" id="croppedImageData" name="croppedImageData" />
-                                             <!-- <button type="submit" class="btn btn-success mt-3">Upload</button> -->
-
-                                   </div>
-
-                              </div>
-                              <div class="card">
-                                   <div class="card-header">
-                                        <h4 class="card-title">General Information</h4>
-                                   </div>
-                                   <div class="card-body">
-                                        <div class="row">
-                                             <div class="col-lg-12">
-
-                                                  <div class="mb-3">
-                                                       <label for="category-title" class="form-label">Category
-                                                            Name</label>
-                                                       <input type="text" name="name" id="category-title"
-                                                            class="form-control" placeholder="Enter Title">
-                                                       <small id="name-error" class="text-danger error-message"
-                                                            style="display: none;"></small>
+                                        <div class="card-body">
+                                             <!-- File Upload -->
+                                             <form method="post" action="/admin/addCategory"
+                                                  onsubmit="return handleFormSubmit(event)"
+                                                  enctype="multipart/form-data">
+                                                  <div class="fallback">
+                                                       <input id="imageInput" name="file" type="file"
+                                                            accept="image/*" />
                                                   </div>
-
-                                                  <div class="mb-3">
-                                                       <label for="description" class="form-label">Description</label>
-                                                       <textarea name="description" class="form-control bg-light-subtle"
-                                                            id="description" rows="7"
-                                                            placeholder="Type description"></textarea>
-                                                       <small id="description-error" class="text-danger error-message"
-                                                            style="display: none;"></small>
+                                                  <div id="cropContainer" style="display:none;">
+                                                       <img id="imagePreview"
+                                                            style="max-width: 100%; display: block;" />
+                                                       <button type="button" id="cropButton"
+                                                            class="btn btn-primary mt-3">Crop</button>
                                                   </div>
+                                                  <div class="dz-message needsclick">
+                                                       <i class=" fs-48 text-primary"></i>
+                                                       <h3 class="mt-4"><span class="text-primary"></span>
+                                                       </h3>
+                                                  </div>
+                                                  <input type="hidden" id="croppedImageData" name="croppedImageData" />
+                                                  <!-- <button type="submit" class="btn btn-success mt-3">Upload</button> -->
 
-                                                  <div class="p-3 bg-light mb-3 rounded">
-                                                       <div class="row justify-content-end g-2">
-                                                            <div class="col-lg-2">
-                                                                 <button type="submit"
-                                                                      class="btn btn-success w-100">Save
-                                                                      Upload</button>
-                                                            </div>
-                                                            <div class="col-lg-2">
-                                                                 <button type="button"
-                                                                      class="btn btn-primary w-100">Cancel</button>
+                                        </div>
+
+                                   </div>
+                                   <div class="card">
+                                        <div class="card-header">
+                                             <h4 class="card-title">General Information</h4>
+                                        </div>
+                                        <div class="card-body">
+                                             <div class="row">
+                                                  <div class="col-lg-12">
+
+                                                       <div class="mb-3">
+                                                            <label for="category-title" class="form-label">Category
+                                                                 Name</label>
+                                                            <input type="text" name="name" id="category-title"
+                                                                 class="form-control" placeholder="Enter Title">
+                                                            <small id="name-error" class="text-danger error-message"
+                                                                 style="display: none;"></small>
+                                                       </div>
+
+                                                       <div class="mb-3">
+                                                            <label for="description"
+                                                                 class="form-label">Description</label>
+                                                            <textarea name="description"
+                                                                 class="form-control bg-light-subtle" id="description"
+                                                                 rows="7" placeholder="Type description"></textarea>
+                                                            <small id="description-error"
+                                                                 class="text-danger error-message"
+                                                                 style="display: none;"></small>
+                                                       </div>
+
+                                                       <div class="p-3 bg-light mb-3 rounded">
+                                                            <div class="row justify-content-end g-2">
+                                                                 <div class="col-lg-2">
+                                                                      <button type="submit"
+                                                                           class="btn btn-success w-100">Save
+                                                                           Upload</button>
+                                                                 </div>
+                                                                 <div class="col-lg-2">
+                                                                      <button type="button"
+                                                                           class="btn btn-primary w-100">Cancel</button>
+                                                                 </div>
                                                             </div>
                                                        </div>
-                                                  </div>
-                                                  </form>
+                                                       </form>
 
+                                                  </div>
                                              </div>
+
                                         </div>
+                                        <!-- End Container Fluid -->
+
+                                        <!-- ========== Footer Start ========== -->
+                                        <footer class="footer">
+                                             <div class="container-fluid">
+                                                  <div class="row">
+                                                       <div class="col-12 text-center">
+                                                            <script>document.write(new Date().getFullYear())</script>
+                                                            &copy;
+                                                            Expansy. Created by <iconify-icon
+                                                                 icon="iconamoon:heart-duotone"
+                                                                 class="fs-18 align-middle text-danger"></iconify-icon>
+                                                            <a href="https://1.envato.market/techzaa"
+                                                                 class="fw-bold footer-text" target="_blank">Aswin
+                                                                 Variyath</a>
+                                                       </div>
+                                                  </div>
+                                             </div>
+                                        </footer>
+                                        <!-- ========== Footer End ========== -->
 
                                    </div>
-                                   <!-- End Container Fluid -->
+                                   <!-- ==================================================== -->
+                                   <!-- End Page Content -->
+                                   <!-- ==================================================== -->
 
-                                   <!-- ========== Footer Start ========== -->
-                                   <footer class="footer">
-                                        <div class="container-fluid">
-                                             <div class="row">
-                                                  <div class="col-12 text-center">
-                                                       <script>document.write(new Date().getFullYear())</script> &copy;
-                                                       Expansy. Created by <iconify-icon icon="iconamoon:heart-duotone"
-                                                            class="fs-18 align-middle text-danger"></iconify-icon> <a
-                                                            href="https://1.envato.market/techzaa"
-                                                            class="fw-bold footer-text" target="_blank">Aswin Variyath</a>
-                                                  </div>
-                                             </div>
-                                        </div>
-                                   </footer>
-                                   <!-- ========== Footer End ========== -->
 
                               </div>
-                              <!-- ==================================================== -->
-                              <!-- End Page Content -->
-                              <!-- ==================================================== -->
 
+                              <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
 
-                         </div>
+                              <script>
+                                   // Handle form submission
+                                   function handleFormSubmit(event) {
+                                        event.preventDefault(); // Prevent default form submission
 
-                         <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+                                        if (!validateForm()) {
+                                             return; // Stop if validation fails
+                                        }
 
-                         <script>
-                              // Handle form submission
-                              function handleFormSubmit(event) {
-                                   event.preventDefault(); // Prevent default form submission
+                                        const name = document.getElementsByName("name")[0].value.trim();
+                                        const description = document.getElementById("description").value.trim();
+                                        const imageInput = document.getElementById("imageInput"); // Changed from "image" to "imageInput"
+                                        const formData = new FormData();
 
-                                   if (!validateForm()) {
-                                        return; // Stop if validation fails
-                                   }
+                                        formData.append("name", name);
+                                        formData.append("description", description);
 
-                                   const name = document.getElementsByName("name")[0].value.trim();
-                                   const description = document.getElementById("description").value.trim();
-                                   const imageInput = document.getElementById("imageInput"); // Changed from "image" to "imageInput"
-                                   const formData = new FormData();
+                                        // Append the cropped image if available
+                                        const croppedImageData = document.getElementById("croppedImageData").value;
 
-                                   formData.append("name", name);
-                                   formData.append("description", description);
+                                        if (croppedImageData) {
+                                             formData.append("croppedImage", croppedImageData);
+                                        } else if (imageInput.files.length > 0) {
+                                             formData.append("image", imageInput.files[0]);
+                                        }
 
-                                   // Append the cropped image if available
-                                   const croppedImageData = document.getElementById("croppedImageData").value;
+                                        console.log(name);
+                                        console.log(description);
+                                        console.log(imageInput.files[0]); // Correctly log the first file
 
-                                   if (croppedImageData) {
-                                        formData.append("croppedImage", croppedImageData);
-                                   } else if (imageInput.files.length > 0) {
-                                        formData.append("image", imageInput.files[0]);
-                                   }
-
-                                   console.log(name);
-                                   console.log(description);
-                                   console.log(imageInput.files[0]); // Correctly log the first file
-
-                                   fetch("/admin/addCategory", {
-                                        method: "POST",
-                                        body: formData,
-                                   })
-                                        .then((response) => {
-                                             if (!response.ok) {
-                                                  return response.json().then((err) => {
-                                                       throw new Error(err.error || "Unknown error");
-                                                  });
-                                             }
-                                             return response.json();
+                                        fetch("/admin/addCategory", {
+                                             method: "POST",
+                                             body: formData,
                                         })
-                                        .then((data) => {
-                                             Swal.fire({
-                                                  icon: "success",
-                                                  title: "Success",
-                                                  text: data.message,
-                                             }).then(() => {
-                                                  location.reload(); // Reload the page after success
+                                             .then((response) => {
+                                                  if (!response.ok) {
+                                                       return response.json().then((err) => {
+                                                            throw new Error(err.error || "Unknown error");
+                                                       });
+                                                  }
+                                                  return response.json();
+                                             })
+                                             .then((data) => {
+                                                  Swal.fire({
+                                                       icon: "success",
+                                                       title: "Success",
+                                                       text: data.message,
+                                                  }).then(() => {
+                                                       location.reload(); // Reload the page after success
+                                                  });
+                                             })
+                                             .catch((error) => {
+                                                  if (error.message === "Category already exists") {
+                                                       Swal.fire({
+                                                            icon: "error",
+                                                            title: "Oops",
+                                                            text: "Category already exists",
+                                                       });
+                                                  } else {
+                                                       Swal.fire({
+                                                            icon: "error",
+                                                            title: "Oops",
+                                                            text: error.message || "An error occurred while adding the category",
+                                                       });
+                                                  }
                                              });
-                                        })
-                                        .catch((error) => {
-                                             if (error.message === "Category already exists") {
-                                                  Swal.fire({
-                                                       icon: "error",
-                                                       title: "Oops",
-                                                       text: "Category already exists",
+                                   }
+
+                                   // Form validation
+                                   function validateForm() {
+                                        clearErrorMessage();
+                                        const name = document.getElementsByName("name")[0].value.trim();
+                                        const description = document.getElementById("description").value.trim();
+                                        let isValid = true;
+
+                                        // Validate Name
+                                        if (name === "") {
+                                             displayErrorMessage("name-error", "Please enter a name");
+                                             isValid = false;
+                                        } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+                                             displayErrorMessage(
+                                                  "name-error",
+                                                  "Category name should contain only alphabetic characters"
+                                             );
+                                             isValid = false;
+                                        }
+
+                                        // Validate Description
+                                        if (description === "") {
+                                             displayErrorMessage("description-error", "Please enter a description");
+                                             isValid = false;
+                                        }
+
+                                        return isValid;
+                                   }
+
+                                   // Display error message
+                                   function displayErrorMessage(elementId, message) {
+                                        const errorElement = document.getElementById(elementId);
+                                        errorElement.innerText = message;
+                                        errorElement.style.display = "block";
+                                   }
+
+                                   // Clear error message
+                                   function clearErrorMessage() {
+                                        const errorElements = document.getElementsByClassName("error-message");
+                                        Array.from(errorElements).forEach((element) => {
+                                             element.innerText = "";
+                                             element.style.display = "none";
+                                        });
+                                   }
+
+                                   // Cropper.js Integration
+                                   document.addEventListener("DOMContentLoaded", function () {
+                                        const imageInput = document.getElementById("imageInput");
+                                        const imagePreview = document.getElementById("imagePreview");
+                                        const cropContainer = document.getElementById("cropContainer");
+                                        const cropButton = document.getElementById("cropButton");
+                                        const croppedImageData = document.getElementById("croppedImageData");
+                                        let cropper;
+
+                                        imageInput.addEventListener("change", function (event) {
+                                             const file = event.target.files[0];
+                                             if (!file) return;
+
+                                             const reader = new FileReader();
+                                             reader.onload = function (e) {
+                                                  imagePreview.src = e.target.result;
+                                                  cropContainer.style.display = "block";
+
+                                                  // Destroy any existing cropper instance to avoid conflicts
+                                                  if (cropper) {
+                                                       cropper.destroy();
+                                                  }
+
+                                                  // Initialize the cropper instance
+                                                  cropper = new Cropper(imagePreview, {
+                                                       aspectRatio: 1,
+                                                       viewMode: 2,
+                                                       scalable: true,
+                                                       zoomable: true,
                                                   });
-                                             } else {
-                                                  Swal.fire({
-                                                       icon: "error",
-                                                       title: "Oops",
-                                                       text: error.message || "An error occurred while adding the category",
+                                             };
+                                             reader.readAsDataURL(file);
+                                        });
+
+                                        cropButton.addEventListener("click", function () {
+                                             if (cropper) {
+                                                  const canvas = cropper.getCroppedCanvas({
+                                                       width: 300,
+                                                       height: 300,
                                                   });
+
+                                                  // Convert canvas to a base64 string
+                                                  croppedImageData.value = canvas.toDataURL("image/jpeg");
+
+                                                  // Hide crop container after cropping
+                                                  cropContainer.style.display = "none";
+
+                                                  Swal.fire({
+                                                       icon: 'success', // Success icon for a positive message
+                                                       title: 'Success!',
+                                                       text: 'Image cropped and ready for upload!',
+                                                  });
+
                                              }
                                         });
-                              }
-
-                              // Form validation
-                              function validateForm() {
-                                   clearErrorMessage();
-                                   const name = document.getElementsByName("name")[0].value.trim();
-                                   const description = document.getElementById("description").value.trim();
-                                   let isValid = true;
-
-                                   // Validate Name
-                                   if (name === "") {
-                                        displayErrorMessage("name-error", "Please enter a name");
-                                        isValid = false;
-                                   } else if (!/^[a-zA-Z\s]+$/.test(name)) {
-                                        displayErrorMessage(
-                                             "name-error",
-                                             "Category name should contain only alphabetic characters"
-                                        );
-                                        isValid = false;
-                                   }
-
-                                   // Validate Description
-                                   if (description === "") {
-                                        displayErrorMessage("description-error", "Please enter a description");
-                                        isValid = false;
-                                   }
-
-                                   return isValid;
-                              }
-
-                              // Display error message
-                              function displayErrorMessage(elementId, message) {
-                                   const errorElement = document.getElementById(elementId);
-                                   errorElement.innerText = message;
-                                   errorElement.style.display = "block";
-                              }
-
-                              // Clear error message
-                              function clearErrorMessage() {
-                                   const errorElements = document.getElementsByClassName("error-message");
-                                   Array.from(errorElements).forEach((element) => {
-                                        element.innerText = "";
-                                        element.style.display = "none";
                                    });
-                              }
-
-                              // Cropper.js Integration
-                              document.addEventListener("DOMContentLoaded", function () {
-                                   const imageInput = document.getElementById("imageInput");
-                                   const imagePreview = document.getElementById("imagePreview");
-                                   const cropContainer = document.getElementById("cropContainer");
-                                   const cropButton = document.getElementById("cropButton");
-                                   const croppedImageData = document.getElementById("croppedImageData");
-                                   let cropper;
-
-                                   imageInput.addEventListener("change", function (event) {
-                                        const file = event.target.files[0];
-                                        if (!file) return;
-
-                                        const reader = new FileReader();
-                                        reader.onload = function (e) {
-                                             imagePreview.src = e.target.result;
-                                             cropContainer.style.display = "block";
-
-                                             // Destroy any existing cropper instance to avoid conflicts
-                                             if (cropper) {
-                                                  cropper.destroy();
-                                             }
-
-                                             // Initialize the cropper instance
-                                             cropper = new Cropper(imagePreview, {
-                                                  aspectRatio: 1,
-                                                  viewMode: 2,
-                                                  scalable: true,
-                                                  zoomable: true,
-                                             });
-                                        };
-                                        reader.readAsDataURL(file);
-                                   });
-
-                                   cropButton.addEventListener("click", function () {
-                                        if (cropper) {
-                                             const canvas = cropper.getCroppedCanvas({
-                                                  width: 300,
-                                                  height: 300,
-                                             });
-
-                                             // Convert canvas to a base64 string
-                                             croppedImageData.value = canvas.toDataURL("image/jpeg");
-
-                                             // Hide crop container after cropping
-                                             cropContainer.style.display = "none";
-
-                                             alert("Image cropped and ready for upload!");
-                                        }
-                                   });
-                              });
-                         </script>
+                              </script>
 
 
 
-                         <!-- END Wrapper -->
+                              <!-- END Wrapper -->
 
-                         <!-- Vendor Javascript (Require in all Page) -->
-                         <script src="/assets/js/vendor.js"></script>
+                              <!-- Vendor Javascript (Require in all Page) -->
+                              <script src="/assets/js/vendor.js"></script>
 
-                         <!-- App Javascript (Require in all Page) -->
-                         <script src="/assets/js/app.js"></script>
+                              <!-- App Javascript (Require in all Page) -->
+                              <script src="/assets/js/app.js"></script>
 
 
 </body>

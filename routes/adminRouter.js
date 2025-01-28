@@ -5,6 +5,8 @@ const customerController = require("../controllers/admin/customerController")
 const {userAuth,adminAuth} = require("../middlewares/auth")
 const upload = require("../middlewares/multer")
 const categoryController = require("../controllers/admin/categoryController")
+const productController = require("../controllers/admin/productController")
+const brandController = require("../controllers/admin/BrandController")
 
 // router.get("/pageerror",adminController.pageerror)
 router.get("/login",adminController.loadLogin)
@@ -26,5 +28,11 @@ router.get('/listCategory', adminAuth,categoryController.getListCategory);
 router.get('/unlistCategory', adminAuth, categoryController.getUnlistCategory);
 router.get("/editCategory",adminAuth, categoryController.getEditCategory)
 router.post("/editCategory/:id", adminAuth, categoryController.editCategory)
+// Brand Management
+router.get("/brands", adminAuth, brandController.getBrandPage);
+router.post("/addBrand",upload.single('file'),adminAuth, brandController.addBrand)
+// Product management
+// router.get("/addProducts",adminAuth, productController.getProductAddPage)
+
 
 module.exports = router

@@ -44,9 +44,6 @@ const categoryInfo = async (req, res) => {
     }
   };
   
-
-
-
 const addCategory = async (req, res) => {
     const { name, description, croppedImage } = req.body; 
     
