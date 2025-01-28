@@ -1,7 +1,7 @@
 const { query } = require("express")
 const Brand = require("../../models/brandSchema")
 const product = require("../../models/productSchema")
-
+const {handleUpload} = require("../../config/cloudinary")
 
 
 const getBrandPage = async (req, res) => {
@@ -39,69 +39,9 @@ const getBrandPage = async (req, res) => {
 
 const addBrand = async (req, res) => {
     try {
-        const { brandName, croppedImageData } = req.body;
-        console.log("brand Name", brandName);
-        console.log("cropped Image Data", croppedImageData);
         
-        
-        // Validate brand name
-        // if (!brandName) {
-        //     return res.status(400).json({
-        //         status: 'error',
-        //         message: 'Brand name is required!'
-        //     });
-        // }
-
-        // Check if brand already exists (case-insensitive)
-        // const findBrand = await Brand.findOne({ 
-        //     brandName: { $regex: new RegExp(`^${brandName}$, 'i'`) }
-        // });
-        
-        // if (findBrand) {
-        //     return res.status(400).json({
-        //         status: 'error',
-        //         message: 'Brand already exists!'
-        //     });
-        // }
-
-        // Validate if image was uploaded
-        // if (!req.files || !req.files.image) {
-        //     return res.status(400).json({
-        //         status: 'error',
-        //         message: 'Brand image is required!'
-        //     });
-        // }
-
-        // Upload image to Cloudinary
-        // const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
-        //     folder: 'brands',
-        //     allowed_formats: ['jpg', 'jpeg', 'png'],
-        //     transformation: [
-        //         { width: 500, height: 500, crop: 'limit' } // Add size limits if needed
-        //     ]
-        // });
-
-        // Create new brand
-        // const newBrand = new Brand({
-        //     brandName: brandName,
-        //     image: result.secure_url,
-        //     cloudinaryId: result.public_id,
-        //     status: true,
-        //     createdAt: new Date()
-        // });
-
-        // await newBrand.save();
-
-        // return res.status(200).json({
-        //     status: 'success',
-        //     message: 'Brand added successfully!'
-        // });
     } catch (error) {
-        console.error('Error in addBrand:', error);
-        return res.status(500).json({
-            status: 'error',
-            message: 'An error occurred while adding the brand.'
-        });
+    
     }
 };
 

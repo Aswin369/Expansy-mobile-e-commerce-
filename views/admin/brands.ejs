@@ -2309,8 +2309,8 @@
                   href="https://1.envato.market/techzaa"
                   class="fw-bold footer-text"
                   target="_blank"
-                  >Techzaa</a
-                >
+                  >Techzaa</a>
+                
               </div>
             </div>
           </div>
@@ -2336,9 +2336,8 @@
           reader.onload = function (e) {
             const preview = document.getElementById("preview");
             const imagePreview = document.getElementById("imagePreview");
-
             preview.src = e.target.result;
-            imagePreview.classList.remove("d-none"); // Show the preview section
+            imagePreview.classList.remove("d-none");
           };
           reader.readAsDataURL(file);
         }
@@ -2349,152 +2348,158 @@
 
         if (!file) {
           Swal.fire({
-            icon: "warning", // Use 'warning' to indicate a cautionary message
+            icon: "warning",
             title: "No Image Uploaded",
             text: "Please upload an image before cropping!",
           });
-
           return;
         }
 
         const reader = new FileReader();
         reader.onload = function (e) {
           const imageToCrop = document.getElementById("imageToCrop");
-          imageToCrop.src = e.target.result; // Load the image into the modal
+          imageToCrop.src = e.target.result;
 
           const cropperModal = new bootstrap.Modal(
             document.getElementById("cropperModal")
           );
-          cropperModal.show(); // Show the cropper modal
+          cropperModal.show();
 
-          // Initialize or re-initialize Cropper.js
           if (cropper) {
-            cropper.destroy(); // Destroy existing instance to avoid multiple instances
+            cropper.destroy();
           }
           cropper = new Cropper(imageToCrop, {
-            aspectRatio: 1, // Square aspect ratio
-            viewMode: 2, // Restrict cropping outside the image
-            autoCropArea: 1, // Automatically set the crop area to 100% of the image
-            responsive: true, // Responsive resizing
-            scalable: true, // Allow scaling
-            zoomable: true, // Allow zooming
-            rotatable: true, // Allow rotation
+            aspectRatio: 1,
+            viewMode: 2,
+            autoCropArea: 1,
+            responsive: true,
+            scalable: true,
+            zoomable: true,
+            rotatable: true,
           });
         };
-        reader.readAsDataURL(file); // Read the uploaded file
+        reader.readAsDataURL(file);
       }
 
-      // Function to save the cropped image
       function saveCroppedImage() {
-  if (!cropper) {
-    Swal.fire({
-      icon: "error",
-      title: "No Image to Crop",
-      text: "Please select and upload an image to crop!",
-    });
+        if (!cropper) {
+          Swal.fire({
+            icon: "error",
+            title: "No Image to Crop",
+            text: "Please select and upload an image to crop!",
+          });
+          return;
+        }
 
-    return;
-  }
+        const canvas = cropper.getCroppedCanvas({
+          width: 300,
+          height: 300,
+        });
 
-  // Get the cropped image as a canvas
-  const croppedCanvas = cropper.getCroppedCanvas({
-    width: 300, // Output width
-    height: 300, // Output height
-  });
+        // Convert canvas to Blob
+        canvas.toBlob(
+          function (blob) {
+            // Create a File object from the Blob
+            const croppedFile = new File([blob], "cropped-image.jpg", {
+              type: "image/jpeg",
+              lastModified: new Date().getTime(),
+            });
 
-  // Convert the cropped canvas to a Base64 string
-  const croppedImageDataURL = croppedCanvas.toDataURL("image/png");
+            // Store the File object for form submission
+            window.croppedImageFile = croppedFile;
 
-  // Store the cropped image data as Base64 in the hidden input
-  const croppedImageData = document.getElementById("croppedImageData");
-  croppedImageData.value = croppedImageDataURL;
+            // Update preview
+            const previewUrl = URL.createObjectURL(blob);
+            document.getElementById("preview").src = previewUrl;
 
-  // Preview the cropped image (optional)
-  const preview = document.getElementById("preview");
-  preview.src = croppedImageDataURL;
+            Swal.fire({
+              icon: "success",
+              title: "Image Cropped",
+              text: "The image has been cropped successfully!",
+            });
 
-  Swal.fire({
-    icon: "success",
-    title: "Image Cropped",
-    text: "The image has been cropped successfully!",
-  });
+            const cropperModal = bootstrap.Modal.getInstance(
+              document.getElementById("cropperModal")
+            );
+            cropperModal.hide();
+          },
+          "image/jpeg",
+          0.9
+        );
+      }
 
-  // Hide the modal after saving the cropped image
-  const cropperModal = bootstrap.Modal.getInstance(
-    document.getElementById("cropperModal")
-  );
-  cropperModal.hide();
-}
-
-
-      // Function to validate and submit the form
-      function validateForm(event) {
+      async function validateForm(event) {
         event.preventDefault();
 
-        // Get form data
         const brandName = document.getElementById("brandName").value.trim();
-        const croppedImageData = document.getElementById("croppedImageData").value;
+        const croppedImage = window.croppedImageFile;
 
-          console.log(croppedImageData);
-          
-
-
-        // Validate brand name (letters and numbers only)
+        console.log("brandName", brandName);
+        console.log("croppedImage", croppedImage);
+        // Validate brand name
         const brandNameRegex = /^[a-zA-Z0-9\s]+$/;
         if (!brandNameRegex.test(brandName)) {
           Swal.fire({
-            icon: "warning", // Warning icon
-            title: "Invalid Brand Name", // Alert title
-            text: "Brand name can only contain letters and numbers. Please correct it!", // Alert message
+            icon: "warning",
+            title: "Invalid Brand Name",
+            text: "Brand name can only contain letters and numbers. Please correct it!",
           });
           return false;
         }
 
-        // Validate cropped image data
-        if (!croppedImageData) {
+        // Validate image
+        if (!croppedImage) {
           Swal.fire({
-            icon: "warning", // Warning icon
+            icon: "warning",
             title: "Image Not Cropped",
             text: "Please crop the image before submitting.",
           });
-
           return false;
         }
 
-        // Prepare data for submission
+        const imageInput = document.getElementById("imageInput")
+        // Prepare form data
         const formData = new FormData();
         formData.append("brandName", brandName);
-        formData.append("croppedImageData", croppedImageData);
-        console.log("brand name",brandName)
-        console.log("brand name",brandName)
-        // Submit form using Fetch API
-        fetch("/admin/addBrand", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => {
-            if (response.ok) {
-              Swal.fire({
-                icon: "success", // Success icon for a positive message
-                title: "Success!",
-                text: "Brand added successfully!",
-              });
-              document.getElementById("brandForm").reset(); // Reset the form
-              document.getElementById("imagePreview").classList.add("d-none"); // Hide preview
-            } else {
-              alert("Failed to add brand. Please try again.");
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            Swal.fire({
-              icon: "error", // Error icon for failure messages
-              title: "Error!",
-              text: "An error occurred. Please try again.",
-            });
+        formData.append("brandImage", croppedImage);
+
+        const croppedImageData = document.getElementById("croppedImageData").value;
+
+        if (croppedImageData) {
+           formData.append("croppedImage", croppedImageData);
+        } else if (imageInput.files.length > 0) {
+          formData.append("image", imageInput.files[0]);
+        }
+
+        try {
+          const response = await fetch("/admin/addBrand", {
+            method: "POST",
+            body: formData,
           });
 
-        return false; // Prevent default form submission
+          if (response.ok) {
+            Swal.fire({
+              icon: "success",
+              title: "Success!",
+              text: "Brand added successfully!",
+            });
+            document.getElementById("brandForm").reset();
+            document.getElementById("imagePreview").classList.add("d-none");
+            window.croppedImageFile = null;
+          } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Server response was not ok");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: error.message || "An error occurred. Please try again.",
+          });
+        }
+
+        return false;
       }
     </script>
   </body>
