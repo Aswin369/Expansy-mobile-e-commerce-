@@ -22,6 +22,9 @@ router.get("/admin/customerdetails", adminAuth, customerController.customerdetai
 router.get("/category",adminAuth,categoryController.categoryInfo)
 router.post("/addCategory", upload.single('file'),adminAuth, categoryController.addCategory);
 router.get("/addCategory", adminAuth,categoryController.loadAddCategory)
-
+router.get('/listCategory', adminAuth,categoryController.getListCategory);
+router.get('/unlistCategory', adminAuth, categoryController.getUnlistCategory);
+router.get("/editCategory",adminAuth, categoryController.getEditCategory)
+router.post("/editCategory/:id", adminAuth, categoryController.editCategory)
 
 module.exports = router

@@ -4,62 +4,63 @@ const {handleUpload} = require("../../config/cloudinary")
 
 const categoryInfo = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1; 
-        const limit = 4;
-        const skip = (page - 1) * limit; 
-
-        
-        const categoryData = await Category.find({})
-            .sort({ createdAt: -1 }) 
-            .skip(skip) 
-            .limit(limit) 
-            .select("image name description createdAt updatedAt isListed"); 
-
-        
-        const totalCategories = await Category.countDocuments();
-        const totalPages = Math.ceil(totalCategories / limit);
-
-        
-        const categoriesWithSerialNumbers = categoryData.map((category, index) => ({
-            no: skip + index + 1, 
-            image: category.image || '/assets/images/default.png', 
-            name: category.name,
-            description: category.description,
-            createdAt: category.createdAt.toLocaleDateString(), 
-            updatedAt: category.updatedAt.toLocaleDateString(), 
-            status: category.isListed ? "Listed" : "Unlisted"
-        }));
-
-        
-        res.render("category-list", {
-            cat: categoriesWithSerialNumbers,
-            currentPage: page,
-            totalPages: totalPages,
-            totalCategories: totalCategories
-        });
+      const page = parseInt(req.query.page) || 1;
+      const limit = 4;
+      const skip = (page - 1) * limit;
+  
+      
+      const categoryData = await Category.find({})
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .select("image name description createdAt updatedAt isListed");
+  
+     
+      const totalCategories = await Category.countDocuments();
+      const totalPages = Math.ceil(totalCategories / limit);
+  
+      
+      const categoriesWithSerialNumbers = categoryData.map((category, index) => ({
+        _id: category._id,
+        no: skip + index + 1,
+        image: category.image || "/assets/images/default.png",
+        name: category.name,
+        description: category.description,
+        createdAt: category.createdAt.toLocaleDateString(),
+        updatedAt: category.updatedAt.toLocaleDateString(),
+        status: category.isListed ? "true" : "false",
+      }));
+  
+      
+      res.render("category-list", {
+        cat: categoriesWithSerialNumbers,
+        currentPage: page,
+        totalPages: totalPages,
+        totalCategories: totalCategories,
+      });
     } catch (error) {
-        console.error(error);
-        res.redirect("/pageerror");
+      console.error("Error in categoryInfo:", error);
+      res.redirect("/pageerror");
     }
-};
+  };
+  
 
 
 
 const addCategory = async (req, res) => {
     const { name, description, croppedImage } = req.body; 
-    console.log("name",name)
-    console.log("description",description)
+    
 
     try {
         
         if (!name || !description) {
-            return res.status(400).json({ error: "Name and description are required" });
+            return res.status(400).json({ error: "Name and description are required"});
         }
 
         
         const existingCategory = await Category.findOne({ name });
         if (existingCategory) {
-            return res.status(400).json({ error: "Category already exists" });
+            return res.status(400).json({ error: "Category already exists"});
         }
 
         
@@ -101,9 +102,74 @@ const loadAddCategory = async (req,res)=>{
     }
 }
 
+const getListCategory = async (req, res) => {
+    try {
+      const id = req.query.id;
+
+      await Category.updateOne({ _id: id }, { $set: { isListed: false } });
+      res.redirect("/admin/category");
+    } catch (error) {
+      console.error("Error in getListCategory:", error);
+      res.redirect("/pageerror");
+    }
+  };
+  
+  const getUnlistCategory = async (req, res) => {
+    try {
+      const id = req.query.id;
+    
+      await Category.updateOne({ _id: id }, { $set: { isListed: true } });
+      res.redirect("/admin/category");
+    } catch (error) {
+      console.error("Error in getUnlistCategory:", error);
+      res.redirect("/pageerror");
+    }
+  };
+  
+const getEditCategory = async (req,res)=>{
+    try {
+        const id = req.query.id
+       
+        const category = await Category.findOne({_id:id})
+        res.render("category-update", {category:category})
+    } catch (error) {
+        console.error("Error in getEditCategory:", error);
+        res.redirect("/pageerror");
+    }
+}
+
+const editCategory = async (req,res)=>{
+    try {
+        const id = req.params.id
+        const {name, description, croppedImage} = req.body
+        const existingCategory = await Category.findOne({name:name})
+
+        if(existingCategory){
+            return res.status(400).json({error:"Category exists, Please Choose another name"})
+        }
+        const updateCategory = await Category.findByIdAndUpdate(id,{
+            name:name,
+            description:description,
+            croppedImage:croppedImage
+        },{new:true})
+
+        if(updateCategory){
+            res.redirect("/admin/category")
+        }else{
+            res.status(404).json({error:"Category not found"})
+        }
+    } catch (error) {
+        console.error("Category update error",error)
+        res.status(500).json({error:"Internal server error"})
+    }
+}
 
 module.exports = {
     categoryInfo,
     addCategory,
-    loadAddCategory
+    loadAddCategory,
+    getListCategory,
+    getUnlistCategory,
+    getEditCategory,
+    editCategory
 }
