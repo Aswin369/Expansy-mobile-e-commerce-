@@ -1,7 +1,6 @@
 {
   "name": "expansy-e-commerce-website",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js"
@@ -24,6 +23,16 @@
     "nodemailer": "^6.9.16",
     "nodemon": "^3.1.9",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
-  }
+    "passport-google-oauth20": "^2.0.0",
+    "sharp": "^0.33.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aswin369/Expany-mobile-e-commerce-.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Aswin369/Expany-mobile-e-commerce-/issues"
+  },
+  "homepage": "https://github.com/Aswin369/Expany-mobile-e-commerce-#readme",
+  "description": ""
 }

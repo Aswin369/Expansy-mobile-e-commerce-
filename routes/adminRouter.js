@@ -32,7 +32,7 @@ router.post("/editCategory/:id", adminAuth, categoryController.editCategory)
 router.get("/brands", adminAuth, brandController.getBrandPage);
 router.post("/addBrand",upload.single('file'),adminAuth, brandController.addBrand)
 // Product management
-// router.get("/addProducts",adminAuth, productController.getProductAddPage)
+router.get("/addProducts",adminAuth, productController.getProductAddPage)
 
 
 module.exports = router
