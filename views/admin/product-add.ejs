@@ -28,7 +28,7 @@
      <script src="/assets/js/config.js"></script>
      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
     <style>
      .image-upload-section {
          border: 1px solid #dee2e6;
@@ -1297,12 +1297,13 @@
                                     <div class="row mb-3">
                                         <div class="col-lg-6">
                                             <label for="product-name" class="form-label">Product Name</label>
-                                            <input type="text" id="product-name" name="product-name" class="form-control" placeholder="Enter product name" required>
+                                            <input type="text" id="product-name" name="productName" class="form-control" placeholder="Enter product name" >
                                         </div>
                                         <div class="col-lg-6">
                                             <label for="product-categories" class="form-label">Category</label>
-                                            <select class="form-control" id="product-categories" name="product-categories" required>
+                                            <select class="form-control" id="product-categories" name="category" >
                                                 <%for(let i=0; i<category.length; i++){%>
+                                                  <option value="">Select Category</option>
                                                        <option value="<%=category[i].name%>">
                                                             <%=category[i].name%>
                                                        </option>
@@ -1314,8 +1315,9 @@
                                     <div class="row mb-3">
                                         <div class="col-lg-6">
                                             <label for="brand" class="form-label">Brand</label>
-                                            <select class="form-control" id="ram" name="brand" required>
+                                            <select class="form-control" id="ram" name="brand" >
                                                 <%for(let i=0; i<brand.length;i++){%>
+                                                  <option value="">Select Brand</option>
                                                   <option value="<%= brand[i].brandName%>">
                                                        <%=brand[i].brandName%>
                                                   </option>
@@ -1324,7 +1326,7 @@
                                         </div>
                                         <div class="col-lg-6">
                                             <label for="quantity" class="form-label">Quantity</label>
-                                            <input type="number" id="quantity" name="quantity" class="form-control" placeholder="Enter quantity" required>
+                                            <input type="number" id="quantity" name="quantity" class="form-control" placeholder="Enter quantity" >
                                         </div>
                                     </div>
             
@@ -1334,14 +1336,14 @@
                                             <label for="regular-price" class="form-label">Regular Price</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class='bx bx-dollar'></i></span>
-                                                <input type="number" id="regular-price" name="regular-price" class="form-control" placeholder="0.00" required>
+                                                <input type="number" id="regular-price" name="regularPrice" class="form-control" placeholder="0.00" >
                                             </div>
                                         </div>
                                         <div class="col-lg-6">
                                             <label for="sale-price" class="form-label">Sale Price</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class='bx bx-dollar'></i></span>
-                                                <input type="number" id="sale-price" name="sale-price" class="form-control" placeholder="0.00">
+                                                <input type="number" id="sale-price" name="salePrice" class="form-control" placeholder="0.00">
                                             </div>
                                         </div>
                                     </div>
@@ -1349,7 +1351,7 @@
                                     <!-- Product Description -->
                                     <div class="mb-3">
                                         <label for="description" class="form-label">Product Description</label>
-                                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter product description" required></textarea>
+                                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter product description" ></textarea>
                                     </div>
             
                                     <!-- Specifications -->
@@ -1357,7 +1359,7 @@
                                     <div class="row mb-3">
                                         <div class="col-lg-4">
                                             <label for="ram" class="form-label">RAM</label>
-                                            <select class="form-control" id="ram" name="ram" required>
+                                            <select class="form-control" id="ram" name="ram" >
                                                 <option value="">Select RAM</option>
                                                 <option value="4GB">4GB</option>
                                                 <option value="8GB">8GB</option>
@@ -1367,7 +1369,7 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <label for="storage" class="form-label">Internal Storage</label>
-                                            <select class="form-control" id="storage" name="storage" required>
+                                            <select class="form-control" id="storage" name="storage" >
                                                 <option value="">Select Storage</option>
                                                 <option value="64GB">64GB</option>
                                                 <option value="128GB">128GB</option>
@@ -1378,12 +1380,12 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <label for="processor" class="form-label">Processor</label>
-                                            <input type="text" id="processor" name="processor" class="form-control" placeholder="Enter processor details" required>
+                                            <input type="text" id="processor" name="processor" class="form-control" placeholder="Enter processor details" >
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
-                                        <label for="storage" class="form-label">Choose Color</label>
-                                        <select class="form-control" id="storage" name="storage" required>
+                                        <label for="color" class="form-label">Choose Color</label>
+                                        <select class="form-control" id="color" name="color" >
                                             <option value="">Select Color</option>
                                             <option value="Red" style="background-color: red; color: white;">Red</option>
                                             <option value="Blue" style="background-color: blue; color: white;">Blue</option>
@@ -1400,7 +1402,7 @@
                                         <div class="row mb-3">
                                             <div class="col-lg-4 image-upload-section">
                                                 <label for="product-image-1" class="form-label">Product Image 1</label>
-                                                <input type="file" class="form-control image-input" id="product-image-1" name="product-image-1" accept="image/*" required>
+                                                <input type="file" class="form-control image-input" id="product-image-1" name="product-image-1" accept="image/*" >
                                                 <div class="image-preview-container" id="preview-container-1">
                                                     <img class="image-preview" id="preview-1">
                                                     <div class="preview-controls" id="controls-1">
@@ -1446,7 +1448,7 @@
                                     <!-- Form Actions -->
                                     <div class="row justify-content-end g-2">
                                         <div class="col-lg-2">
-                                            <button type="submit"  class="btn btn-primary w-100" onclick="validateAndSubmit()">Create Product</button>
+                                            <button type="submit"  class="btn btn-primary w-100">Create Product</button>
                                         </div>
                                         <div class="col-lg-2">
                                             <button type="reset" class="btn btn-outline-secondary w-100">Cancel</button>
@@ -1484,124 +1486,291 @@
 
      <!-- Vendor Javascript (Require in all Page) -->
      <script src="/assets/js/vendor.js"></script>
-
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
      <!-- App Javascript (Require in all Page) -->
      <script src="/assets/js/app.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+     
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
      <script>
           document.addEventListener('DOMContentLoaded', function() {
-              let currentCropper = null;
-  
-              // Handle file input change
-              document.querySelectorAll('.image-input').forEach(input => {
-                  input.addEventListener('change', function(e) {
-                      const file = e.target.files[0];
-                      if (!file) return;
-  
-                      const index = this.id.split('-')[2];
-                      const previewContainer = document.getElementById(`preview-container-${index}`);
-                      const preview = document.getElementById(`preview-${index}`);
-                      const finalImage = document.getElementById(`final-${index}`);
-  
-                      // Hide final image if it was previously shown
-                      finalImage.style.display = 'none';
-  
-                      // Destroy existing cropper if any
-                      if (currentCropper) {
-                          currentCropper.destroy();
-                      }
-  
-                      // Read and preview file
-                      const reader = new FileReader();
-                      reader.onload = function(e) {
-                          preview.src = e.target.result;
-                          previewContainer.style.display = 'block';
-  
-                          // Initialize cropper
-                          currentCropper = new Cropper(preview, {
-                              aspectRatio: 1,
-                              viewMode: 2,
-                              dragMode: 'move',
-                              autoCropArea: 1,
-                              restore: false,
-                              guides: true,
-                              center: true,
-                              highlight: false,
-                              cropBoxMovable: true,
-                              cropBoxResizable: true,
-                              toggleDragModeOnDblclick: false
-                          });
-                      };
-                      reader.readAsDataURL(file);
-                  });
-              });
-  
-              // Handle crop button click
-              document.querySelectorAll('.crop-btn').forEach(btn => {
-                  btn.addEventListener('click', function() {
-                      if (!currentCropper) return;
-  
-                      const index = this.dataset.index;
-                      const previewContainer = document.getElementById(`preview-container-${index}`);
-                      const finalImage = document.getElementById(`final-${index}`);
-                      const croppedInput = document.getElementById(`cropped-image-${index}`);
-  
-                      // Get cropped canvas
-                      const canvas = currentCropper.getCroppedCanvas({
-                          width: 600,
-                          height: 600
-                      });
-  
-                      // Set cropped image
-                      const croppedData = canvas.toDataURL('image/jpeg', 0.9);
-                      finalImage.src = croppedData;
-                      finalImage.style.display = 'block';
-                      croppedInput.value = croppedData;
-  
-                      // Clean up
-                      currentCropper.destroy();
-                      currentCropper = null;
-                      previewContainer.style.display = 'none';
-  
-                      // Enable next input if exists
-                      const nextInput = document.getElementById(`product-image-${parseInt(index) + 1}`);
-                      if (nextInput) {
-                          nextInput.disabled = false;
-                      }
-                  });
-              });
-  
-              // Handle cancel button click
-              document.querySelectorAll('.cancel-btn').forEach(btn => {
-                  btn.addEventListener('click', function() {
-                      const index = this.dataset.index;
-                      const input = document.getElementById(`product-image-${index}`);
-                      const previewContainer = document.getElementById(`preview-container-${index}`);
-                      const finalImage = document.getElementById(`final-${index}`);
-                      const croppedInput = document.getElementById(`cropped-image-${index}`);
-  
-                      // Clean up
-                      if (currentCropper) {
-                          currentCropper.destroy();
-                          currentCropper = null;
-                      }
-  
-                      // Reset everything
-                      input.value = '';
-                      previewContainer.style.display = 'none';
-                      finalImage.style.display = 'none';
-                      croppedInput.value = '';
-                  });
-              });
+    let currentCropper = null;
+    let croppedImages = [];
 
+    // Prevent 'e' input in number fields
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+                e.preventDefault();
+            }
+        });
+    });
 
-              
+    // Form validation function
+    async function validateForm(e) {
+        e.preventDefault();
+        
+        // Get all form elements
+        const productName = document.getElementById('product-name').value.trim();
+        const quantity = document.getElementById('quantity').value;
+        const regularPrice = document.getElementById('regular-price').value;
+        const salePrice = document.getElementById('sale-price').value;
+        const description = document.getElementById('description').value.trim();
+        const ram = document.getElementById('ram').value;
+        const storage = document.getElementById('storage').value;
+        const color = document.getElementById("color").value;
+        const processor = document.getElementById('processor').value.trim();
+        const brand = document.getElementById('brand').value;
+        const category = document.getElementById('product-categories').value;
 
+        // Validation checks
+        if (!productName) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Product name cannot be empty!'
+            });
+            return false;
+        }
 
-          });
+        if (quantity === '' || parseInt(quantity) < 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Quantity must be a positive number!'
+            });
+            return false;
+        }
 
+        if (regularPrice === '' || parseFloat(regularPrice) < 0 || isNaN(regularPrice) || regularPrice.includes('e')) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Regular price must be a positive number!'
+            });
+            return false;
+        }
 
+        if (salePrice !== '') {
+            if (parseFloat(salePrice) < 0 || isNaN(salePrice) || salePrice.includes('e')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Sale price must be a positive number!'
+                });
+                return false;
+            }
 
+            if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Sale price must be less than regular price!'
+                });
+                return false;
+            }
+        }
+
+        if (!description || !ram || !storage || !processor || !brand || !category) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Please fill in all required fields!'
+            });
+            return false;
+        }
+
+        // Validate if at least one image is cropped
+        const croppedImage1 = document.getElementById('cropped-image-1').value;
+        if (!croppedImage1) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Please upload and crop at least one product image!'
+            });
+            return false;
+        }
+
+        // Create FormData
+        const formData = new FormData();
+
+        // Add all form fields to FormData
+        formData.append('product-name', productName);
+        formData.append('quantity', quantity);
+        formData.append('regular-price', regularPrice);
+        formData.append('sale-price', salePrice);
+        formData.append('description', description);
+        formData.append('ram', ram);
+        formData.append('storage', storage);
+        formData.append("color", color)
+        formData.append('processor', processor);
+        formData.append('brand', brand);
+        formData.append('product-categories', category);
+
+        // Handle cropped images
+        for (let i = 1; i <= 3; i++) {
+            const croppedImage = document.getElementById(`cropped-image-${i}`).value;
+            if (croppedImage) {
+                // Convert base64 to blob
+                const blob = await fetch(croppedImage).then(r => r.blob());
+                formData.append('file', blob, `image${i}.jpg`);
+            }
+        }
+        console.log("formdatat", formData)
+        // Show loading state
+        Swal.fire({
+            title: 'Uploading...',
+            text: 'Please wait while we process your request',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        try {
+            // Send formData to server
+            const response = await fetch('/admin/addProducts', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Product added successfully!',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.reload(); // or redirect to products list
+                });
+            } else {
+                throw new Error('Server responded with an error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'There was an error adding the product. Please try again.'
+            });
+        }
+
+        return false;
+    }
+
+    // Update form onsubmit handler
+    document.querySelector('form').onsubmit = validateForm;
+
+    // Handle file input change
+    document.querySelectorAll('.image-input').forEach(input => {
+        input.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+
+            if (!file) return;
+
+            const index = this.id.split('-')[2];
+            const previewContainer = document.getElementById(`preview-container-${index}`);
+            const preview = document.getElementById(`preview-${index}`);
+            const finalImage = document.getElementById(`final-${index}`);
+
+            // Hide final image if it was previously shown
+            finalImage.style.display = 'none';
+
+            // Destroy existing cropper if any
+            if (currentCropper) {
+                currentCropper.destroy();
+            }
+
+            // Read and preview file
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+
+                // Initialize cropper
+                currentCropper = new Cropper(preview, {
+                    aspectRatio: 1,
+                    viewMode: 2,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    // Handle crop button click
+    document.querySelectorAll('.crop-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!currentCropper) return;
+
+            const index = this.dataset.index;
+            const previewContainer = document.getElementById(`preview-container-${index}`);
+            const finalImage = document.getElementById(`final-${index}`);
+            const croppedInput = document.getElementById(`cropped-image-${index}`);
+
+            // Get cropped canvas
+            const canvas = currentCropper.getCroppedCanvas({
+                width: 600,
+                height: 600
+            });
+
+            // Set cropped image
+            const croppedData = canvas.toDataURL('image/jpeg', 0.9);
+            finalImage.src = croppedData;
+            finalImage.style.display = 'block';
+            croppedInput.value = croppedData;
+
+          //   console.log("cropped image", croppedInput)
+            // Clean up
+            currentCropper.destroy();
+            currentCropper = null;
+            previewContainer.style.display = 'none';
+
+            // Enable next input if exists
+            const nextInput = document.getElementById(`product-image-${parseInt(index) + 1}`);
+            if (nextInput) {
+                nextInput.disabled = false;
+            }
+        });
+    });
+
+    // Handle cancel button click
+    document.querySelectorAll('.cancel-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const index = this.dataset.index;
+            const input = document.getElementById(`product-image-${index}`);
+            const previewContainer = document.getElementById(`preview-container-${index}`);
+            const finalImage = document.getElementById(`final-${index}`);
+            const croppedInput = document.getElementById(`cropped-image-${index}`);
+          console.log("cropped image ",croppedInput);
+          
+            // Clean up
+            if (currentCropper) {
+                currentCropper.destroy();
+                currentCropper = null;
+            }
+
+            // Reset everything
+            input.value = '';
+            previewContainer.style.display = 'none';
+            finalImage.style.display = 'none';
+            croppedInput.value = '';
+        });
+    });
+    // Rest of your existing cropper code remains the same...
+    // [Previous cropper-related code continues here...
+
+});
       </script>
 
 </body>

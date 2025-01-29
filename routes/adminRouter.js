@@ -37,6 +37,14 @@ router.get("/getEditBrand",adminAuth, brandController.getEditBrand)
 router.post("/editBrand/:id",upload.single('brandImage'),adminAuth, brandController.editBrand)
 // Product management
 router.get("/addProducts",adminAuth, productController.getProductAddPage)
-
+router.post("/addProducts", 
+    upload.fields([
+        { name: 'product-image-1' },
+        { name: 'product-image-2' },
+        { name: 'product-image-3' }
+    ]), 
+    adminAuth, 
+    productController.addProducts
+);
 
 module.exports = router

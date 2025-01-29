@@ -48,6 +48,18 @@ const productSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    ram:{
+        type:String,
+        required:true
+    },
+    storage:{
+        type:String,
+        required:true
+    },
+    processor:{
+        type:String,
+        required:true
+    },
     status:{
         type:String,
         enum:["Available","out of stock", "Discountinued"],
