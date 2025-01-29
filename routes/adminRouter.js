@@ -31,11 +31,12 @@ router.post("/editCategory/:id", adminAuth, categoryController.editCategory)
 // Brand Management
 router.get("/brands", adminAuth, brandController.getBrandPage);
 router.post("/addBrand",upload.single('brandImage'),adminAuth, brandController.addBrand)
-// Product management
-router.get("/addProducts",adminAuth, productController.getProductAddPage)
 router.get("/blockBrand",adminAuth, brandController.blockBrand)
 router.get("/unBlockBrand", adminAuth, brandController.unBlockBrand)
 router.get("/getEditBrand",adminAuth, brandController.getEditBrand)
-router.post("/editBrand/:id",adminAuth, brandController.editBrand)
+router.post("/editBrand/:id",upload.single('brandImage'),adminAuth, brandController.editBrand)
+// Product management
+router.get("/addProducts",adminAuth, productController.getProductAddPage)
+
 
 module.exports = router

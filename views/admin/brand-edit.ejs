@@ -1391,42 +1391,41 @@
 let originalBrandName;
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Store original brand name for comparison
   originalBrandName = document.getElementById("brandName").value.trim();
+  const preview = document.getElementById("preview");
   
-  // Show existing image in preview
-  const existingImage = document.getElementById("preview").src;
-  if (existingImage.trim() !== "") {
+  // Show existing image preview if available
+  if (preview.src && preview.src.trim() !== "" && !preview.src.endsWith('undefined')) {
     document.getElementById("imagePreview").classList.remove("d-none");
   }
 });
 
 function previewImage(input) {
+  if (!input.files || !input.files[0]) return;
+  
   const file = input.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const preview = document.getElementById("preview");
-      preview.src = e.target.result;
-      document.getElementById("imagePreview").classList.remove("d-none");
-    };
-    reader.readAsDataURL(file);
-  }
+  const reader = new FileReader();
+  
+  reader.onload = function (e) {
+    const preview = document.getElementById("preview");
+    preview.src = e.target.result;
+    document.getElementById("imagePreview").classList.remove("d-none");
+    // Store original image data for cropping
+    preview.setAttribute('data-original', e.target.result);
+  };
+  
+  reader.readAsDataURL(file);
 }
 
 function cropImage() {
-  const fileInput = document.getElementById("brandImage");
-  const file = fileInput.files[0];
   const preview = document.getElementById("preview");
+  let imageSrc = preview.getAttribute('data-original') || preview.src;
 
-  // Use existing image if no new file is uploaded
-  let imageSrc = file ? URL.createObjectURL(file) : preview.src;
-
-  if (!imageSrc || imageSrc.trim() === window.location.href) {
+  if (!imageSrc || imageSrc.trim() === "" || imageSrc.endsWith('undefined')) {
     Swal.fire({
       icon: "warning",
       title: "No Image Available",
-      text: "Please upload or select an image before cropping!",
+      text: "Please upload an image before cropping!",
     });
     return;
   }
@@ -1437,19 +1436,22 @@ function cropImage() {
   const cropperModal = new bootstrap.Modal(document.getElementById("cropperModal"));
   cropperModal.show();
 
-  if (cropper) {
-    cropper.destroy();
-  }
+  // Wait for modal to fully show before initializing cropper
+  document.getElementById('cropperModal').addEventListener('shown.bs.modal', function () {
+    if (cropper) {
+      cropper.destroy();
+    }
 
-  cropper = new Cropper(imageToCrop, {
-    aspectRatio: 1,
-    viewMode: 2,
-    autoCropArea: 1,
-    responsive: true,
-    scalable: true,
-    zoomable: true,
-    rotatable: true,
-  });
+    cropper = new Cropper(imageToCrop, {
+      aspectRatio: 1,
+      viewMode: 2,
+      autoCropArea: 1,
+      responsive: true,
+      scalable: true,
+      zoomable: true,
+      rotatable: true
+    });
+  }, { once: true });
 }
 
 function saveCroppedImage() {
@@ -1476,21 +1478,15 @@ function saveCroppedImage() {
     return;
   }
 
+  // Convert canvas to blob instead of base64
   canvas.toBlob((blob) => {
-    const croppedFile = new File([blob], "cropped-image.jpg", {
-      type: "image/jpeg",
-      lastModified: new Date().getTime(),
-    });
-
-    window.croppedImageFile = croppedFile;
-
-    // Store cropped image data in hidden input
-    canvas.toDataURL('image/jpeg', 0.9).then(dataUrl => {
-      document.getElementById("croppedImageData").value = dataUrl;
-    });
-
-    const previewUrl = URL.createObjectURL(blob);
-    document.getElementById("preview").src = previewUrl;
+    // Store the blob in a hidden input
+    const blobInput = document.getElementById("croppedImageData");
+    blobInput.file = blob;
+    
+    // Update preview
+    const preview = document.getElementById("preview");
+    preview.src = URL.createObjectURL(blob);
     document.getElementById("imagePreview").classList.remove("d-none");
 
     Swal.fire({
@@ -1501,34 +1497,23 @@ function saveCroppedImage() {
 
     const cropperModal = bootstrap.Modal.getInstance(document.getElementById("cropperModal"));
     cropperModal.hide();
-  }, "image/jpeg", 0.9);
+  }, 'image/jpeg', 0.9);
 }
 
 async function validateForm(event) {
   event.preventDefault();
 
   const brandName = document.getElementById("brandName").value.trim();
-  const croppedImageData = document.getElementById("croppedImageData").value;
+  const croppedImageInput = document.getElementById("croppedImageData");
   const form = event.target;
-  const formAction = form.getAttribute("action");
 
+  // Validate brand name
   const brandNameRegex = /^[a-zA-Z0-9\s]+$/;
   if (!brandNameRegex.test(brandName)) {
     Swal.fire({
       icon: "warning",
       title: "Invalid Brand Name",
-      text: "Brand name can only contain letters and numbers. Please correct it!",
-    });
-    return false;
-  }
-
-  // Only require cropped image if a new image was uploaded
-  const fileInput = document.getElementById("brandImage");
-  if (fileInput.files.length > 0 && !window.croppedImageFile) {
-    Swal.fire({
-      icon: "warning",
-      title: "Image Not Cropped",
-      text: "Please crop the image before submitting.",
+      text: "Brand name can only contain letters and numbers.",
     });
     return false;
   }
@@ -1536,18 +1521,21 @@ async function validateForm(event) {
   const formData = new FormData();
   formData.append("brandName", brandName);
   
-  // Only append new image if it exists
-  if (window.croppedImageFile) {
-    formData.append("brandImage", window.croppedImageFile);
-  } else if (croppedImageData) {
-    formData.append("brandImage", croppedImageData);
+  // Add image data if it exists
+  if (croppedImageInput.file) {
+    // Generate a unique filename
+    const filename = `brand_${Date.now()}.jpg`;
+    formData.append("brandImage", croppedImageInput.file, filename);
   }
-
+  console.log(croppedImageInput.file, "croppedImageInputaswinsdjkf");
+  
   try {
-    const response = await fetch(formAction, {
+    const response = await fetch(form.action, {
       method: "POST",
-      body: formData,
+      body: formData
     });
+
+    const result = await response.json();
 
     if (response.ok) {
       Swal.fire({
@@ -1558,8 +1546,7 @@ async function validateForm(event) {
         window.location.href = "/admin/brands";
       });
     } else {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Server response was not ok");
+      throw new Error(result.error || "Failed to update brand");
     }
   } catch (error) {
     console.error("Error:", error);
@@ -1572,7 +1559,6 @@ async function validateForm(event) {
 
   return false;
 }
-
 </script>
 
 <!-- Mirrored from techzaa.in/larkon/admin/category-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:17 GMT -->

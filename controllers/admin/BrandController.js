@@ -40,7 +40,7 @@ const getBrandPage = async (req, res) => {
 const addBrand = async (req, res) => {
         try {
             const brand = req.body.brandName;
-            console.log(brand)
+            // console.log(brand)
             const findBrand = await Brand.findOne({ brandName: brand });
     
             if (findBrand) {
@@ -71,7 +71,7 @@ const addBrand = async (req, res) => {
 const blockBrand = async (req,res)=>{
     try {
         const id = req.query.id
-        console.log(id)
+        // console.log(id)
         await Brand.updateOne({_id:id},{$set:{isBlocked:true}})
         res.redirect("/admin/brands")
     } catch (error) {
@@ -103,50 +103,34 @@ const getEditBrand = async (req, res) => {
 
 const editBrand = async (req, res) => {
     try {
-        const id = req.params.id;
-        const { brandName, brandImage } = req.body;
-        
-        // If updating to the same name, don't check for existing
-        const currentBrand = await Brand.findById(id);
-        if (currentBrand.brandName !== brandName) {
-            const existingBrand = await Brand.findOne({ 
-                brandName: brandName,
-                _id: { $ne: id } // Exclude current brand from check
-            });
+        const id = req.params.id
+        const {brandName} = req.body
+        const existingBrand = await Brand.findOne({brandName:brandName})
+
+        if(existingBrand){
+            return res.status(400).json({error:"Brand already exists, please use another name"})
+
+        }
+        const updateBrand = await Brand.findByIdAndUpdate(id,{
+            brandName:brandName
+        },{new:true})
+
+        if (req.file) {
             
-            if (existingBrand) {
-                return res.status(400).json({
-                    error: "Brand name already exists, please choose another"
-                });
-            }
+            const b64 = Buffer.from(req.file.buffer).toString("base64");
+            let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+            const cldRes = await handleUpload(dataURI);
+            updateBrand.brandImage = cldRes.secure_url;
         }
-
-        const updateData = {
-            brandName: brandName
-        };
-
-        // Only update image if new one is provided
-        if (brandImage) {
-            updateData.brandImage = brandImage;
-        }
-
-        const updateBrand = await Brand.findByIdAndUpdate(
-            id,
-            updateData,
-            { new: true }
-        );
-
-        if (updateBrand) {
-            res.redirect("/admin/brands");
-        } else {
-            res.status(404).json({ error: "Brand not found" });
-        }
+        
+        await updateBrand.save()
+        return res.json({ message: "Brand updated successfully" });
+        
     } catch (error) {
-        console.error("Brand update error", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error adding category:", error.message);
+        return res.status(500).json({ error: "Internal server error" });
     }
 };
-
 module.exports = {
     getBrandPage,
     addBrand,
