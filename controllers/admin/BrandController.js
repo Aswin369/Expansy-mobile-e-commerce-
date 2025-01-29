@@ -72,7 +72,7 @@ const blockBrand = async (req,res)=>{
     try {
         const id = req.query.id
         console.log(id)
-        await Brand.upadateOne({_id:id},{$set:{isBlocked:true}})
+        await Brand.updateOne({_id:id},{$set:{isBlocked:true}})
         res.redirect("/admin/brands")
     } catch (error) {
         res.redirect("/pageerror")
@@ -82,31 +82,76 @@ const blockBrand = async (req,res)=>{
 const unBlockBrand = async (req, res)=>{
     try {
         const id = req.query.id
-        await Brand.upadateOne({_id:id},{$set:{isBlocked:false}})
+        await Brand.updateOne({_id:id},{$set:{isBlocked:false}})
         res.redirect("/admin/brands")
     } catch (error) {
         res.redirect("/pageerror")
     }
 }
 
-const deleteBrand = async (req, res)=>{
+const getEditBrand = async (req, res) => {
     try {
-        const {id} = req.query
-        if(!id){
-            return res.status(400).redirect("/pageerror")
-        }
-        await Brand.deleteOne({_id:id})
-        res.redirect("/admin/brands")
+    const id = req.query.id
+    const brand = await Brand.findOne({_id:id})
+    res.render("brand-edit",{brand:brand})
+    console.log(brand)
     } catch (error) {
-        console.error("Error delecting", error)
-        res.status(500).redirect("/pagerror")
+        console.error("Error in geteditBrand",Error)
+        res.redirect("/pagerror")
     }
-}
+};
+
+const editBrand = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { brandName, brandImage } = req.body;
+        
+        // If updating to the same name, don't check for existing
+        const currentBrand = await Brand.findById(id);
+        if (currentBrand.brandName !== brandName) {
+            const existingBrand = await Brand.findOne({ 
+                brandName: brandName,
+                _id: { $ne: id } // Exclude current brand from check
+            });
+            
+            if (existingBrand) {
+                return res.status(400).json({
+                    error: "Brand name already exists, please choose another"
+                });
+            }
+        }
+
+        const updateData = {
+            brandName: brandName
+        };
+
+        // Only update image if new one is provided
+        if (brandImage) {
+            updateData.brandImage = brandImage;
+        }
+
+        const updateBrand = await Brand.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        );
+
+        if (updateBrand) {
+            res.redirect("/admin/brands");
+        } else {
+            res.status(404).json({ error: "Brand not found" });
+        }
+    } catch (error) {
+        console.error("Brand update error", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
 
 module.exports = {
     getBrandPage,
     addBrand,
     blockBrand,
     unBlockBrand,
-    deleteBrand
+    getEditBrand,
+    editBrand
 }

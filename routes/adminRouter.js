@@ -35,6 +35,7 @@ router.post("/addBrand",upload.single('brandImage'),adminAuth, brandController.a
 router.get("/addProducts",adminAuth, productController.getProductAddPage)
 router.get("/blockBrand",adminAuth, brandController.blockBrand)
 router.get("/unBlockBrand", adminAuth, brandController.unBlockBrand)
-router.get("/deleteBrand",adminAuth, brandController.deleteBrand)
+router.get("/getEditBrand",adminAuth, brandController.getEditBrand)
+router.post("/editBrand/:id",adminAuth, brandController.editBrand)
 
 module.exports = router
