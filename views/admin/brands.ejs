@@ -2036,8 +2036,8 @@
                                 class="rounded bg-light avatar-md d-flex align-items-center justify-content-center"
                               >
                                 <img
-                                  src="<%= brand.image %>"
-                                  alt="<%= brand.name %>"
+                                  src="<%= brand.brandImage %>"
+                                  alt="<%= brand.brandName %>"
                                   class="avatar-md"
                                 />
                               </div>
@@ -2045,12 +2045,12 @@
                           </td>
                           <td>
                             <p class="text-dark fw-medium fs-15 mb-0">
-                              <%= brand.name %>
+                              <%= brand.brandName %>
                             </p>
                           </td>
-                          <td><%= brand.createdAt %></td>
+                          <td><%= brand.createAt.toDateString() %></td>
                           <td>
-                            <% if (brand.status===true) { %>
+                            <% if (brand.isBlocked===true) { %>
                             <span class="badge bg-success">Active</span>
                             <% } else { %>
                             <span class="badge bg-danger">Blocked</span>
@@ -2068,30 +2068,27 @@
                                 </a>
                               </button>
 
-                              <% if (brand.status===true) { %>
+                              <% if (brand.isBlocked===false) { %>
                               <button class="btn btn-danger">
                                 <a
-                                  href="/admin/blockBrand/<%= brand._id %>"
-                                  class="text-white"
-                                  >Block</a
-                                >
+                                  href="/admin/blockBrand?id=<%= brand._id %>"
+                                  class="text-white">
+                                  Block</a>
                               </button>
                               <% } else { %>
                               <button class="btn btn-success">
                                 <a
-                                  href="/admin/unblockBrand/<%= brand._id %>"
+                                  href="/admin/unblockBrand?id=<%= brand._id %>"
                                   class="text-white"
-                                  >Unblock</a
-                                >
+                                  >Unblock</a>
                               </button>
                               <% } %>
 
-                              <button class="btn btn-danger">
+                              <button class="btn btn-danger" onclick="return confirmDelete()">
                                 <a
-                                  href="/admin/deleteBrand/<%= brand._id %>"
+                                  href="/admin/deleteBrand?id=<%= brand._id %>"
                                   class="text-white"
-                                  >Delete</a
-                                >
+                                  >Delete</a>
                               </button>
                             </div>
                           </td>
@@ -2396,19 +2393,19 @@
           height: 300,
         });
 
-        // Convert canvas to Blob
+        
         canvas.toBlob(
           function (blob) {
-            // Create a File object from the Blob
+            
             const croppedFile = new File([blob], "cropped-image.jpg", {
               type: "image/jpeg",
               lastModified: new Date().getTime(),
             });
 
-            // Store the File object for form submission
+            
             window.croppedImageFile = croppedFile;
 
-            // Update preview
+            
             const previewUrl = URL.createObjectURL(blob);
             document.getElementById("preview").src = previewUrl;
 
@@ -2436,7 +2433,7 @@
 
         console.log("brandName", brandName);
         console.log("croppedImage", croppedImage);
-        // Validate brand name
+       
         const brandNameRegex = /^[a-zA-Z0-9\s]+$/;
         if (!brandNameRegex.test(brandName)) {
           Swal.fire({
@@ -2447,7 +2444,7 @@
           return false;
         }
 
-        // Validate image
+       
         if (!croppedImage) {
           Swal.fire({
             icon: "warning",
@@ -2458,18 +2455,12 @@
         }
 
         const imageInput = document.getElementById("imageInput")
-        // Prepare form data
+       
         const formData = new FormData();
         formData.append("brandName", brandName);
         formData.append("brandImage", croppedImage);
 
-        const croppedImageData = document.getElementById("croppedImageData").value;
-
-        if (croppedImageData) {
-           formData.append("croppedImage", croppedImageData);
-        } else if (imageInput.files.length > 0) {
-          formData.append("image", imageInput.files[0]);
-        }
+       
 
         try {
           const response = await fetch("/admin/addBrand", {
@@ -2501,6 +2492,11 @@
 
         return false;
       }
+
+      function confirmDelete(){
+        
+      }
+
     </script>
   </body>
 </html>

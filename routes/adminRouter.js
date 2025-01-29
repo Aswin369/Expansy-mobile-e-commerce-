@@ -30,9 +30,11 @@ router.get("/editCategory",adminAuth, categoryController.getEditCategory)
 router.post("/editCategory/:id", adminAuth, categoryController.editCategory)
 // Brand Management
 router.get("/brands", adminAuth, brandController.getBrandPage);
-router.post("/addBrand",upload.single('file'),adminAuth, brandController.addBrand)
+router.post("/addBrand",upload.single('brandImage'),adminAuth, brandController.addBrand)
 // Product management
 router.get("/addProducts",adminAuth, productController.getProductAddPage)
-
+router.get("/blockBrand",adminAuth, brandController.blockBrand)
+router.get("/unBlockBrand", adminAuth, brandController.unBlockBrand)
+router.get("/deleteBrand",adminAuth, brandController.deleteBrand)
 
 module.exports = router
