@@ -14,5 +14,6 @@ cloudinary.config({
   }
 
 module.exports = {
-    handleUpload
+    handleUpload,
+    cloudinary
 }

@@ -1302,8 +1302,8 @@
                                         <div class="col-lg-6">
                                             <label for="product-categories" class="form-label">Category</label>
                                             <select class="form-control" id="product-categories" name="category" >
+                                                 <option value="">Select Category</option>
                                                 <%for(let i=0; i<category.length; i++){%>
-                                                  <option value="">Select Category</option>
                                                        <option value="<%=category[i].name%>">
                                                             <%=category[i].name%>
                                                        </option>
@@ -1492,7 +1492,7 @@
      
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
      <script>
-          document.addEventListener('DOMContentLoaded', function() {
+         document.addEventListener('DOMContentLoaded', function() {
     let currentCropper = null;
     let croppedImages = [];
 
@@ -1522,112 +1522,114 @@
         const brand = document.getElementById('brand').value;
         const category = document.getElementById('product-categories').value;
 
-        // Validation checks
-        if (!productName) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Product name cannot be empty!'
-            });
-            return false;
-        }
-
-        if (quantity === '' || parseInt(quantity) < 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Quantity must be a positive number!'
-            });
-            return false;
-        }
-
-        if (regularPrice === '' || parseFloat(regularPrice) < 0 || isNaN(regularPrice) || regularPrice.includes('e')) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Regular price must be a positive number!'
-            });
-            return false;
-        }
-
-        if (salePrice !== '') {
-            if (parseFloat(salePrice) < 0 || isNaN(salePrice) || salePrice.includes('e')) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Validation Error',
-                    text: 'Sale price must be a positive number!'
-                });
-                return false;
-            }
-
-            if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Validation Error',
-                    text: 'Sale price must be less than regular price!'
-                });
-                return false;
-            }
-        }
-
-        if (!description || !ram || !storage || !processor || !brand || !category) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Please fill in all required fields!'
-            });
-            return false;
-        }
-
-        // Validate if at least one image is cropped
-        const croppedImage1 = document.getElementById('cropped-image-1').value;
-        if (!croppedImage1) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Please upload and crop at least one product image!'
-            });
-            return false;
-        }
-
-        // Create FormData
-        const formData = new FormData();
-
-        // Add all form fields to FormData
-        formData.append('product-name', productName);
-        formData.append('quantity', quantity);
-        formData.append('regular-price', regularPrice);
-        formData.append('sale-price', salePrice);
-        formData.append('description', description);
-        formData.append('ram', ram);
-        formData.append('storage', storage);
-        formData.append("color", color)
-        formData.append('processor', processor);
-        formData.append('brand', brand);
-        formData.append('product-categories', category);
-
-        // Handle cropped images
-        for (let i = 1; i <= 3; i++) {
-            const croppedImage = document.getElementById(`cropped-image-${i}`).value;
-            if (croppedImage) {
-                // Convert base64 to blob
-                const blob = await fetch(croppedImage).then(r => r.blob());
-                formData.append('file', blob, `image${i}.jpg`);
-            }
-        }
-        console.log("formdatat", formData)
-        // Show loading state
-        Swal.fire({
-            title: 'Uploading...',
-            text: 'Please wait while we process your request',
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            willOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
         try {
+            // Validation checks with await for Swal
+            if (!productName) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Product name cannot be empty!'
+                });
+                return false;
+            }
+
+            if (quantity === '' || parseInt(quantity) < 0) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Quantity must be a positive number!'
+                });
+                return false;
+            }
+
+            if (regularPrice === '' || parseFloat(regularPrice) < 0 || isNaN(regularPrice) || regularPrice.includes('e')) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Regular price must be a positive number!'
+                });
+                return false;
+            }
+
+            if (salePrice !== '') {
+                if (parseFloat(salePrice) < 0 || isNaN(salePrice) || salePrice.includes('e')) {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: 'Sale price must be a positive number!'
+                    });
+                    return false;
+                }
+
+                if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: 'Sale price must be less than regular price!'
+                    });
+                    return false;
+                }
+            }
+
+            if (!description || !ram || !storage || !processor || !brand || !category) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Please fill in all required fields!'
+                });
+                return false;
+            }
+
+            // Validate if at least one image is cropped
+            const croppedImage1 = document.getElementById('cropped-image-1').value;
+            if (!croppedImage1) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Please upload and crop at least one product image!'
+                });
+                return false;
+            }
+
+            // Create FormData
+            const formData = new FormData();
+
+            // Add all form fields to FormData
+            formData.append('productName', productName);
+            formData.append('quantity', quantity);
+            formData.append('regularPrice', regularPrice);
+            formData.append('salePrice', salePrice);
+            formData.append('description', description);
+            formData.append('ram', ram);
+            formData.append('storage', storage);
+            formData.append("color", color);
+            formData.append('processor', processor);
+            formData.append('brand', brand);
+            formData.append('productCategories', category);
+
+            // Handle cropped images
+            let imageCount = 0;
+            for (let i = 1; i <= 3; i++) {
+                const croppedImage = document.getElementById(`cropped-image-${i}`).value;
+                if (croppedImage) {
+                    // Convert base64 to blob
+                    const blob = await fetch(croppedImage).then(r => r.blob());
+                    formData.append('file', blob, `image${i}.jpg`);
+                    imageCount++;
+                }
+            }
+
+            // Show loading state
+            await Swal.fire({
+                title: 'Uploading...',
+                text: 'Please wait while we process your request',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             // Send formData to server
             const response = await fetch('/admin/addProducts', {
                 method: 'POST',
@@ -1635,21 +1637,20 @@
             });
 
             if (response.ok) {
-                Swal.fire({
+                await Swal.fire({
                     icon: 'success',
                     title: 'Success',
                     text: 'Product added successfully!',
                     showConfirmButton: false,
                     timer: 1500
-                }).then(() => {
-                    window.location.reload(); // or redirect to products list
                 });
+                window.location.reload();
             } else {
                 throw new Error('Server responded with an error');
             }
         } catch (error) {
             console.error('Error:', error);
-            Swal.fire({
+            await Swal.fire({
                 icon: 'error',
                 title: 'Error',
                 text: 'There was an error adding the product. Please try again.'
@@ -1659,37 +1660,32 @@
         return false;
     }
 
-    // Update form onsubmit handler
     document.querySelector('form').onsubmit = validateForm;
 
-    // Handle file input change
+    // Image input handling
     document.querySelectorAll('.image-input').forEach(input => {
         input.addEventListener('change', function(e) {
             const file = e.target.files[0];
-            
-
             if (!file) return;
+
+            // Destroy any existing cropper before creating a new one
+            if (currentCropper) {
+                currentCropper.destroy();
+                currentCropper = null;
+            }
 
             const index = this.id.split('-')[2];
             const previewContainer = document.getElementById(`preview-container-${index}`);
             const preview = document.getElementById(`preview-${index}`);
             const finalImage = document.getElementById(`final-${index}`);
 
-            // Hide final image if it was previously shown
             finalImage.style.display = 'none';
-
-            // Destroy existing cropper if any
-            if (currentCropper) {
-                currentCropper.destroy();
-            }
-
-            // Read and preview file
+            
             const reader = new FileReader();
             reader.onload = function(e) {
                 preview.src = e.target.result;
                 previewContainer.style.display = 'block';
 
-                // Initialize cropper
                 currentCropper = new Cropper(preview, {
                     aspectRatio: 1,
                     viewMode: 2,
@@ -1708,7 +1704,7 @@
         });
     });
 
-    // Handle crop button click
+    // Crop button handling
     document.querySelectorAll('.crop-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             if (!currentCropper) return;
@@ -1718,33 +1714,31 @@
             const finalImage = document.getElementById(`final-${index}`);
             const croppedInput = document.getElementById(`cropped-image-${index}`);
 
-            // Get cropped canvas
             const canvas = currentCropper.getCroppedCanvas({
                 width: 600,
                 height: 600
             });
 
-            // Set cropped image
             const croppedData = canvas.toDataURL('image/jpeg', 0.9);
             finalImage.src = croppedData;
             finalImage.style.display = 'block';
             croppedInput.value = croppedData;
 
-          //   console.log("cropped image", croppedInput)
-            // Clean up
             currentCropper.destroy();
             currentCropper = null;
             previewContainer.style.display = 'none';
 
-            // Enable next input if exists
-            const nextInput = document.getElementById(`product-image-${parseInt(index) + 1}`);
-            if (nextInput) {
-                nextInput.disabled = false;
+            // Enable next image input if available
+            if (index < 3) {
+                const nextInput = document.getElementById(`product-image-${parseInt(index) + 1}`);
+                if (nextInput) {
+                    nextInput.disabled = false;
+                }
             }
         });
     });
 
-    // Handle cancel button click
+    // Cancel button handling
     document.querySelectorAll('.cancel-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const index = this.dataset.index;
@@ -1752,24 +1746,18 @@
             const previewContainer = document.getElementById(`preview-container-${index}`);
             const finalImage = document.getElementById(`final-${index}`);
             const croppedInput = document.getElementById(`cropped-image-${index}`);
-          console.log("cropped image ",croppedInput);
-          
-            // Clean up
+
             if (currentCropper) {
                 currentCropper.destroy();
                 currentCropper = null;
             }
 
-            // Reset everything
             input.value = '';
             previewContainer.style.display = 'none';
             finalImage.style.display = 'none';
             croppedInput.value = '';
         });
     });
-    // Rest of your existing cropper code remains the same...
-    // [Previous cropper-related code continues here...
-
 });
       </script>
 

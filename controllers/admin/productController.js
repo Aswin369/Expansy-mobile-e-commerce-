@@ -6,6 +6,8 @@ const fs = require("fs")
 const path = require("path")
 const User = require("../../models/userSchema")
 const sharp = require("sharp")
+const {handleUpload } = require("../../config/cloudinary")
+const streamifier = require("streamifier");
 
 const getProductAddPage = async (req,res)=>{
     try {
@@ -21,56 +23,103 @@ const getProductAddPage = async (req,res)=>{
     }
 }
 
-const addProducts = async (req,res)=>{
+const addProducts = async (req, res) => {
     try {
-        const {productName, category} = req.body
-        console.log("productname",productName);
-        console.log("fdsgsdgf",category);
+        const {productName, category, brand, quantity, regularPrice, salePrice, description, ram, storage, processor, color} = req.body;
+        
+        
+        
+        // Check if product already exists
+        const productExists = await Product.findOne({
+            productName: productName.productName
+        });
+        
+        if (productExists) {
+            return res.status(400).json({
+                success: false,
+                message: 'Product already exists'
+            });
+        }
 
+        // Handle file uploads to Cloudinary
         
         
 
-       
-        if(!productExists){
-            const images = []
-            if(req.files && req.files.length>0){
-                for(let i=0; i<req.files.length;i++){
-                    const b64 = Buffer.from(req.file[i].buffer).toString("base64");
-                    let dataURI = "data:" + req.file[i].mimetype + ";base64," + b64;
-                    const cldRes = await handleUpload(dataURI);
-                    newProducts.images = cldRes.secure_url;
+        const imagePaths = [];
+
+        if (req.files && Object.keys(req.files).length > 0) {
+            // Loop through each field name in req.files (like 'product-image-1', 'product-image-2', etc.)
+            for (const key in req.files) {
+                // Loop through each file in the array for the current field (key)
+                for (const file of req.files[key]) {
+                    try {
+                        // Convert the file buffer to a base64 string
+                        const b64 = Buffer.from(file.buffer).toString("base64");
+                        const dataURI = `data:${file.mimetype};base64,${b64}`;
+                        
+                        // Upload to Cloudinary
+                        const cldRes = await handleUpload(dataURI);
+                        
+                        // Push the secure URL to imagePaths
+                        if (cldRes && cldRes.secure_url) {
+                            imagePaths.push(cldRes.secure_url);
+                        } else {
+                            throw new Error('Failed to upload image');
+                        }
+                    } catch (error) {
+                        console.error('Error uploading image:', error);
+                        return res.status(400).json({
+                            success: false,
+                            message: 'Error uploading images',
+                            error: error.message
+                        });
+                    }
                 }
             }
-            const categoryId = await Category.findOne({name:products.category})
-            if(!categoryId){
-                return res.status(400).json("Invalid category name")
-            }
-
-            const newProducts = new Product({
-                productName:products.productName,
-                description:products.description,
-                brand:products.brand,
-                category:categoryId._id,
-                regularPrice:products.regularPrice,
-                salePrice:products.salePrice,
-                createdAt:new Date(),
-                quantity:products.quantity,
-                color:products.color,
-                ram:products.ram,
-                processor:products.processor,
-                status: "Available"
-                
-            })
-            await newProducts.save()
-            return res.redirect("/admin/addProducts")
-        }else{
-            return res.status(400).json("Products already exists, please try with another name")
         }
+        
+
+      
+      
+        
+        // Create new product with uploaded image URLs
+        const newProduct = new Product({
+            productName:productName,
+            description:description,
+            category:category,
+            brand:brand,
+            quantity:quantity,
+            regularPrice:regularPrice,
+            salePrice:salePrice,
+            ram:ram,
+            storage:storage,
+            processor:processor,
+            color:color,
+            status:"Available",
+            date: Date.now(),
+            productImage: imagePaths
+        });
+
+        
+        
+        await newProduct.save();
+        
+
+        return res.status(201).json({
+            success: true,
+            message: 'Product added successfully',
+            product: newProduct
+        });
+
     } catch (error) {
-        console.error("Error saving product")
-        return res.redirect("/admin/pageerror")
+        console.error('Error adding product:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error adding product',
+            error: error.message
+        });
     }
-}
+};
 
 module.exports = {
     getProductAddPage,
