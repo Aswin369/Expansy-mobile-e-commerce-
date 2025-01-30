@@ -28,7 +28,7 @@ const customerInfo = async (req, res) => {
             id: user._id,
             name: user.name,
             email: user.email,
-            date: user.createdOn.toLocaleDateString("en-US"), // Format `createdOn` as "MM/DD/YYYY"
+            date: user.createdOn.toLocaleDateString("en-US"), 
             isBlocked: user.isBlocked,
         }));
 
@@ -43,7 +43,7 @@ const customerInfo = async (req, res) => {
         const totalPages = Math.ceil(count / limit);
 
         res.render("customer-manegment", {
-            data: formattedUserData, // Use formatted user data
+            data: formattedUserData, 
             totalPages,
             currentPage: page,
             search
@@ -84,14 +84,10 @@ const customerdetail = async (req, res) => {
     try {
         const userId = req.query.id;
         console.log("Received User ID:", userId);
-
-        // Validate the ID format
         if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
             console.error("Invalid or missing User ID");
             return res.redirect("/admin/users");
         }
-
-        // Fetch the user by ID
         const user = await User.findById(userId);
         console.log("Fetched User:", user);
 
@@ -99,8 +95,6 @@ const customerdetail = async (req, res) => {
             console.error("User not found");
             return res.redirect("/admin/users");
         }
-
-        // Render the details page
         res.render("customerdetails", { user });
     } catch (error) {
         console.error("Error fetching user details:", error);

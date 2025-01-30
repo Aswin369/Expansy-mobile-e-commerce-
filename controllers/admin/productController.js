@@ -133,7 +133,7 @@ const getAllProducts = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
         console.log("2");
-
+        const message = req.message
 
         const productData = await Product.find({
             productName: { $regex: new RegExp(".*" + search + ".*", "i") }  
@@ -160,6 +160,7 @@ const getAllProducts = async (req, res) => {
             totalPages: Math.ceil(count / limit),
             category: category,
             brand: brand,
+            message:message
         });
 
     } catch (error) {
@@ -195,22 +196,139 @@ const UnBlockProduct = async (req, res) => {
     }
 };
 
-const getEditProduct = async (req,res)=>{
+const getEditProduct = async (req, res) => {
     try {
-        const id = req.params.id
-        console.log(id)
-        const product = await Product.findOne({_id:id})
-        const category = await Category.find({})
-        const brand = await Brand.find({})
-        res.render("product-edit",{
+        const id = req.params.id;
+        const product = await Product.findOne({ _id: id });
+        const category = await Category.find({});
+        const brand = await Brand.find({});
+
+        if (!product) {
+            return res.redirect("/admin/products"); 
+        }
+
+        res.render("product-edit", {
             product: product,
-            category:category,
-            brand:brand
-        })
+            category: category,
+            brand: brand
+        });
     } catch (error) {
-        res.redirect("/pageerror")
+        console.error('Get edit product error:', error);
+        res.redirect("/pageerror");
+    }
+};
+
+const updateProduct = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const {productName,category,
+            brand,
+            quantity,
+            regularPrice,
+            salePrice,
+            description,
+            ram,
+            storage,
+            processor,
+            color
+        } = req.body;
+
+       
+        if (!productName || !category || !brand || !quantity || !regularPrice) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required fields'
+            });
+        }
+
+        
+        let productImages = [];
+        if (req.files) {
+            for (let i = 0; i < Object.keys(req.files).length; i++) {
+                const imageKey = `productImage-${i}`;
+                if (req.files[imageKey]) {
+                    
+                    const imageUrl = await uploadImage(req.files[imageKey]);
+                    productImages.push(imageUrl);
+                }
+            }
+        }
+
+        
+        const existingProduct = await Product.findById(productId);
+        if (!existingProduct) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+
+        
+        const finalImages = productImages.length > 0 ? productImages : existingProduct.productImage;
+
+        
+        const updatedProduct = await Product.findByIdAndUpdate(
+            productId,
+            {
+                productName,
+                category,
+                brand,
+                quantity,
+                regularPrice,
+                salePrice,
+                description,
+                ram,
+                storage,
+                processor,
+                color,
+                productImage: finalImages
+            },
+            { new: true }
+        );
+
+        
+        return res.status(200).json({
+            success: true,
+            message: 'Product updated successfully',
+            product: updatedProduct,
+            redirectUrl: '/admin/products' 
+        });
+
+    } catch (error) {
+        console.error('Update product error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to update product'
+        });
+    }
+};
+
+const viewProduct = async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (!id) {
+            return res.redirect("/admin/products");
+        }
+        const productDetails = await Product.findById(id);
+        if (!productDetails) {
+            return res.redirect("/pageerror"); 
+        }
+        const brandcategory = await Product.findById(id)
+            .populate('brand', 'brandName')
+            .populate('category', 'name');
+        console.log(productDetails);
+        console.log("brand adn vategory",brandcategory)
+        res.render("product-details", {
+            productDetails,
+            brandcategory
+        });
+
+    } catch (error) {
+        console.error('Product Info error:', error);
+        res.redirect("/pageerror");
     }
 }
+
 
 module.exports = {
     getProductAddPage,
@@ -218,5 +336,7 @@ module.exports = {
     getAllProducts,
     blockProduct,
     UnBlockProduct,
-    getEditProduct
+    updateProduct,
+    getEditProduct,
+    viewProduct
 }
