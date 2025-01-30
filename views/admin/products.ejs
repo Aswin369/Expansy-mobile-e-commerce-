@@ -2,11 +2,11 @@
 <html lang="en">
 
 
-<!-- Mirrored from techzaa.in/larkon/admin/product-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:17 GMT -->
+<!-- Mirrored from techzaa.in/larkon/admin/product-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:10 GMT -->
 <head>
      <!-- Title Meta -->
      <meta charset="utf-8" />
-     <title>Create Product | Larkon - Responsive Admin Dashboard Template</title>
+     <title>Product List | Larkon - Responsive Admin Dashboard Template</title>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <meta name="description" content="A fully responsive premium admin dashboard template" />
      <meta name="author" content="Techzaa" />
@@ -26,43 +26,6 @@
 
      <!-- Theme Config js (Require in all Page) -->
      <script src="/assets/js/config.js"></script>
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
-    <style>
-     .image-upload-section {
-         border: 1px solid #dee2e6;
-         padding: 15px;
-         margin-bottom: 15px;
-         border-radius: 5px;
-     }
-
-     .image-preview-container {
-         display: none;
-         margin-top: 15px;
-     }
-
-     .image-preview {
-         display: block;
-         max-width: 100%;
-         max-height: 300px;
-     }
-
-     .preview-controls {
-         margin-top: 15px;
-         margin-bottom: 15px;
-     }
-
-     .final-image {
-         display: none;
-         max-width: 200px;
-         max-height: 200px;
-         margin-top: 15px;
-         border: 1px solid #ddd;
-         border-radius: 4px;
-     }
- </style>
-
 </head>
 
 <body>
@@ -84,7 +47,7 @@
 
                               <!-- Menu Toggle Button -->
                               <div class="topbar-item">
-                                   <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Create Product</h4>
+                                   <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Product List</h4>
                               </div>
                          </div>
 
@@ -565,7 +528,7 @@
                                    <ul class="nav sub-navbar-nav">
                                         <li class="sub-nav-item">
                                              <a class="sub-nav-link" href="category-list.html">List</a>
-                                        </li>
+                                        </li>                         
                                         <li class="sub-nav-item">
                                              <a class="sub-nav-link" href="category-edit.html">Edit</a>
                                         </li>
@@ -680,7 +643,7 @@
                                         </li>
                                         <li class="sub-nav-item">
                                              <a class="sub-nav-link" href="invoice-details.html">Details</a>
-                                        </li>
+                                        </li>                            
                                         <li class="sub-nav-item">
                                              <a class="sub-nav-link" href="invoice-add.html">Create</a>
                                         </li>
@@ -930,16 +893,16 @@
                                    <ul class="nav sub-navbar-nav">
                                         <li class="sub-nav-item">
                                              <a class="sub-nav-link" href="auth-signin.html">Sign In</a>
-                                        </li>
+                                        </li>                              
                                         <li class="sub-nav-item">
                                              <a class="sub-nav-link" href="auth-signup.html">Sign Up</a>
-                                        </li>
+                                        </li>                           
                                         <li class="sub-nav-item">
                                              <a class="sub-nav-link" href="auth-password.html">Reset Password</a>
-                                        </li>
+                                        </li>                              
                                         <li class="sub-nav-item">
                                              <a class="sub-nav-link" href="auth-lock-screen.html">Lock Screen</a>
-                                        </li>
+                                        </li>                          
                                    </ul>
                               </div>
                          </li>
@@ -1284,194 +1247,125 @@
           <div class="page-content">
 
                <!-- Start Container Fluid -->
-               <div class="container-xxl">
-                <div class="row">
-                    <div class="col-xl-9 col-lg-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Add Product</h4>
-                            </div>
-                            <div class="card-body">
-                                <form action="/admin/addProducts" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
-                                    <!-- Basic Product Information -->
-                                    <div class="row mb-3">
-                                        <div class="col-lg-6">
-                                            <label for="product-name" class="form-label">Product Name</label>
-                                            <input type="text" id="product-name" name="productName" class="form-control" placeholder="Enter product name" >
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <label for="product-categories" class="form-label">Category</label>
-                                            <select class="form-control" id="product-categories" name="category" >
-                                                 <option value="">Select Category</option>
-                                                <%for(let i=0; i<category.length; i++){%>
-                                                       <option value="<%=category[i].name%>">
-                                                            <%=category[i].name%>
-                                                       </option>
-                                                  <%}%>
-                                            </select>
-                                        </div>
-                                    </div>
+               <div class="container-fluid">
 
-                                    <div class="row mb-3">
-                                        <div class="col-lg-6">
-                                            <label for="brand" class="form-label">Brand</label>
-                                            <select class="form-control" id="ram" name="brand" >
-                                                 <option value="">Select Brand</option>
-                                                <%for(let i=0; i<brand.length;i++){%>
-                                                  <option value="<%= brand[i].brandName%>">
-                                                       <%=brand[i].brandName%>
-                                                  </option>
-                                                  <%}%>
-                                            </select>
+                    <div class="row">
+                         <div class="col-xl-12">
+                              <div class="card">
+                                   <div class="card-header d-flex justify-content-between align-items-center gap-1">
+                                        <h4 class="card-title flex-grow-1">All Product List</h4>
+
+                                        <a href="product-add.html" class="btn btn-sm btn-primary">
+                                             Add Product
+                                        </a>
+                                        <div class="mb-6">
+                                            <input type="text" class="form-control" placeholder="Search products..." aria-label="Search">
                                         </div>
-                                        <div class="col-lg-6">
-                                            <label for="quantity" class="form-label">Quantity</label>
-                                            <input type="number" id="quantity" name="quantity" class="form-control" placeholder="Enter quantity" >
-                                        </div>
+                                   </div>
+                                   <div>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th scope="col" class="text-center" style="width: 50px;">No.</th>
+                                                    <th scope="col">Product Name</th>
+                                                    <th scope="col">Brand</th>
+                                                    <th scope="col">Category</th>
+                                                    <th scope="col">Image</th>
+                                                    <th scope="col">Sale Price</th>
+                                                    <th scope="col">Quantity</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col" class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                             <%for(let i=data.length-1; i>=0;i--){%>
+                                                <tr>
+                                                    <td class="text-center"><%=i+1%></td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="fw-medium"><%=data[i].productName%></span>
+                                                        </div>
+                                                    </td>
+                                                    <td><%= data[i].brand.brandName %></td>
+                                                    <td><%= data[i].category.name %></td>
+                                                    <td>
+                                                        <div class="rounded" style="width: 50px; height: 50px;">
+                                                            <img src="<%= data[i].productImage[0]%>" alt="Product" class="img-fluid rounded">
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="fw-medium">₹<%= data[i].salePrice%></span>
+                                                    </td>
+                                                    <td>
+                                                        <div>
+                                                            <span class="fw-medium"><%= data[i].quantity%></span>
+                                                            <!-- <small class="text-muted">155 sold</small> -->
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                       <% if (data[i].isBlocked) { %>
+                                                            <span class="badge bg-danger">Blocked</span> 
+                                                        <% } else { %>
+                                                            <span class="badge bg-success">Active</span> 
+                                                        <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex justify-content-center gap-2">
+                                                            <button class="btn  btn-info" title="View">
+                                                                View
+                                                            </button>
+                                                            <button class="btn  btn-primary" title="Edit">
+                                                                <a href="/admin/editProduct/<%= data[i]._id%>" class="text-white" style="text-decoration: none;">Edit</a>
+                                                            </button>
+                                                            <%if(!data[i].isBlocked){%>
+                                                            <button class="btn  btn-danger" title="Block">
+                                                               <a href="/admin/blockProduct/<%= data[i]._id %>" class="text-white" style="text-decoration: none;">Block</a>
+                                                            </button>
+                                                            <%}else{%>
+                                                            <button class="btn  btn-success" title="UnBlock">
+                                                                 <a href="/admin/UnBlockProduct/<%= data[i]._id %>" class="text-white" style="text-decoration: none;">UnBlock</a>
+                                                            </button>
+                                                            <%}%>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <!-- Additional rows would go here -->
+                                                 <%}%>
+                                            </tbody>
+                                        </table>
                                     </div>
-            
-                                    <!-- Price Information -->
-                                    <div class="row mb-3">
-                                        <div class="col-lg-6">
-                                            <label for="regular-price" class="form-label">Regular Price</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class='bx bx-dollar'></i></span>
-                                                <input type="number" id="regular-price" name="regularPrice" class="form-control" placeholder="0.00" >
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <label for="sale-price" class="form-label">Sale Price</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class='bx bx-dollar'></i></span>
-                                                <input type="number" id="sale-price" name="salePrice" class="form-control" placeholder="0.00">
-                                            </div>
-                                        </div>
-                                    </div>
-            
-                                    <!-- Product Description -->
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Product Description</label>
-                                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter product description" ></textarea>
-                                    </div>
-            
-                                    <!-- Specifications -->
-                                    <h5 class="mb-3">Specifications</h5>
-                                    <div class="row mb-3">
-                                        <div class="col-lg-4">
-                                            <label for="ram" class="form-label">RAM</label>
-                                            <select class="form-control" id="ram" name="ram" >
-                                                <option value="">Select RAM</option>
-                                                <option value="4GB">4GB</option>
-                                                <option value="8GB">8GB</option>
-                                                <option value="16GB">16GB</option>
-                                                <option value="32GB">32GB</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label for="storage" class="form-label">Internal Storage</label>
-                                            <select class="form-control" id="storage" name="storage" >
-                                                <option value="">Select Storage</option>
-                                                <option value="64GB">64GB</option>
-                                                <option value="128GB">128GB</option>
-                                                <option value="256GB">256GB</option>
-                                                <option value="512GB">512GB</option>
-                                                <option value="1TB">1TB</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label for="processor" class="form-label">Processor</label>
-                                            <input type="text" id="processor" name="processor" class="form-control" placeholder="Enter processor details" >
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <label for="color" class="form-label">Choose Color</label>
-                                        <select class="form-control" id="color" name="color" >
-                                            <option value="">Select Color</option>
-                                            <option value="Red" style="background-color: red; color: white;">Red</option>
-                                            <option value="Blue" style="background-color: blue; color: white;">Blue</option>
-                                            <option value="Green" style="background-color: green; color: white;">Green</option>
-                                            <option value="Black" style="background-color: black; color: white;">Black</option>
-                                            <option value="White" style="background-color: white; color: black;">White</option>
-                                        </select>
-                                    </div>
-                                    
-                                   <div style="margin: 5%;"></div>
-                                    <!-- Product Images -->
-                                    <div class="container mt-4">
-                                        <h5 class="mb-3">Product Images</h5>
-                                        <div class="row mb-3">
-                                            <div class="col-lg-4 image-upload-section">
-                                                <label for="product-image-1" class="form-label">Product Image 1</label>
-                                                <input type="file" class="form-control image-input" id="product-image-1" name="product-image-1" accept="image/*" >
-                                                <div class="image-preview-container" id="preview-container-1">
-                                                    <img class="image-preview" id="preview-1">
-                                                    <div class="preview-controls" id="controls-1">
-                                                        <button type="button" class="btn btn-primary crop-btn" data-index="1">Crop & Save</button>
-                                                        <button type="button" class="btn btn-secondary cancel-btn" data-index="1">Cancel</button>
-                                                    </div>
-                                                </div>
-                                                <img class="final-image" id="final-1">
-                                                <input type="hidden" name="cropped-image-1" id="cropped-image-1">
-                                            </div>
-                                
-                                            <div class="col-lg-4 image-upload-section">
-                                                <label for="product-image-2" class="form-label">Product Image 2</label>
-                                                <input type="file" class="form-control image-input" id="product-image-2" name="product-image-2" accept="image/*" disabled>
-                                                <div class="image-preview-container" id="preview-container-2">
-                                                    <img class="image-preview" id="preview-2">
-                                                    <div class="preview-controls" id="controls-2">
-                                                        <button type="button" class="btn btn-primary crop-btn" data-index="2">Crop & Save</button>
-                                                        <button type="button" class="btn btn-secondary cancel-btn" data-index="2">Cancel</button>
-                                                    </div>
-                                                </div>
-                                                <img class="final-image" id="final-2">
-                                                <input type="hidden" name="cropped-image-2" id="cropped-image-2">
-                                            </div>
-                                
-                                            <div class="col-lg-4 image-upload-section">
-                                                <label for="product-image-3" class="form-label">Product Image 3</label>
-                                                <input type="file" class="form-control image-input" id="product-image-3" name="product-image-3" accept="image/*" disabled>
-                                                <div class="image-preview-container" id="preview-container-3">
-                                                    <img class="image-preview" id="preview-3">
-                                                    <div class="preview-controls" id="controls-3">
-                                                        <button type="button" class="btn btn-primary crop-btn" data-index="2">Crop & Save</button>
-                                                        <button type="button" class="btn btn-secondary cancel-btn" data-index="2">Cancel</button>
-                                                    </div>
-                                                </div>
-                                                <img class="final-image" id="final-3">
-                                                <input type="hidden" name="cropped-image-3" id="cropped-image-3">
-                                            </div>
-                                        </div>
-                                    </div>
-                                
-            
-                                    <!-- Form Actions -->
-                                    <div class="row justify-content-end g-2">
-                                        <div class="col-lg-2">
-                                            <button type="submit"  class="btn btn-primary w-100">Create Product</button>
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <button type="reset" class="btn btn-outline-secondary w-100">Cancel</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                                        <!-- end table-responsive -->
+                                   </div>
+                                   <div class="card-footer border-top">
+                                        <nav aria-label="Page navigation example">
+                                             <ul class="pagination justify-content-end mb-0">
+                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">Previous</a></li>
+                                                  <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
+                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
+                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
+                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">Next</a></li>
+                                             </ul>
+                                        </nav>
+                                   </div>
+                              </div>
+                         </div>
+
                     </div>
-                </div>
-            </div>
-            
+
+               </div>
                <!-- End Container Fluid -->
 
                <!-- ========== Footer Start ========== -->
                <footer class="footer">
-                    <div class="container-fluid">
-                         <div class="row">
-                              <div class="col-12 text-center">
-                                   <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
-                              </div>
-                         </div>
-                    </div>
+                   <div class="container-fluid">
+                       <div class="row">
+                           <div class="col-12 text-center">
+                               <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
+                                   href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
+                           </div>
+                       </div>
+                   </div>
                </footer>
                <!-- ========== Footer End ========== -->
 
@@ -1480,289 +1374,17 @@
           <!-- End Page Content -->
           <!-- ==================================================== -->
 
-
      </div>
      <!-- END Wrapper -->
 
      <!-- Vendor Javascript (Require in all Page) -->
      <script src="/assets/js/vendor.js"></script>
-     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
      <!-- App Javascript (Require in all Page) -->
      <script src="/assets/js/app.js"></script>
-     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-     <script>
-         document.addEventListener('DOMContentLoaded', function() {
-    let currentCropper = null;
-    let croppedImages = [];
-
-    // Prevent 'e' input in number fields
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
-                e.preventDefault();
-            }
-        });
-    });
-
-    // Form validation function
-    async function validateForm(e) {
-        e.preventDefault();
-        
-        // Get all form elements
-        const productName = document.getElementById('product-name').value.trim();
-        const quantity = document.getElementById('quantity').value;
-        const regularPrice = document.getElementById('regular-price').value;
-        const salePrice = document.getElementById('sale-price').value;
-        const description = document.getElementById('description').value.trim();
-        const ram = document.getElementById('ram').value;
-        const storage = document.getElementById('storage').value;
-        const color = document.getElementById("color").value;
-        const processor = document.getElementById('processor').value.trim();
-        const brand = document.getElementById('brand').value;
-        const category = document.getElementById('product-categories').value;
-
-        try {
-            // Validation checks with await for Swal
-            if (!productName) {
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Validation Error',
-                    text: 'Product name cannot be empty!'
-                });
-                return false;
-            }
-
-            if (quantity === '' || parseInt(quantity) < 0) {
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Validation Error',
-                    text: 'Quantity must be a positive number!'
-                });
-                return false;
-            }
-
-            if (regularPrice === '' || parseFloat(regularPrice) < 0 || isNaN(regularPrice) || regularPrice.includes('e')) {
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Validation Error',
-                    text: 'Regular price must be a positive number!'
-                });
-                return false;
-            }
-
-            if (salePrice !== '') {
-                if (parseFloat(salePrice) < 0 || isNaN(salePrice) || salePrice.includes('e')) {
-                    await Swal.fire({
-                        icon: 'error',
-                        title: 'Validation Error',
-                        text: 'Sale price must be a positive number!'
-                    });
-                    return false;
-                }
-
-                if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
-                    await Swal.fire({
-                        icon: 'error',
-                        title: 'Validation Error',
-                        text: 'Sale price must be less than regular price!'
-                    });
-                    return false;
-                }
-            }
-
-            if (!description || !ram || !storage || !processor || !brand || !category) {
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Validation Error',
-                    text: 'Please fill in all required fields!'
-                });
-                return false;
-            }
-
-            // Validate if at least one image is cropped
-            const croppedImage1 = document.getElementById('cropped-image-1').value;
-            if (!croppedImage1) {
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Validation Error',
-                    text: 'Please upload and crop at least one product image!'
-                });
-                return false;
-            }
-
-            // Create FormData
-            const formData = new FormData();
-
-            // Add all form fields to FormData
-            formData.append('productName', productName);
-            formData.append('quantity', quantity);
-            formData.append('regularPrice', regularPrice);
-            formData.append('salePrice', salePrice);
-            formData.append('description', description);
-            formData.append('ram', ram);
-            formData.append('storage', storage);
-            formData.append("color", color);
-            formData.append('processor', processor);
-            formData.append('brand', brand);
-            formData.append('productCategories', category);
-
-            // Handle cropped images
-            let imageCount = 0;
-            for (let i = 1; i <= 3; i++) {
-                const croppedImage = document.getElementById(`cropped-image-${i}`).value;
-                if (croppedImage) {
-                    // Convert base64 to blob
-                    const blob = await fetch(croppedImage).then(r => r.blob());
-                    formData.append('file', blob, `image${i}.jpg`);
-                    imageCount++;
-                }
-            }
-
-            // Show loading state
-            await Swal.fire({
-                title: 'Uploading...',
-                text: 'Please wait while we process your request',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            // Send formData to server
-            const response = await fetch('/admin/addProducts', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Product added successfully!',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                window.location.reload();
-            } else {
-                throw new Error('Server responded with an error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            await Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'There was an error adding the product. Please try again.'
-            });
-        }
-
-        return false;
-    }
-
-    document.querySelector('form').onsubmit = validateForm;
-
-    // Image input handling
-    document.querySelectorAll('.image-input').forEach(input => {
-        input.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // Destroy any existing cropper before creating a new one
-            if (currentCropper) {
-                currentCropper.destroy();
-                currentCropper = null;
-            }
-
-            const index = this.id.split('-')[2];
-            const previewContainer = document.getElementById(`preview-container-${index}`);
-            const preview = document.getElementById(`preview-${index}`);
-            const finalImage = document.getElementById(`final-${index}`);
-
-            finalImage.style.display = 'none';
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                previewContainer.style.display = 'block';
-
-                currentCropper = new Cropper(preview, {
-                    aspectRatio: 1,
-                    viewMode: 2,
-                    dragMode: 'move',
-                    autoCropArea: 1,
-                    restore: false,
-                    guides: true,
-                    center: true,
-                    highlight: false,
-                    cropBoxMovable: true,
-                    cropBoxResizable: true,
-                    toggleDragModeOnDblclick: false
-                });
-            };
-            reader.readAsDataURL(file);
-        });
-    });
-
-    // Crop button handling
-    document.querySelectorAll('.crop-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            if (!currentCropper) return;
-
-            const index = this.dataset.index;
-            const previewContainer = document.getElementById(`preview-container-${index}`);
-            const finalImage = document.getElementById(`final-${index}`);
-            const croppedInput = document.getElementById(`cropped-image-${index}`);
-
-            const canvas = currentCropper.getCroppedCanvas({
-                width: 600,
-                height: 600
-            });
-
-            const croppedData = canvas.toDataURL('image/jpeg', 0.9);
-            finalImage.src = croppedData;
-            finalImage.style.display = 'block';
-            croppedInput.value = croppedData;
-
-            currentCropper.destroy();
-            currentCropper = null;
-            previewContainer.style.display = 'none';
-
-            // Enable next image input if available
-            if (index < 3) {
-                const nextInput = document.getElementById(`product-image-${parseInt(index) + 1}`);
-                if (nextInput) {
-                    nextInput.disabled = false;
-                }
-            }
-        });
-    });
-
-    // Cancel button handling
-    document.querySelectorAll('.cancel-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const index = this.dataset.index;
-            const input = document.getElementById(`product-image-${index}`);
-            const previewContainer = document.getElementById(`preview-container-${index}`);
-            const finalImage = document.getElementById(`final-${index}`);
-            const croppedInput = document.getElementById(`cropped-image-${index}`);
-
-            if (currentCropper) {
-                currentCropper.destroy();
-                currentCropper = null;
-            }
-
-            input.value = '';
-            previewContainer.style.display = 'none';
-            finalImage.style.display = 'none';
-            croppedInput.value = '';
-        });
-    });
-});
-      </script>
 
 </body>
 
 
-<!-- Mirrored from techzaa.in/larkon/admin/product-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:17 GMT -->
+<!-- Mirrored from techzaa.in/larkon/admin/product-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:15 GMT -->
 </html>
