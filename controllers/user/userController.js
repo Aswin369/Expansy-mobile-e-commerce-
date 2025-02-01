@@ -2,22 +2,26 @@ const User = require("../../models/userSchema")
 const nodemailer = require("nodemailer")
 const bcrypt = require("bcrypt")
 const env = require("dotenv").config()
+const productSchema = require("../../models/productSchema")
 
 const loadHomepage = async (req, res) => {
     try {
         const user = req.session.user;
+        const products = await productSchema.find({ isBlocked: false }); // Await the result
+        console.log(products); // Check if it prints an array
+
         if (user) {
-            // Fetch the user data from the database
             const userData = await User.findOne({ _id: user._id });
-            res.render("home", { user: userData }); // Pass user data to the view
+            res.render("home", { user: userData, product: products }); // Pass products to the view
         } else {
-            res.render("home", { user: null }); // Pass null if no user is logged in
+            res.render("home", { user: null, product: products }); // Pass products to the view
         }
     } catch (error) {
         console.error("Error loading home page:", error);
         res.status(500).send("Server error");
     }
 };
+
 
 const verification = async (req,res)=>{
     try{

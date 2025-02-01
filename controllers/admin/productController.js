@@ -23,11 +23,16 @@ const getProductAddPage = async (req,res)=>{
 
 const addProducts = async (req, res) => {
     try {
-        const {productName, category, brand, quantity, regularPrice, salePrice, description, ram, storage, processor, color} = req.body;
+        const {productName, productCategories, brand, quantity, regularPrice, salePrice, description, ram, storage, processor, color, Stocks} = req.body;
         
+        // console.log(req.body)
+        // console.log("request body is printing",req.body)
+
         const brandId = await Brand.findOne({
-            category:category._id
+            brand:brand._id
         })
+
+        // console.log("brand id ",brandId)
         
         if(!brand){
             return res.status(400).json({
@@ -35,11 +40,12 @@ const addProducts = async (req, res) => {
                 message:"Brand is not exists"
             })
         }
-
-
+        
+        
         const categoryId = await Category.findOne({
-            category:category._id
+            category:productCategories._id
         })
+        // console.log("category id ",categoryId)
         
         if(!categoryId){
             return res.status(400).json({
@@ -47,51 +53,32 @@ const addProducts = async (req, res) => {
                 message: "Category is not exists"
             })
         }
-        
-        const productExists = await Product.findOne({
-            productName: productName.productName
-        });
+       
 
-        if (productExists) {
-            return res.status(400).json({
-                success: false,
-                message: 'Product already exists'
-            });
-        }
-
-
-        
+    
         const imagePaths = [];
+        
+       
 
-        if (req.files && Object.keys(req.files).length > 0) {
-            for (const key in req.files) {
-                for (const file of req.files[key]) {
-                    try {
-                        const b64 = Buffer.from(file.buffer).toString("base64");
-                        const dataURI = `data:${file.mimetype};base64,${b64}`;
-                        const cldRes = await handleUpload(dataURI);
-                        if (cldRes && cldRes.secure_url) {
-                            imagePaths.push(cldRes.secure_url);
-                        } else {
-                            throw new Error('Failed to upload image');
-                        }
-                    } catch (error) {
-                        console.error('Error uploading image:', error);
-                        return res.status(400).json({
-                            success: false,
-                            message: 'Error uploading images',
-                            error: error.message
-                        });
-                    }
+            if (req.files && req.files.length > 0) {
+                for (let i = 0; i < req.files.length; i++) {
+                    const b64 = Buffer.from(req.files[i].buffer).toString("base64");
+                    let dataURI = "data:" + req.files[i].mimetype + ";base64," + b64;
+                    const cldRes = await handleUpload(dataURI)
+                    imagePaths.push(cldRes.secure_url)
                 }
             }
-        }
+
+console.log("Images ",imagePaths);
+
+
         const newProduct = new Product({
             productName:productName,
             description:description,
             category:categoryId._id,
             brand:brandId._id,
             quantity:quantity,
+            stockes:Stocks,
             regularPrice:regularPrice,
             salePrice:salePrice,
             ram:ram,
@@ -99,14 +86,14 @@ const addProducts = async (req, res) => {
             processor:processor,
             color:color,
             status:"Available",
-            date: Date.now(),
             productImage: imagePaths
         });
 
-        
+        console.log("Now product detail checking properly",newProduct)
         
         await newProduct.save();
         
+        console.log("Saved conformed")
 
         return res.status(201).json({
             success: true,
@@ -127,7 +114,7 @@ const addProducts = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
     try {
-        console.log("1");
+        
 
         const search = req.query.search ? req.query.search.trim() : "";
         const page = parseInt(req.query.page) || 1;
@@ -144,7 +131,8 @@ const getAllProducts = async (req, res) => {
         .populate("brand")
         .exec();
 
-        console.log("Page is not rendering");
+        console.log("this is product data", productData)
+        // console.log("Page is not rendering");
 
         const count = await Product.countDocuments({
             productName: { $regex: new RegExp(".*" + search + ".*", "i") } 
@@ -153,7 +141,9 @@ const getAllProducts = async (req, res) => {
         console.log("3")
         const category = await Category.find({ isListed: true })
         const brand = await Brand.find({ isBlocked: false })
-        console.log("5");
+        console.log("this is brand",brand)
+        console.log("category", category )
+      
         res.render("products", {
             data: productData,
             currentPage: page,

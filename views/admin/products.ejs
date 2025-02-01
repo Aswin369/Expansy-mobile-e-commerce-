@@ -559,11 +559,44 @@
                                    <div class="card-footer border-top">
                                         <nav aria-label="Page navigation example">
                                              <ul class="pagination justify-content-end mb-0">
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">Previous</a></li>
-                                                  <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
-                                                  <li class="page-item"><a class="page-link" href="javascript:void(0);">Next</a></li>
+                                                  <!-- Pervious button -->
+                                                  <%if(currentPage > 1){%>
+                                                  <li class="page-item">
+                                                       <a class="page-link" href="?page=<%= currentPage - 1 %>"><a href="">
+                                                            Previous
+                                                       </a>
+                                                  </li>
+                                                  <%}else {%>
+                                                  <li class="page-item active">
+                                                       <a class="page-link" href="javascript:void(0);">
+                                                            Previous
+                                                       </a>
+                                                  </li>
+                                                  <%} %>
+                                                  <% for(let i=1; i<=totalPages; i++){%>
+                                                       <%if(i===currentPage){%>
+                                                  <li class="page-item">
+                                                       <a class="page-link" href="javascript:void(0);">
+                                                            <%= i%>
+                                                       </a>
+                                                  </li>
+                                                  <%}else{%>
+                                                  <li class="page-item">
+                                                       <a class="page-link" href="?page=<%= i%>">
+                                                            <%= i%>
+                                                       </a>
+                                                  </li>
+                                                  <%}%>
+                                                  <%}%>
+                                                  <%if(currentPage < totalPages){%>
+                                                  <li class="page-item">
+                                                       <a class="page-link" href="?page=<%= currentPage + 1%>">Next</a>
+                                                  </li>
+                                                  <%}else{%>
+                                                  <li class="page-item">
+                                                       <a class="page-link" href="javascript:void(0);">Next</a>
+                                                  </li>
+                                                  <%}%>
                                              </ul>
                                         </nav>
                                    </div>

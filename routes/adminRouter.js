@@ -37,7 +37,7 @@ router.get("/getEditBrand",adminAuth, brandController.getEditBrand)
 router.post("/editBrand/:id",upload.single('brandImage'),adminAuth, brandController.editBrand)
 // Product management
 router.get("/addProducts",adminAuth, productController.getProductAddPage)
-router.post("/addProducts", upload.fields([{ name: 'product-image-1' },{ name: 'product-image-2' },{ name: 'product-image-3' }]),adminAuth,productController.addProducts);
+router.post("/addProducts", upload.array("file"),adminAuth,productController.addProducts);
 router.get("/products",adminAuth,productController.getAllProducts)
 router.get("/blockProduct/:id", adminAuth, productController.blockProduct);
 router.get("/UnBlockProduct/:id", adminAuth, productController.UnBlockProduct);

@@ -509,8 +509,8 @@
                             <div class="card-header">
                                 <h4 class="card-title">Add Product</h4>
                             </div>
-                            <div class="card-body">
-                                <form action="/admin/addProducts" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                            <div class="card-body">  
+                                <form  enctype="multipart/form-data" id="myForm">     
                                     <!-- Basic Product Information -->
                                     <div class="row mb-3">
                                         <div class="col-lg-6">
@@ -522,7 +522,7 @@
                                             <select class="form-control" id="product-categories" name="category" >
                                                  <option value="">Select Category</option>
                                                 <%for(let i=0; i<category.length; i++){%>
-                                                       <option value="<%=category[i].name%>">
+                                                       <option value="<%=category[i]._id%>">
                                                             <%=category[i].name%>
                                                        </option>
                                                   <%}%>
@@ -533,10 +533,10 @@
                                     <div class="row mb-3">
                                         <div class="col-lg-6">
                                             <label for="brand" class="form-label">Brand</label>
-                                            <select class="form-control" id="ram" name="brand" >
+                                            <select class="form-control" id="brand" name="brand" >
                                                  <option value="">Select Brand</option>
                                                 <%for(let i=0; i<brand.length;i++){%>
-                                                  <option value="<%= brand[i].brandName%>">
+                                                  <option value="<%= brand[i]._id%>">
                                                        <%=brand[i].brandName%>
                                                   </option>
                                                   <%}%>
@@ -600,6 +600,10 @@
                                             <label for="processor" class="form-label">Processor</label>
                                             <input type="text" id="processor" name="processor" class="form-control" placeholder="Enter processor details" >
                                         </div>
+                                        <div class="col-lg-4">
+                                            <label for="processor" class="form-label">Add Stocks</label>
+                                            <input type="text" id="add-stocks" name="Stocks" class="form-control" placeholder="Add Stocks" >
+                                        </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <label for="color" class="form-label">Choose Color</label>
@@ -631,7 +635,7 @@
                                                 <img class="final-image" id="final-1">
                                                 <input type="hidden" name="cropped-image-1" id="cropped-image-1">
                                             </div>
-                                
+                                    
                                             <div class="col-lg-4 image-upload-section">
                                                 <label for="product-image-2" class="form-label">Product Image 2</label>
                                                 <input type="file" class="form-control image-input" id="product-image-2" name="product-image-2" accept="image/*" disabled>
@@ -645,15 +649,16 @@
                                                 <img class="final-image" id="final-2">
                                                 <input type="hidden" name="cropped-image-2" id="cropped-image-2">
                                             </div>
-                                
+                                    
                                             <div class="col-lg-4 image-upload-section">
                                                 <label for="product-image-3" class="form-label">Product Image 3</label>
                                                 <input type="file" class="form-control image-input" id="product-image-3" name="product-image-3" accept="image/*" disabled>
                                                 <div class="image-preview-container" id="preview-container-3">
                                                     <img class="image-preview" id="preview-3">
                                                     <div class="preview-controls" id="controls-3">
-                                                        <button type="button" class="btn btn-primary crop-btn" data-index="2">Crop & Save</button>
-                                                        <button type="button" class="btn btn-secondary cancel-btn" data-index="2">Cancel</button>
+                                                        <!-- Fixed data-index value for the third image -->
+                                                        <button type="button" class="btn btn-primary crop-btn" data-index="3">Crop & Save</button>
+                                                        <button type="button" class="btn btn-secondary cancel-btn" data-index="3">Cancel</button>
                                                     </div>
                                                 </div>
                                                 <img class="final-image" id="final-3">
@@ -669,7 +674,9 @@
                                             <button type="submit"  class="btn btn-primary w-100">Create Product</button>
                                         </div>
                                         <div class="col-lg-2">
-                                            <button type="reset" class="btn btn-outline-secondary w-100">Cancel</button>
+                                            <button type="reset" class="btn btn-outline-secondary w-100">
+                                             <a href="/admin/products" class="" style="text-decoration: none;">Cancel</a>
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -722,11 +729,14 @@
             }
         });
     });
+    document.getElementById("myForm").addEventListener("submit",(event)=>{
+    event.preventDefault()
+     validateForm()
+    })
 
     // Form validation function
     async function validateForm(e) {
-        e.preventDefault();
-        
+       // e.preventDefault();
         // Get all form elements
         const productName = document.getElementById('product-name').value.trim();
         const quantity = document.getElementById('quantity').value;
@@ -739,9 +749,27 @@
         const processor = document.getElementById('processor').value.trim();
         const brand = document.getElementById('brand').value;
         const category = document.getElementById('product-categories').value;
+        const stocks = document.getElementById('add-stocks').value.trim(); // Added stocks validation
+     console.log("brand",brand);
+     console.log("category",category);
+     console.log("processor",processor);
+     console.log("description",description);
+     console.log("ram",ram);
+     console.log("storage",storage);
 
+     
         try {
-            // Validation checks with await for Swal
+            // Add stocks validation
+            if (stocks === '' || parseInt(stocks) < 0 || isNaN(stocks)) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Stocks must be a positive number!'
+                });
+                return false;
+            }
+
+            // Existing validation checks
             if (!productName) {
                 await Swal.fire({
                     icon: 'error',
@@ -824,6 +852,7 @@
             formData.append('processor', processor);
             formData.append('brand', brand);
             formData.append('productCategories', category);
+            formData.append('stocks', stocks); // Added stocks to FormData
 
             // Handle cropped images
             let imageCount = 0;
@@ -837,23 +866,23 @@
                 }
             }
 
-            // Show loading state
-            await Swal.fire({
-                title: 'Uploading...',
-                text: 'Please wait while we process your request',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            // Send formData to server
+          //   Show loading state
+          //   await Swal.fire({
+          //       title: 'Uploading...',
+          //       text: 'Please wait while we process your request',
+          //       allowOutsideClick: false,
+          //       showConfirmButton: false,
+          //       willOpen: () => {
+          //           Swal.showLoading();
+          //       }
+          //   });
+            console.log("dajkhsdjks")
+            
             const response = await fetch('/admin/addProducts', {
                 method: 'POST',
                 body: formData
             });
-
+           console.log(response)
             if (response.ok) {
                 await Swal.fire({
                     icon: 'success',
@@ -878,7 +907,7 @@
         return false;
     }
 
-    document.querySelector('form').onsubmit = validateForm;
+    //document.querySelector('form').onsubmit = validateForm;
 
     // Image input handling
     document.querySelectorAll('.image-input').forEach(input => {
@@ -886,16 +915,16 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            // Destroy any existing cropper before creating a new one
-            if (currentCropper) {
-                currentCropper.destroy();
-                currentCropper = null;
-            }
-
             const index = this.id.split('-')[2];
             const previewContainer = document.getElementById(`preview-container-${index}`);
             const preview = document.getElementById(`preview-${index}`);
             const finalImage = document.getElementById(`final-${index}`);
+
+            // Destroy existing cropper for this specific preview
+            if (preview.cropper) {
+                preview.cropper.destroy();
+                preview.cropper = null;
+            }
 
             finalImage.style.display = 'none';
             
@@ -904,7 +933,7 @@
                 preview.src = e.target.result;
                 previewContainer.style.display = 'block';
 
-                currentCropper = new Cropper(preview, {
+                preview.cropper = new Cropper(preview, {
                     aspectRatio: 1,
                     viewMode: 2,
                     dragMode: 'move',
@@ -925,14 +954,16 @@
     // Crop button handling
     document.querySelectorAll('.crop-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            if (!currentCropper) return;
-
             const index = this.dataset.index;
+            const preview = document.getElementById(`preview-${index}`);
+            
+            if (!preview.cropper) return;
+
             const previewContainer = document.getElementById(`preview-container-${index}`);
             const finalImage = document.getElementById(`final-${index}`);
             const croppedInput = document.getElementById(`cropped-image-${index}`);
 
-            const canvas = currentCropper.getCroppedCanvas({
+            const canvas = preview.cropper.getCroppedCanvas({
                 width: 600,
                 height: 600
             });
@@ -942,8 +973,8 @@
             finalImage.style.display = 'block';
             croppedInput.value = croppedData;
 
-            currentCropper.destroy();
-            currentCropper = null;
+            preview.cropper.destroy();
+            preview.cropper = null;
             previewContainer.style.display = 'none';
 
             // Enable next image input if available
@@ -961,13 +992,14 @@
         btn.addEventListener('click', function() {
             const index = this.dataset.index;
             const input = document.getElementById(`product-image-${index}`);
+            const preview = document.getElementById(`preview-${index}`);
             const previewContainer = document.getElementById(`preview-container-${index}`);
             const finalImage = document.getElementById(`final-${index}`);
             const croppedInput = document.getElementById(`cropped-image-${index}`);
 
-            if (currentCropper) {
-                currentCropper.destroy();
-                currentCropper = null;
+            if (preview.cropper) {
+                preview.cropper.destroy();
+                preview.cropper = null;
             }
 
             input.value = '';

@@ -53,14 +53,6 @@ const addCategory = async (req, res) => {
         if (!name || !description) {
             return res.status(400).json({ error: "Name and description are required"});
         }
-
-        
-        const existingCategory = await Category.findOne({ name });
-        if (existingCategory) {
-            return res.status(400).json({ error: "Category already exists"});
-        }
-
-        
         const newCategory = new Category({
             name,
             description,
@@ -139,11 +131,7 @@ const editCategory = async (req,res)=>{
     try {
         const id = req.params.id
         const {name, description, croppedImage} = req.body
-        const existingCategory = await Category.findOne({name:name})
-
-        if(existingCategory){
-            return res.status(400).json({error:"Category exists, Please Choose another name"})
-        }
+        
         const updateCategory = await Category.findByIdAndUpdate(id,{
             name:name,
             description:description,
