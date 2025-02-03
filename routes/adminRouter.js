@@ -42,7 +42,8 @@ router.get("/products",adminAuth,productController.getAllProducts)
 router.get("/blockProduct/:id", adminAuth, productController.blockProduct);
 router.get("/UnBlockProduct/:id", adminAuth, productController.UnBlockProduct);
 router.get('/editProduct/:id', adminAuth,productController.getEditProduct);
-router.post('/editProduct/:id', upload.any(),adminAuth,productController.updateProduct);
+router.put('/editProduct/:productId',upload.single("productImage"),adminAuth,productController.updateImage);
+
 // view product details
 router.get("/viewProducts/:id",adminAuth,productController.viewProduct)
 module.exports = router

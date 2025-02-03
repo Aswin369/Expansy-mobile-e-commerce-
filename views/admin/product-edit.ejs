@@ -23,6 +23,7 @@
 
      <!-- App css (Require in all Page) -->
      <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.css">
      <style>
         .image-upload-section {
     margin-bottom: 20px;
@@ -550,193 +551,212 @@
                                 <h4 class="card-title">Add Product</h4>
                             </div>
                             <div class="card-body">
-                                <form action="/admin/editProduct/<%=product._id%>" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
-                                    <!-- Basic Product Information -->
-                                    <div class="row mb-3">
-                                        <div class="col-lg-6">
-                                            <label for="product-name" class="form-label">Product Name</label>
-                                            <input type="text" id="product-name" value="<%=product.productName%>" name="productName" class="form-control" placeholder="Enter product name" >
-                                        </div>
-                                        <div class="col-lg-6">
-                                             <label for="product-categories" class="form-label">Category</label>
-                                             <select class="form-control" id="product-categories" name="category">
-                                                  <% let selectedCategory = category.find(c => c._id.toString() === product.category.toString()); %>
-                                                  <option value="<%= product.category %>" selected>
-                                                      <%= selectedCategory ? selectedCategory.name : "Select Category" %>
-                                                  </option>
-                                                  <% for(let i = 0; i < category.length; i++) { %>
-                                                      <% if (category[i]._id.toString() !== product.category.toString()) { %>
-                                                          <option value="<%= category[i]._id %>"><%= category[i].name %></option>
-                                                      <% } %>
-                                                  <% } %>
-                                              </select>
-                                              
-                                         </div>
-                                    </div>
+                              <form id="productForm" action="/admin/editProduct/<%=product._id%>" method="put" enctype="multipart/form-data">
+                                   <input type="hidden" id="productId" value="<%= product._id %>">
 
-                                    <div class="row mb-3">
-                                        <div class="col-lg-6">
-                                             <label for="brand" class="form-label">Brand</label>
-                                             <select class="form-control" id="brand" name="brand">
-                                                  <% let selectedBrand = brand.find(b => b._id.toString() === product.brand.toString()); %>
-                                                  <option value="<%= product.brand %>" selected><%= selectedBrand ? selectedBrand.brandName : 'Unknown Brand' %></option>
-                                              
-                                                  <% for(let i = 0; i < brand.length; i++) { %>
-                                                      <% if (brand[i]._id.toString() !== product.brand.toString()) { %>
-                                                          <option value="<%= brand[i]._id %>"><%= brand[i].brandName %></option>
-                                                      <% } %>
-                                                  <% } %>
-                                              </select>
-                                         </div>
-                                        <div class="col-lg-6">
-                                            <label for="quantity" class="form-label">Quantity</label>
-                                            <input type="number" value="<%=product.quantity%>" id="quantity" name="quantity" class="form-control" placeholder="Enter quantity" >
+                                   <!-- Basic Product Information -->
+                                   <div class="row mb-3">
+                                       <div class="col-lg-6">
+                                           <label for="product-name" class="form-label">Product Name</label>
+                                           <input type="text" id="name" value="<%=product.productName%>" name="productName" class="form-control" placeholder="Enter product name" >
+                                       </div>
+                                       <div class="col-lg-6">
+                                            <label for="product-categories" class="form-label">Category</label>
+                                            <select class="form-control" id="category" name="category">
+                                                 <% let selectedCategory = category.find(c => c._id.toString() === product.category.toString()); %>
+                                                 <option value="<%= product.category %>" selected>
+                                                     <%= selectedCategory ? selectedCategory.name : "Select Category" %>
+                                                 </option>
+                                                 <% for(let i = 0; i < category.length; i++) { %>
+                                                     <% if (category[i]._id.toString() !== product.category.toString()) { %>
+                                                         <option value="<%= category[i]._id %>"><%= category[i].name %></option>
+                                                     <% } %>
+                                                 <% } %>
+                                             </select>
+                                             
                                         </div>
-                                    </div>
-            
-                                    <!-- Price Information -->
-                                    <div class="row mb-3">
-                                        <div class="col-lg-6">
-                                            <label for="regular-price" class="form-label">Regular Price</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class='bx bx-dollar'></i></span>
-                                                <input type="number" value="<%=product.regularPrice%>" id="regular-price" name="regularPrice" class="form-control" placeholder="0.00" >
-                                            </div>
+                                   </div>
+
+                                   <div class="row mb-3">
+                                       <div class="col-lg-6">
+                                            <label for="brand" class="form-label">Brand</label>
+                                            <select class="form-control" id="brand" name="brand">
+                                                 <% let selectedBrand = brand.find(b => b._id.toString() === product.brand.toString()); %>
+                                                 <option value="<%= product.brand %>" selected><%= selectedBrand ? selectedBrand.brandName : 'Unknown Brand' %></option>
+                                             
+                                                 <% for(let i = 0; i < brand.length; i++) { %>
+                                                     <% if (brand[i]._id.toString() !== product.brand.toString()) { %>
+                                                         <option value="<%= brand[i]._id %>"><%= brand[i].brandName %></option>
+                                                     <% } %>
+                                                 <% } %>
+                                             </select>
                                         </div>
-                                        <div class="col-lg-6">
-                                            <label for="sale-price" class="form-label">Sale Price</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class='bx bx-dollar'></i></span>
-                                                <input value="<%=product.salePrice%>" type="number" id="sale-price" name="salePrice" class="form-control" placeholder="0.00">
-                                            </div>
-                                        </div>
-                                    </div>
-            
-                                    <!-- Product Description -->
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Product Description</label>
-                                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter product description" value="<%=product.description%>" ><%=product.description%></textarea>
-                                    </div>
-            
-                                    <!-- Specifications -->
-                                    <h5 class="mb-3">Specifications</h5>
-                                    <div class="row mb-3">
-                                        <div class="col-lg-4">
-                                            <label for="ram" class="form-label">RAM</label>
-                                            <select class="form-control" id="ram" name="ram" >
-                                                <option value="<%=product.ram%>"><%=product.ram%></option>
-                                                <option value="4GB">4GB</option>
-                                                <option value="8GB">8GB</option>
-                                                <option value="16GB">16GB</option>
-                                                <option value="32GB">32GB</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label for="storage" class="form-label">Internal Storage</label>
-                                            <select class="form-control" id="storage" name="storage" >
-                                                <option value="<%=product.storage%>"><%=product.storage%></option>
-                                                <option value="64GB">64GB</option>
-                                                <option value="128GB">128GB</option>
-                                                <option value="256GB">256GB</option>
-                                                <option value="512GB">512GB</option>
-                                                <option value="1TB">1TB</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label for="processor" class="form-label">Processor</label>
-                                            <input type="text" id="processor" value="<%=product.processor%>" name="processor" class="form-control" placeholder="Enter processor details" >
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <label for="color" class="form-label">Choose Color</label>
-                                        <select class="form-control" id="color" name="color" >
-                                            <option value="<%=product.color%>"><%=product.color%></option>
-                                            <option value="Red" style="background-color: red; color: white;">Red</option>
-                                            <option value="Blue" style="background-color: blue; color: white;">Blue</option>
-                                            <option value="Green" style="background-color: green; color: white;">Green</option>
-                                            <option value="Black" style="background-color: black; color: white;">Black</option>
-                                            <option value="White" style="background-color: white; color: black;">White</option>
-                                        </select>
-                                    </div>
-                                    
-                                   <div style="margin: 5%;"></div>
-                                    <!-- Product Images -->
-                                    <div class="container product-image-editor">
-                                        <% product.productImage.forEach((image, index) => { %>
-                                            <div class="image-section mb-4" id="image-section-<%= index %>">
-                                                <h6 class="mb-3">Product Image <%= index + 1 %></h6>
-                                                
-                                                <!-- Image Preview Circle -->
-                                                <div class="image-preview-circle mb-3">
-                                                    <img 
-                                                        src="<%= image %>" 
-                                                        id="preview-<%= index %>" 
-                                                        class="preview-image"
-                                                        alt="Product Image <%= index + 1 %>"
-                                                    >
-                                                </div>
-                                    
-                                                <!-- Control Buttons -->
-                                                <div class="button-group mb-3">
-                                                    <button 
-                                                        class="btn btn-outline-dark mb-2 me-2 crop-btn" 
-                                                        id="crop-btn-<%= index %>"
-                                                        onclick="initCrop('<%= index %>', event)" 
-                                                    >
-                                                        Crop Image <%= index + 1 %>
-                                                    </button>
-                                                    
-                                                    <button 
-                                                        type="button"
-                                                        class="btn btn-outline-danger mb-2 delete-btn"
-                                                        onclick="deleteImage('<%= index %>')"
-                                                    >
-                                                        Delete Image
-                                                    </button>
-                                                </div>
-                                    
-                                                <!-- File Input Section -->
-                                                <div class="file-input-section mb-4">
-                                                    <label for="file-<%= index %>" class="mb-2">Product Image <%= index + 1 %></label>
-                                                    <div class="custom-file-input">
-                                                        <input 
-                                                            type="file" 
-                                                            class="form-control" 
-                                                            id="file-<%= index %>" 
-                                                            name="productImage-<%= index %>"
-                                                            accept="image/*"
-                                                            onchange="handleFileSelect('<%= index %>')"
-                                                        >
-                                                    </div>
-                                                </div>
-                                    
-                                                <!-- Hidden inputs -->
-                                                <input 
-                                                    type="hidden" 
-                                                    name="croppedImage-<%= index %>" 
-                                                    id="cropped-<%= index %>"
-                                                >
-                                                <input 
-                                                    type="hidden" 
-                                                    name="deleteImage-<%= index %>" 
-                                                    id="delete-<%= index %>"
-                                                    value="false"
-                                                >
-                                            </div>
-                                        <% }); %>
-                                    </div>
-                                
-            
-                                    <!-- Form Actions -->
-                                    <div class="row justify-content-end g-2">
-                                        <div class="col-lg-2">
-                                            <button type="submit" onclick="validateAndSubmit()" class="btn btn-primary w-100">Update Product</button>
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <button type="reset" class="btn btn-outline-secondary w-100">Cancel</button>
-                                        </div>
-                                    </div>
-                                </form>
+                                       <div class="col-lg-6">
+                                           <label for="quantity" class="form-label">Quantity</label>
+                                           <input type="number" value="<%=product.quantity%>" id="quantity" name="quantity" class="form-control" placeholder="Enter quantity" >
+                                       </div>
+                                   </div>
+           
+                                   <!-- Price Information -->
+                                   <div class="row mb-3">
+                                       <div class="col-lg-6">
+                                           <label for="regular-price" class="form-label">Regular Price</label>
+                                           <div class="input-group">
+                                               <span class="input-group-text"><i class='bx bx-dollar'></i></span>
+                                               <input type="number" value="<%=product.regularPrice%>" id="regularPrice" name="regularPrice" class="form-control" placeholder="0.00" >
+                                           </div>
+                                       </div>
+                                       <div class="col-lg-6">
+                                           <label for="sale-price" class="form-label">Sale Price</label>
+                                           <div class="input-group">
+                                               <span class="input-group-text"><i class='bx bx-dollar'></i></span>
+                                               <input value="<%=product.salePrice%>" type="number" id="salePrice" name="salePrice" class="form-control" placeholder="0.00">
+                                           </div>
+                                       </div>
+                                   </div>
+           
+                                   <!-- Product Description -->
+                                   <div class="mb-3">
+                                       <label for="description" class="form-label">Product Description</label>
+                                       <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter product description" value="<%=product.description%>" ><%=product.description%></textarea>
+                                   </div>
+           
+                                   <!-- Specifications -->
+                                   <h5 class="mb-3">Specifications</h5>
+                                   <div class="row mb-3">
+                                       <div class="col-lg-4">
+                                           <label for="ram" class="form-label">RAM</label>
+                                           <select class="form-control" id="RAM" name="ram" >
+                                               <option value="<%=product.ram%>"><%=product.ram%></option>
+                                               <option value="4GB">4GB</option>
+                                               <option value="8GB">8GB</option>
+                                               <option value="16GB">16GB</option>
+                                               <option value="32GB">32GB</option>
+                                           </select>
+                                       </div>
+                                       <div class="col-lg-4">
+                                           <label for="storage" class="form-label">Internal Storage</label>
+                                           <select class="form-control" id="storage" name="storage" >
+                                               <option value="<%=product.storage%>"><%=product.storage%></option>
+                                               <option value="64GB">64GB</option>
+                                               <option value="128GB">128GB</option>
+                                               <option value="256GB">256GB</option>
+                                               <option value="512GB">512GB</option>
+                                               <option value="1TB">1TB</option>
+                                           </select>
+                                       </div>
+                                       <div class="col-lg-4">
+                                           <label for="processor" class="form-label">Processor</label>
+                                           <input type="text" id="processor" value="<%=product.processor%>" name="processor" class="form-control" placeholder="Enter processor details" >
+                                       </div>
+                                   </div>
+                                   <div class="col-lg-4">
+                                       <label for="color" class="form-label">Choose Color</label>
+                                       <select class="form-control" id="color" name="color" >
+                                           <option value="<%=product.color%>"><%=product.color%></option>
+                                           <option value="Red" style="background-color: red; color: white;">Red</option>
+                                           <option value="Blue" style="background-color: blue; color: white;">Blue</option>
+                                           <option value="Green" style="background-color: green; color: white;">Green</option>
+                                           <option value="Black" style="background-color: black; color: white;">Black</option>
+                                           <option value="White" style="background-color: white; color: black;">White</option>
+                                       </select>
+                                   </div>
+                                   
+                                  <div style="margin: 5%;"></div>
+                                   <!-- Product Images -->
+                                   <!-- Image Section 1 -->
+<div class="image-section mb-4" id="image-section-1">
+    <h6 class="mb-3">Image 1</h6>
+    <div class="image-preview-circle mb-3">
+        <img src="<%= product.productImage[0]%>" id="imagePreview1" class="preview-image" alt="Product Image 1">
+    </div>
+
+    <!-- Control Buttons -->
+    <div class="button-group mb-3">
+        <button class="btn btn-outline-dark mb-2 me-2 crop-btn" id="cropButton1">Crop Image</button>
+        <button type="button" class="btn btn-outline-danger mb-2 delete-btn" id="delete-btn-1">Delete Image</button>
+    </div>
+
+    <!-- File Input Section -->
+    <div class="file-input-section mb-4">
+        <label for="file-1" class="mb-2">Choose Image 1</label>
+        <div class="custom-file-input">
+            <input type="file" class="form-control" id="productImage1" name="productImage-1" accept="image/*">
+        </div>
+    </div>
+
+    <!-- Hidden inputs -->
+    <input type="hidden" name="imageModified-1" id="image-modified-1" value="<%= product.productImage[0]%>">
+    <input type="hidden" name="deleteImage-1" id="delete-1" value="false">
+</div>
+
+<!-- Image Section 2 -->
+<div class="image-section mb-4" id="image-section-2">
+    <h6 class="mb-3">Image 2</h6>
+    <div class="image-preview-circle mb-3">
+        <img src="<%= product.productImage[1]%>" id="imagePreview2" class="preview-image" alt="Product Image 2">
+    </div>
+
+    <!-- Control Buttons -->
+    <div class="button-group mb-3">
+        <button class="btn btn-outline-dark mb-2 me-2 crop-btn" id="cropButton2">Crop Image</button>
+        <button type="button" class="btn btn-outline-danger mb-2 delete-btn" id="delete-btn-2">Delete Image</button>
+    </div>
+    <div id="cropModal" style="display: none;">
+     <img id="imageToCrop">
+     <button id="saveCrop">Save Crop</button>
+     <button id="cancelCrop">Cancel</button>
+ </div>
+    <!-- File Input Section -->
+    <div class="file-input-section mb-4">
+        <label for="file-2" class="mb-2">Choose Image 2</label>
+        <div class="custom-file-input">
+            <input type="file" class="form-control" id="productImage2" name="productImage-2" accept="image/*">
+        </div>
+    </div>
+
+    <!-- Hidden inputs -->
+    <input type="hidden" name="imageModified-2" id="image-modified-2" value="<%= product.productImage[1]%>">
+    <input type="hidden" name="deleteImage-2" id="delete-2" value="false">
+</div>
+
+<!-- Image Section 3 -->
+<div class="image-section mb-4" id="image-section-3">
+    <h6 class="mb-3">Image 3</h6>
+    <div class="image-preview-circle mb-3">
+        <img src="<%= product.productImage[2]%>" id="imagePreview3" class="preview-image" alt="Product Image 3">
+    </div>
+
+    <!-- Control Buttons -->
+    <div class="button-group mb-3">
+        <button class="btn btn-outline-dark mb-2 me-2 crop-btn" id="cropButton3">Crop Image</button>
+        <button type="button" class="btn btn-outline-danger mb-2 delete-btn" id="delete-btn-3">Delete Image</button>
+    </div>
+
+    <!-- File Input Section -->
+    <div class="file-input-section mb-4">
+        <label for="file-3" class="mb-2">Choose Image 3</label>
+        <div class="custom-file-input">
+            <input type="file" class="form-control" id="productImage3" name="productImage-3" accept="image/*">
+        </div>
+    </div>
+
+    <!-- Hidden inputs -->
+    <input type="hidden" name="imageModified-3" id="image-modified-3" value="<%= product.productImage[2]%>">
+    <input type="hidden" name="deleteImage-3" id="delete-3" value="false">
+</div>
+                               
+           
+                                   <!-- Form Actions -->
+                                   <div class="row justify-content-end g-2">
+                                       <div class="col-lg-2">
+                                           <button type="submit" class="btn btn-primary w-100">Update Product</button>
+                                       </div>
+                                       <div class="col-lg-2">
+                                           <button type="reset" class="btn btn-outline-secondary w-100">Cancel</button>
+                                       </div>
+                                   </div>
+                               </form>
                             </div>
                         </div>
                     </div>
@@ -770,145 +790,244 @@
 
      <!-- App Javascript (Require in all Page) -->
      <script src="/assets/js/app.js"></script>
-     <script>
-          let croppers = {};
-          let croppedImages = {};
-
-
-function handleFileSelect(index) {
-    const fileInput = document.getElementById(file-${index});
-    const previewImg = document.getElementById(preview-${index});
+     <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     
     
-    if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            previewImg.src = e.target.result;
-            // Destroy existing cropper if any
-            if (croppers[index]) {
-                croppers[index].destroy();
+    <script>
+     let cropper;
+let currentImageIndex = null;
+let croppedImages = new Array(3).fill(null);
+
+const imageInputs = [
+    document.getElementById('productImage1'),
+    document.getElementById('productImage2'),
+    document.getElementById('productImage3')
+];
+const imagePreviews = [
+    document.getElementById('imagePreview1'),
+    document.getElementById('imagePreview2'),
+    document.getElementById('imagePreview3')
+];
+const cropButtons = [
+    document.getElementById('cropButton1'),
+    document.getElementById('cropButton2'),
+    document.getElementById('cropButton3')
+];
+const cropModal = document.getElementById('cropModal');
+const saveCropButton = document.getElementById('saveCrop');
+const cancelCropButton = document.getElementById('cancelCrop');
+const imageToCrop = document.getElementById('imageToCrop');
+const productForm = document.getElementById("productForm");
+
+// Image Input Change Event Listener
+imageInputs.forEach((input, index) => {
+    input.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            if (!file.type.startsWith('image/')) {
+                swal('Invalid File', 'Please select an image file', 'error');
+                input.value = '';
+                return;
             }
-        };
-        
-        reader.readAsDataURL(fileInput.files[0]);
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreviews[index].src = e.target.result;
+                imagePreviews[index].style.display = 'block';
+                cropButtons[index].style.display = 'inline-block';
+
+                currentImageIndex = index;
+                cropModal.style.display = 'flex';
+                imageToCrop.src = e.target.result;
+
+                if (cropper) cropper.destroy();
+
+                cropper = new Cropper(imageToCrop, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 0.8,
+                    zoomable: true,
+                    movable: true
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+
+// Crop Button Click Event
+cropButtons.forEach((button, index) => {
+    button.addEventListener('click', function() {
+        currentImageIndex = index;
+        cropModal.style.display = 'flex';
+        imageToCrop.src = imagePreviews[index].src;
+
+        if (cropper) cropper.destroy();
+
+        cropper = new Cropper(imageToCrop, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 0.8,
+            zoomable: true,
+            movable: true
+        });
+    });
+});
+
+// Save Crop Button
+     saveCropButton.addEventListener('click', async function() {
+    if (cropper) {
+        const canvas = cropper.getCroppedCanvas({
+            width: 800,
+            height: 800,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+        });
+
+        const croppedImageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        const blob = dataURItoBlob(croppedImageDataUrl);
+        croppedImages[currentImageIndex] = blob;
+        imagePreviews[currentImageIndex].src = croppedImageDataUrl;
+
+
+        console.log("crop image",croppedImageDataUrl)
+
+        const productId = document.getElementById("productId").value.trim();
+        const formData = new FormData();
+        formData.append("productImage", blob, 'cropped-image.jpg');
+        formData.append("index", currentImageIndex);
+        console.log(`This tidsk ${productId}`)
+        try {
+            const response = await fetch(`/admin/editProduct/${productId}`, {
+                method: 'PUT',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.message) {
+                swal('Success', 'Image updated successfully!', 'success');
+            } else {
+                throw new Error(result.error || 'Failed to update image');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            swal('Error', 'Failed to update image. Please try again.', 'error');
+        }
+
+        cropper.destroy();
+        cropModal.style.display = 'none';
     }
+});
+
+// Cancel Crop Button
+cancelCropButton.addEventListener('click', function() {
+    if (cropper) {
+        cropper.destroy();
+        cropModal.style.display = 'none';
+    }
+});
+
+// Helper Function for Data URI to Blob
+function dataURItoBlob(dataURI) {
+    const byteString = atob(dataURI.split(',')[1]);
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ab], { type: mimeString });
 }
 
-// Initialize image cropping
-function initCrop(index, event) {
+// Form Validation and Submission
+productForm.addEventListener("submit", async function(event) {
     event.preventDefault();
-    const previewImg = document.getElementById(`preview-${index}`);
-    
-    // Destroy existing cropper if any
-    if (croppers[index]) {
-        croppers[index].destroy();
-        croppers[index] = null;
-        return;
-    }
-    
-    // Initialize Cropper.js
-    croppers[index] = new Cropper(previewImg, {
-        aspectRatio: 1,
-        viewMode: 2,
-        crop: function(event) {
-            // Store cropped image data
-            const canvas = this.cropper.getCroppedCanvas();
-            croppedImages[index] = canvas.toDataURL('image/jpeg');
-            document.getElementById(`cropped-${index}`).value = croppedImages[index];
-        }
-    });
-}
 
-// Handle image deletion
-function deleteImage(index) {
-    const imageSection = document.getElementById(image-section-${index});
-    const deleteInput = document.getElementById(delete-${index});
-    
-    if (imageSection) {
-        imageSection.style.opacity = '0.5';
-        deleteInput.value = 'true';
-    }
-}
+    // Form Field Values
+    const productId = document.getElementById("productId").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const brand = document.getElementById("brand").value.trim();
+    const category = document.getElementById("category").value;
+    const regularPrice = parseFloat(document.getElementById("regularPrice").value);
+    const salePrice = document.getElementById("salePrice").value;
+    const quantity = parseInt(document.getElementById("quantity").value);
+    const RAM = document.getElementById("RAM").value;
+    const processor = document.getElementById("processor").value;
+    const displaySize = document.getElementById("displaySize").value;
+    const storage = document.getElementById("storage").value;
 
-// Convert base64 to blob
-function base64ToBlob(base64) {
-    const parts = base64.split(';base64,');
-    const contentType = parts[0].split(':')[1];
-    const raw = window.atob(parts[1]);
-    const rawLength = raw.length;
-    const uInt8Array = new Uint8Array(rawLength);
-    
-    for (let i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-    }
-    
-    return new Blob([uInt8Array], { type: contentType });
-}
+    // Basic Validation
+    let errorMessage = "";
+    if (!name) errorMessage = "Product name is required.";
+    else if (!description) errorMessage = "Product description is required.";
+    else if (!brand) errorMessage = "Product brand is required.";
+    else if (!category) errorMessage = "Product category is required.";
+    else if (!regularPrice || regularPrice <= 0) errorMessage = "Regular price must be a positive number.";
+    else if (!salePrice || salePrice < 0) errorMessage = "Sale price must be a non-negative number.";
+    else if (!quantity || quantity < 0) errorMessage = "Quantity must be a non-negative number.";
+    else if (parseFloat(salePrice) > regularPrice) errorMessage = "Sale price cannot be greater than regular price.";
+    else if (!RAM) errorMessage = "RAM specification is required.";
+    else if (!processor) errorMessage = "Processor specification is required.";
+    else if (!displaySize) errorMessage = "Display size specification is required.";
+    else if (!storage) errorMessage = "Storage specification is required.";
 
-// Form validation
-function validateForm() {
-    const productName = document.getElementById('product-name').value;
-    const category = document.getElementById('product-categories').value;
-    const quantity = document.getElementById('quantity').value;
-    const regularPrice = document.getElementById('regular-price').value;
-    
-    if (!productName || !category || !quantity || !regularPrice) {
-        alert('Please fill in all required fields');
-        return false;
-    }
-    return true;
-}
-
-// Handle form submission
-function validateAndSubmit() {
-    if (!validateForm()) {
+    if (errorMessage) {
+        swal('Validation Error', errorMessage, 'error');
         return;
     }
 
-    const form = document.querySelector('form');
-    const formData = new FormData(form);
-    
-    // Process images
-    document.querySelectorAll('.image-section').forEach((section, index) => {
-        const fileInput = document.getElementById(`file-${index}`);
-        const croppedImage = croppedImages[index];
-        const isDeleted = document.getElementById(`delete-${index}`).value === 'true';
-        
-        if (isDeleted) {
-            formData.append(`deleteImage-${index}`, 'true');
-        } else if (croppedImage) {
-            // Convert cropped image to blob and append
-            const imageBlob = base64ToBlob(croppedImage);
-            formData.append(`productImage-${index}`, imageBlob, `image-${index}.jpg`);
-        } else if (fileInput.files[0]) {
-            // Use original file if no cropping was done
-            formData.append(`productImage-${index}`, fileInput.files[0]);
-        }
-    });
+    // Button Loading State
+    const submitButton = document.querySelector('.submit-button');
+    const originalButtonText = submitButton.textContent;
+    submitButton.textContent = 'Updating Product...';
+    submitButton.disabled = true;
 
-    // Send form data using fetch
-    fetch(form.action, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+    try {
+        const response = await fetch(`/admin/update/${productId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name,
+                description,
+                quantity,
+                RAM,
+                processor,
+                displaySize,
+                storage,
+                brand,
+                category,
+                regularPrice,
+                salePrice,
+                productId
+            })
+        });
+
+        const result = await response.json();
+        if (result.message) {
+            swal('Success', 'Product updated successfully!', 'success').then(() => {
+                window.location.href = "/admin/products";
+            });
+        } else {
+            throw new Error(result.error || 'Failed to update product');
         }
-        return response.json();
-    })
-    .then(data => {
-        alert('Product updated successfully!');
-        window.location.href = '/admin/products'; // Redirect to products page
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error:', error);
-        alert('Error updating product. Please try again.');
-    });
-}
-     </script>
+        swal('Error', 'Failed to update product. Please try again.', 'error');
+    } finally {
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
+    }
+});
+
+</script>
+    
+
 </body>
-
-
 <!-- Mirrored from techzaa.in/larkon/admin/product-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:17 GMT -->
 </html>
