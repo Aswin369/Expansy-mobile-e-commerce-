@@ -2,6 +2,7 @@ const express = require("express")
 const Product = require("../../models/productSchema")
 const Category = require("../../models/categorySchema")
 const Brand = require("../../models/brandSchema")
+const Variant = require("../../models/variantSchema")
 const User = require("../../models/userSchema")
 const sharp = require("sharp")
 const {handleUpload } = require("../../config/cloudinary")
@@ -11,9 +12,13 @@ const getProductAddPage = async (req,res)=>{
     try {
         const category = await Category.find({isListed:true})
         const brand = await Brand.find({isBlocked:false})
+        const ram = await Variant.find({category:"Ram", isBlocked:false})
+        const storage = await Variant.find({category:"Storage",isBlocked:false})
         res.render("product-add",{
             category:category,
-            brand:brand
+            brand:brand,
+            storage:storage,
+            ram:ram
         })
         
     } catch (error) {
@@ -24,7 +29,7 @@ const getProductAddPage = async (req,res)=>{
 const addProducts = async (req, res) => {
     try {
         const {productName, productCategories, brand, quantity, regularPrice, salePrice, description, ram, storage, processor, color, Stocks} = req.body;
-        
+        console.log("Stoger",req.body)
         // console.log(req.body)
         // console.log("request body is printing",req.body)
 
@@ -53,8 +58,30 @@ const addProducts = async (req, res) => {
                 message: "Category is not exists"
             })
         }
-       
 
+
+        const ramId = await Variant.findOne({
+            ram:ram._id
+        })
+        if(!ramId){
+            return res.status(400).json({
+                success:false,
+                message: "Ram is not exists"
+            })
+        }
+       
+        const storageId = await Variant.findOne({
+            storage:storage._id
+        })
+
+        console.log("storage?????",storageId)
+
+        if(!storageId){
+            return res.status(400).json({
+                success:false,
+                message: "Storage is not exists"
+            })
+        }
     
         const imagePaths = [];
         
@@ -81,8 +108,8 @@ const addProducts = async (req, res) => {
             stockes:Stocks,
             regularPrice:regularPrice,
             salePrice:salePrice,
-            ram:ram,
-            storage:storage,
+            ram:ramId._id,
+            storage:storageId._id,
             processor:processor,
             color:color,
             status:"Available",
@@ -93,7 +120,7 @@ const addProducts = async (req, res) => {
         
         await newProduct.save();
         
-        console.log("Saved conformed")
+        console.log("Saved conformed", newProduct)
 
         return res.status(201).json({
             success: true,

@@ -1,11 +1,11 @@
 const mongoose = require("mongoose")
 const {Schema} = mongoose
 
-const variantSchema = new moongoose.Schema({
+const variantSchema = new mongoose.Schema({
     category:{
         type:String,
         required:true,
-        enum:["ram", "storage"]
+        enum:["Ram", "Storage"]
     },
     value:{
         type:String,
@@ -13,10 +13,14 @@ const variantSchema = new moongoose.Schema({
     },
     price:{
         type:Number,
-        required:tre
+        required:true
     },
     isBlocked:{
         type:Boolean,
         default:false
     }
-},{Timestamp:true})
+},{timestamp:true})
+
+const Variant = mongoose.model("Variant", variantSchema);
+
+module.exports =  Variant

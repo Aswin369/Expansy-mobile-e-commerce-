@@ -54,11 +54,13 @@ const productSchema = new mongoose.Schema({
         default:false
     },
     ram:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Ram",
         required:true
     },
     storage:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Storage",
         required:true
     },
     processor:{

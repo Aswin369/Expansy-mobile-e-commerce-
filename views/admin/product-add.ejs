@@ -29,7 +29,9 @@
      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.2.0/dist/css/coreui.min.css" rel="stylesheet" integrity="sha384-u3h5SFn5baVOWbh8UkOrAaLXttgSF0vXI15ODtCSxl0v/VKivnCN6iHCcvlyTL7L" crossorigin="anonymous">
     <style>
+ 
      .image-upload-section {
          border: 1px solid #dee2e6;
          padding: 15px;
@@ -577,23 +579,20 @@
                                     <div class="row mb-3">
                                         <div class="col-lg-4">
                                             <label for="ram" class="form-label">RAM</label>
-                                            <select class="form-control" id="ram" name="ram" >
-                                                <option value="">Select RAM</option>
-                                                <option value="4GB">4GB</option>
-                                                <option value="8GB">8GB</option>
-                                                <option value="16GB">16GB</option>
-                                                <option value="32GB">32GB</option>
-                                            </select>
+                                            <select class="form-control" id="ram" name="ram">
+                                             <option value="">Select RAM</option>
+                                             <% for (let i = 0; i < ram.length; i++) { %>
+                                                 <option value="<%= ram[i]._id %>"><%= ram[i].value %></option>
+                                             <% } %>
+                                         </select>
                                         </div>
                                         <div class="col-lg-4">
                                             <label for="storage" class="form-label">Internal Storage</label>
-                                            <select class="form-control" id="storage" name="storage" >
+                                            <select class="form-control" id="storage" name="storage">
                                                 <option value="">Select Storage</option>
-                                                <option value="64GB">64GB</option>
-                                                <option value="128GB">128GB</option>
-                                                <option value="256GB">256GB</option>
-                                                <option value="512GB">512GB</option>
-                                                <option value="1TB">1TB</option>
+                                                <%for(let i=0; i<storage.length; i++){%>
+                                                  <option value="<%= storage[i]._id %>"><%= storage[i].value%></option>
+                                                  <%}%>
                                             </select>
                                         </div>
                                         <div class="col-lg-4">
@@ -714,7 +713,7 @@
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
      <!-- App Javascript (Require in all Page) -->
      <script src="/assets/js/app.js"></script>
-     
+     <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.2.0/dist/js/coreui.bundle.min.js" integrity="sha384-JdRP5GRWP6APhoVS1OM/pOKMWe7q9q8hpl+J2nhCfVJKoS+yzGtELC5REIYKrymn" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
      <script>
          document.addEventListener('DOMContentLoaded', function() {

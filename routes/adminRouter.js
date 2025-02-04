@@ -7,13 +7,13 @@ const upload = require("../middlewares/multer")
 const categoryController = require("../controllers/admin/categoryController")
 const productController = require("../controllers/admin/productController")
 const brandController = require("../controllers/admin/BrandController")
+const variantController = require("../controllers/admin/variantController")
 
 // router.get("/pageerror",adminController.pageerror)
 router.get("/login",adminController.loadLogin)
 router.post("/login",adminController.login)
 router.get("/",adminAuth,adminController.loadDashboard)
 router.get("/logout", adminController.logout)
-
 // Customer mangement
 router.get("/users",adminAuth,customerController.customerInfo)
 router.get("/blockCustomer",adminAuth,customerController.customerBlocked)
@@ -45,5 +45,8 @@ router.get('/editProduct/:id', adminAuth,productController.getEditProduct);
 router.put('/editProduct/:productId',upload.single("productImage"),adminAuth,productController.updateImage);
 router.get("/viewProducts/:id",adminAuth,productController.viewProduct)
 router.put("/updateForm/:productId",adminAuth,productController.updateForm)
-
+// Variant Management
+router.get("/getVariant",adminAuth,variantController.getVariantList)
+router.get("/getAddVariant",adminAuth,variantController.getAddVariant)
+router.post("/addVariant",adminAuth,variantController.addVariants)
 module.exports = router
