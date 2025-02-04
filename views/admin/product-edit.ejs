@@ -905,8 +905,15 @@ cropButtons.forEach((button, index) => {
             });
 
             const result = await response.json();
+           
+            console.log("image result",result)
+
             if (result.message) {
-                swal('Success', 'Image updated successfully!', 'success');
+               Swal.fire({
+                    title: "Image Update!",
+                    text: result.message,
+                    icon: "success"
+               });
             } else {
                 throw new Error(result.error || 'Failed to update image');
             }
@@ -987,7 +994,7 @@ productForm.addEventListener("submit", async function(event) {
     submitButton.disabled = true;
 
     try {
-        const response = await fetch(`/admin/update/${productId}`, {
+        const response = await fetch(`/admin/updateForm/${productId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

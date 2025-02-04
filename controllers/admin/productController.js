@@ -231,14 +231,14 @@ const updateImage = async (req,res)=>{
         await productData.save()
         console.log("2")
 
-        res.json({
+        return res.json({
             message:"Image updated successfully",
             Image:result.secure_url
         })
 
     } catch (error) {
         console.error("Error updating image:",error)
-        res.status(500).json({
+        return res.status(500).json({
             error: "Failed to update image",
             details:error.message
         })
