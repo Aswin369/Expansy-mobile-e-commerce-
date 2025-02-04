@@ -245,7 +245,52 @@ const updateImage = async (req,res)=>{
     }
 }
 
+const updateForm = async (req,res)=>{
+    try {
+        const id = req.params.productId
+        if(!id){
+            return res.status(400).json({message:"Product id not found"})
+        }
 
+        const {name,
+            description,
+            quantity,
+            RAM,
+            processor,
+            storage,
+            brand,
+            category,
+            regularPrice,
+            salePrice,
+            color} = req.body
+
+            console.log("request body is ", req.body)
+
+        const productData = await Product.updateOne({_id:id},{
+            $set:{productName:name,
+                description:description,
+                brand:brand,
+                category:category,
+                regularPrice:regularPrice,
+                salePrice:salePrice,
+                quantity:quantity,
+                color:color,
+                ram:RAM,
+                storage:storage,
+                processor:processor
+            }})
+            
+            return res.json({
+                message:"Product updated successfully"
+            })
+
+    } catch (error) {
+        console.error("error form validate form",error)
+        return res.status(500).json({
+            message:"Internal server error"
+        })
+    }
+}
 
 const viewProduct = async (req, res) => {
     try {
@@ -282,5 +327,6 @@ module.exports = {
     UnBlockProduct,
     updateImage,
     getEditProduct,
-    viewProduct
+    viewProduct,
+    updateForm
 }

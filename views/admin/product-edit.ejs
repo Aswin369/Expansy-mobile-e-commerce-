@@ -750,7 +750,7 @@
                                    <!-- Form Actions -->
                                    <div class="row justify-content-end g-2">
                                        <div class="col-lg-2">
-                                           <button type="submit" class="btn btn-primary w-100">Update Product</button>
+                                           <button type="submit" class="btn btn-primary w-100" id="submit-button">Update Product</button>
                                        </div>
                                        <div class="col-lg-2">
                                            <button type="reset" class="btn btn-outline-secondary w-100">Cancel</button>
@@ -858,7 +858,9 @@ imageInputs.forEach((input, index) => {
 
 // Crop Button Click Event
 cropButtons.forEach((button, index) => {
-    button.addEventListener('click', function() {
+     console.log(button)
+    button.addEventListener('click', function(event) {
+     event.preventDefault();
         currentImageIndex = index;
         cropModal.style.display = 'flex';
         imageToCrop.src = imagePreviews[index].src;
@@ -876,7 +878,8 @@ cropButtons.forEach((button, index) => {
 });
 
 // Save Crop Button
-     saveCropButton.addEventListener('click', async function() {
+     saveCropButton.addEventListener('click', async function(event) {
+          event.preventDefault();
     if (cropper) {
         const canvas = cropper.getCroppedCanvas({
             width: 800,
@@ -913,7 +916,7 @@ cropButtons.forEach((button, index) => {
                     title: "Image Update!",
                     text: result.message,
                     icon: "success"
-               });
+               })
             } else {
                 throw new Error(result.error || 'Failed to update image');
             }
@@ -964,7 +967,7 @@ productForm.addEventListener("submit", async function(event) {
     const quantity = parseInt(document.getElementById("quantity").value);
     const RAM = document.getElementById("RAM").value;
     const processor = document.getElementById("processor").value;
-    const displaySize = document.getElementById("displaySize").value;
+    const color = document.getElementById("color").value.trim();
     const storage = document.getElementById("storage").value;
 
     // Basic Validation
@@ -979,8 +982,8 @@ productForm.addEventListener("submit", async function(event) {
     else if (parseFloat(salePrice) > regularPrice) errorMessage = "Sale price cannot be greater than regular price.";
     else if (!RAM) errorMessage = "RAM specification is required.";
     else if (!processor) errorMessage = "Processor specification is required.";
-    else if (!displaySize) errorMessage = "Display size specification is required.";
     else if (!storage) errorMessage = "Storage specification is required.";
+    else if (!color) errorMessage = "color is required.";
 
     if (errorMessage) {
         swal('Validation Error', errorMessage, 'error');
@@ -988,7 +991,7 @@ productForm.addEventListener("submit", async function(event) {
     }
 
     // Button Loading State
-    const submitButton = document.querySelector('.submit-button');
+    const submitButton = document.getElementById('submit-button');
     const originalButtonText = submitButton.textContent;
     submitButton.textContent = 'Updating Product...';
     submitButton.disabled = true;
@@ -1005,23 +1008,26 @@ productForm.addEventListener("submit", async function(event) {
                 quantity,
                 RAM,
                 processor,
-                displaySize,
                 storage,
                 brand,
                 category,
                 regularPrice,
                 salePrice,
-                productId
+                productId,
+                color
             })
         });
 
-        const result = await response.json();
-        if (result.message) {
-            swal('Success', 'Product updated successfully!', 'success').then(() => {
-                window.location.href = "/admin/products";
-            });
+        const done = await response.json();
+        console.log("ksdhfhfdhh",done)
+        if (done.message) {
+          Swal.fire({
+                    title: "Product Update",
+                    text: done.message,
+                    icon: "success"
+               })
         } else {
-            throw new Error(result.error || 'Failed to update product');
+            throw new Error(done.error || 'Failed to update product');
         }
     } catch (error) {
         console.error('Error:', error);
