@@ -69,7 +69,7 @@ const addProducts = async (req, res) => {
                 }
             }
 
-console.log("Images ",imagePaths);
+// console.log("Images ",imagePaths);
 
 
         const newProduct = new Product({
@@ -89,7 +89,7 @@ console.log("Images ",imagePaths);
             productImage: imagePaths
         });
 
-        console.log("Now product detail checking properly",newProduct)
+        // console.log("Now product detail checking properly",newProduct)
         
         await newProduct.save();
         
@@ -119,7 +119,7 @@ const getAllProducts = async (req, res) => {
         const search = req.query.search ? req.query.search.trim() : "";
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
-        console.log("2");
+        // console.log("2");
         const message = req.message
 
         const productData = await Product.find({
@@ -131,18 +131,18 @@ const getAllProducts = async (req, res) => {
         .populate("brand")
         .exec();
 
-        console.log("this is product data", productData)
+        // console.log("this is product data", productData)
         // console.log("Page is not rendering");
 
         const count = await Product.countDocuments({
             productName: { $regex: new RegExp(".*" + search + ".*", "i") } 
         });
 
-        console.log("3")
+        // console.log("3")
         const category = await Category.find({ isListed: true })
         const brand = await Brand.find({ isBlocked: false })
-        console.log("this is brand",brand)
-        console.log("category", category )
+        // console.log("this is brand",brand)
+        // console.log("category", category )
       
         res.render("products", {
             data: productData,
@@ -154,7 +154,7 @@ const getAllProducts = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("page error");
+        // console.log("page error");
         console.error("Error in getAllProducts:", error);
         res.redirect("/pagerror");
     }
@@ -208,90 +208,44 @@ const getEditProduct = async (req, res) => {
     }
 };
 
-const updateProduct = async (req, res) => {
+const updateImage = async (req,res)=>{
     try {
-        const productId = req.params.id;
-        const {productName,category,
-            brand,
-            quantity,
-            regularPrice,
-            salePrice,
-            description,
-            ram,
-            storage,
-            processor,
-            color
-        } = req.body;
-
-       
-        if (!productName || !category || !brand || !quantity || !regularPrice) {
-            return res.status(400).json({
-                success: false,
-                message: 'Missing required fields'
-            });
+        const id = req.params.productId
+        const imageIndex = req.body.index;
+        
+        if(!req.file){
+            return res.status(400).json({error: "No image file provided"})
         }
 
-        
-        let productImages = [];
-        if (req.files) {
-            for (let i = 0; i < Object.keys(req.files).length; i++) {
-                const imageKey = `productImage-${i}`;
-                if (req.files[imageKey]) {
-                    
-                    const imageUrl = await uploadImage(req.files[imageKey]);
-                    productImages.push(imageUrl);
-                }
-            }
+        const productData = await Product.findById({_id:id})
+        if(!productData){
+            return res.status(404).json({error:"Product not found"})
         }
-
         
-        const existingProduct = await Product.findById(productId);
-        if (!existingProduct) {
-            return res.status(404).json({
-                success: false,
-                message: 'Product not found'
-            });
-        }
+        const b64 = Buffer.from(req.file.buffer).toString("base64");
+        let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+        const result = await handleUpload(dataURI);
+        console.log("result image is ",result )
+        productData.productImage[imageIndex] = result.secure_url
+        console.log("1")
+        await productData.save()
+        console.log("2")
 
-        
-        const finalImages = productImages.length > 0 ? productImages : existingProduct.productImage;
-
-        
-        const updatedProduct = await Product.findByIdAndUpdate(
-            productId,
-            {
-                productName,
-                category,
-                brand,
-                quantity,
-                regularPrice,
-                salePrice,
-                description,
-                ram,
-                storage,
-                processor,
-                color,
-                productImage: finalImages
-            },
-            { new: true }
-        );
-
-        
-        return res.status(200).json({
-            success: true,
-            message: 'Product updated successfully',
-            product: updatedProduct,
-            redirectUrl: '/admin/products' 
-        });
+        return res.json({
+            message:"Image updated successfully",
+            Image:result.secure_url
+        })
 
     } catch (error) {
-        console.error('Update product error:', error);
+        console.error("Error updating image:",error)
         return res.status(500).json({
-            success: false,
-            message: 'Failed to update product'
-        });
+            error: "Failed to update image",
+            details:error.message
+        })
     }
-};
+}
+
+
 
 const viewProduct = async (req, res) => {
     try {
@@ -306,8 +260,8 @@ const viewProduct = async (req, res) => {
         const brandcategory = await Product.findById(id)
             .populate('brand', 'brandName')
             .populate('category', 'name');
-        console.log(productDetails);
-        console.log("brand adn vategory",brandcategory)
+        // console.log(productDetails);
+        // console.log("brand adn vategory",brandcategory)
         res.render("product-details", {
             productDetails,
             brandcategory
@@ -326,7 +280,7 @@ module.exports = {
     getAllProducts,
     blockProduct,
     UnBlockProduct,
-    updateProduct,
+    updateImage,
     getEditProduct,
     viewProduct
 }

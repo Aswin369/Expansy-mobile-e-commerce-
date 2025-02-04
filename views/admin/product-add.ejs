@@ -750,13 +750,6 @@
         const brand = document.getElementById('brand').value;
         const category = document.getElementById('product-categories').value;
         const stocks = document.getElementById('add-stocks').value.trim(); // Added stocks validation
-     console.log("brand",brand);
-     console.log("category",category);
-     console.log("processor",processor);
-     console.log("description",description);
-     console.log("ram",ram);
-     console.log("storage",storage);
-
      
         try {
             // Add stocks validation
@@ -866,17 +859,7 @@
                 }
             }
 
-          //   Show loading state
-          //   await Swal.fire({
-          //       title: 'Uploading...',
-          //       text: 'Please wait while we process your request',
-          //       allowOutsideClick: false,
-          //       showConfirmButton: false,
-          //       willOpen: () => {
-          //           Swal.showLoading();
-          //       }
-          //   });
-            console.log("dajkhsdjks")
+          
             
             const response = await fetch('/admin/addProducts', {
                 method: 'POST',
