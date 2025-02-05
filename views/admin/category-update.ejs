@@ -578,7 +578,7 @@
 
                                    <div class="card-body">
                                         <!-- File Upload -->
-                                        <form method="post" action="/admin/editCategory/<%=category._id%>"
+                                        <form method="POST" action="/admin/editCategory/<%= category._id%>"
                                              onsubmit="return handleFormSubmit(event)" enctype="multipart/form-data">
 
                                              <div class="fallback">
@@ -589,8 +589,7 @@
                                              </div>
 
                                              <!-- Image preview container -->
-                                             <div id="cropContainer"
-                                                  style ="<%= category.image ? 'display: block;' : 'display: none;' %>">
+                                             <div id="cropContainer"style ="<%= category.image ? 'display: block;' : 'display: none;' %>">
                                                   <img id="imagePreview"
                                                        src="<%= category.image ? category.image : '' %>"
                                                        alt="Preview Image" style="max-width: 100%; display: block;" />
@@ -617,7 +616,7 @@
                                                                  <div class="mb-3">
                                                                       <label for="category-title"
                                                                            class="form-label">Category Name</label>
-                                                                      <input type="text" value="<%=category.name%>"
+                                                                      <input type="text" value="<%= category.name%>"
                                                                            name="name" id="category-title"
                                                                            class="form-control"
                                                                            placeholder="Enter Title">
@@ -630,12 +629,7 @@
                                                                  <div class="mb-3">
                                                                       <label for="description"
                                                                            class="form-label">Description</label>
-                                                                      <textarea name="description"
-                                                                           class="form-control bg-light-subtle"
-                                                                           id="description" rows="7"
-                                                                           placeholder="Type description">
-                                                                   <%=category.description%>
-                                                               </textarea>
+                                                                      <textarea name="description" class="form-control bg-light-subtle" id="description" rows="7" placeholder="Type description"> <%= category.description%></textarea>
                                                                       <small id="description-error"
                                                                            class="text-danger error-message"
                                                                            style="display: none;"></small>
@@ -692,183 +686,165 @@
                </div>
 
                <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+               <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
                <script>
                     // Handle form submission
                     function handleFormSubmit(event) {
-                         event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
+    
+    const form = event.target;
+    const categoryId = form.getAttribute('action').split('/').pop();
+    const name = document.getElementsByName("name")[0].value.trim();
+    const description = document.getElementById("description").value.trim();
+    const croppedImageData = document.getElementById("croppedImageData").value;
 
-                         if (!validateForm()) {
-                              return; // Stop if validation fails
-                         }
+    // Basic validation
+    if (!name || name.length < 3) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            text: 'Category name must be at least 3 characters long'
+        });
+        return false;
+    }
 
-                         const name = document.getElementsByName("name")[0].value.trim();
-                         const description = document.getElementById("description").value.trim();
-                         const imageInput = document.getElementById("imageInput"); // Changed from "image" to "imageInput"
-                         const formData = new FormData();
+    if (!description || description.length < 10) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            text: 'Description must be at least 10 characters long'
+        });
+        return false;
+    }
 
-                         formData.append("name", name);
-                         formData.append("description", description);
+    const formData = new FormData();
+    formData.append("categoryId", categoryId);
+    formData.append("name", name);
+    formData.append("description", description);
 
-                         // Append the cropped image if available
-                         const croppedImageData = document.getElementById("croppedImageData").value;
+console.log("name",name)
+console.log("description",description);
 
-                         if (croppedImageData) {
-                              formData.append("croppedImage", croppedImageData);
-                         } else if (imageInput.files.length > 0) {
-                              formData.append("image", imageInput.files[0]);
-                         }
 
-                         console.log(name);
-                         console.log(description);
-                         console.log(imageInput.files[0]); // Correctly log the first file
+    // Handle image data
+    if (croppedImageData && croppedImageData.startsWith('data:image')) {
+        // Convert base64 to blob
+        fetch(croppedImageData)
+            .then(res => res.blob())
+            .then(blob => {
+                formData.append("image", blob, "cropped-image.jpg");
+                submitForm(formData, categoryId);
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to process image. Please try again.'
+                });
+            });
+    } else {
+        const imageInput = document.getElementById("imageInput");
+        if (imageInput.files.length > 0) {
+            formData.append("image", imageInput.files[0]);
+        }
+        submitForm(formData, categoryId);
+    }
+}
 
-                         fetch("/admin/addCategory", {
-                              method: "POST",
-                              body: formData,
-                         })
-                              .then((response) => {
-                                   if (!response.ok) {
-                                        return response.json().then((err) => {
-                                             throw new Error(err.error || "Unknown error");
-                                        });
-                                   }
-                                   return response.json();
-                              })
-                              .then((data) => {
-                                   Swal.fire({
-                                        icon: "success",
-                                        title: "Success",
-                                        text: data.message,
-                                   }).then(() => {
-                                        location.reload(); // Reload the page after success
-                                   });
-                              })
-                              .catch((error) => {
-                                   if (error.message === "Category already exists") {
-                                        Swal.fire({
-                                             icon: "error",
-                                             title: "Oops",
-                                             text: "Category already exists",
-                                        });
-                                   } else {
-                                        Swal.fire({
-                                             icon: "error",
-                                             title: "Oops",
-                                             text: error.message || "An error occurred while adding the category",
-                                        });
-                                   }
-                              });
-                    }
+async function submitForm(formData, categoryId) {
+    // Show loading message
+    Swal.fire({
+        title: 'Processing',
+        text: 'Please wait...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
-                    // Form validation
-                    function validateForm() {
-                         clearErrorMessage();
-                         const name = document.getElementsByName("name")[0].value.trim();
-                         const description = document.getElementById("description").value.trim();
-                         let isValid = true;
+    try {
+        const response = await fetch(`/admin/editCategory/${categoryId}`, {
+            method: "POST",
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: data.message
+        }).then(() => {
+            window.location.href = '/admin/category';
+        });
 
-                         // Validate Name
-                         if (name === "") {
-                              displayErrorMessage("name-error", "Please enter a name");
-                              isValid = false;
-                         } else if (!/^[a-zA-Z\s]+$/.test(name)) {
-                              displayErrorMessage(
-                                   "name-error",
-                                   "Category name should contain only alphabetic characters"
-                              );
-                              isValid = false;
-                         }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to update category'
+        });
+    }
+}
 
-                         // Validate Description
-                         if (description === "") {
-                              displayErrorMessage("description-error", "Please enter a description");
-                              isValid = false;
-                         }
 
-                         return isValid;
-                    }
+// Image cropper initialization
+document.addEventListener("DOMContentLoaded", function () {
+    const imageInput = document.getElementById("imageInput");
+    const imagePreview = document.getElementById("imagePreview");
+    const cropContainer = document.getElementById("cropContainer");
+    const cropButton = document.getElementById("cropButton");
+    const croppedImageData = document.getElementById("croppedImageData");
+    let cropper;
 
-                    // Display error message
-                    function displayErrorMessage(elementId, message) {
-                         const errorElement = document.getElementById(elementId);
-                         errorElement.innerText = message;
-                         errorElement.style.display = "block";
-                    }
+    imageInput.addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (!file) return;
 
-                    // Clear error message
-                    function clearErrorMessage() {
-                         const errorElements = document.getElementsByClassName("error-message");
-                         Array.from(errorElements).forEach((element) => {
-                              element.innerText = "";
-                              element.style.display = "none";
-                         });
-                    }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            imagePreview.src = e.target.result;
+            cropContainer.style.display = "block";
 
-                    // Cropper.js Integration
-                    document.addEventListener("DOMContentLoaded", function () {
-                         const imageInput = document.getElementById("imageInput");
-                         const imagePreview = document.getElementById("imagePreview");
-                         const cropContainer = document.getElementById("cropContainer");
-                         const cropButton = document.getElementById("cropButton");
-                         const croppedImageData = document.getElementById("croppedImageData");
-                         let cropper;
+            if (cropper) {
+                cropper.destroy();
+            }
 
-                         imageInput.addEventListener("change", function (event) {
-                              const file = event.target.files[0];
-                              if (!file) return;
+            cropper = new Cropper(imagePreview, {
+                aspectRatio: 1,
+                viewMode: 2,
+                scalable: true,
+                zoomable: true,
+            });
+        };
+        reader.readAsDataURL(file);
+    });
 
-                              const reader = new FileReader();
-                              reader.onload = function (e) {
-                                   imagePreview.src = e.target.result;
-                                   cropContainer.style.display = "block";
+    cropButton.addEventListener("click", function () {
+        if (cropper) {
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300,
+            });
 
-                                   // Destroy any existing cropper instance to avoid conflicts
-                                   if (cropper) {
-                                        cropper.destroy();
-                                   }
-
-                                   // Initialize the cropper instance
-                                   cropper = new Cropper(imagePreview, {
-                                        aspectRatio: 1,
-                                        viewMode: 2,
-                                        scalable: true,
-                                        zoomable: true,
-                                   });
-                              };
-                              reader.readAsDataURL(file);
-                         });
-
-                         cropButton.addEventListener("click", function () {
-                              if (cropper) {
-                                   const canvas = cropper.getCroppedCanvas({
-                                        width: 300,
-                                        height: 300,
-                                   });
-
-                                   // Convert canvas to a base64 string
-                                   croppedImageData.value = canvas.toDataURL("image/jpeg");
-
-                                   // Hide crop container after cropping
-                                   cropContainer.style.display = "none";
-
-                                   alert("Image cropped and ready for upload!");
-                              }
-                         });
-
-                         document.getElementById("imageInput").addEventListener("change", function (event) {
-                              const file = event.target.files[0];
-                              if (file) {
-                                   const reader = new FileReader();
-                                   reader.onload = function (e) {
-                                        document.getElementById("imagePreview").src = e.target.result;
-                                        document.getElementById("cropContainer").style.display = "block";
-                                   };
-                                   reader.readAsDataURL(file);
-                              }
-                         });
-
-                    });
+            croppedImageData.value = canvas.toDataURL("image/jpeg");
+            imagePreview.src = croppedImageData.value;
+            cropper.destroy();
+            cropper = null;
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Image cropped successfully'
+            });
+        }
+    });
+});
                </script>
 
 

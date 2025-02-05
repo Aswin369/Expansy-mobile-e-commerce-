@@ -505,8 +505,8 @@
                                                             <span class="fw-medium"><%=data[i].productName%></span>
                                                         </div>
                                                     </td>
-                                                    <td><%= data[i].brand.brandName %></td>
-                                                    <td><%= data[i].category.name %></td>
+                                                    <td><%= data[i].brand ? data[i].brand.brandName : 'No Brand' %></td>
+                                                    <td><%= data[i].category ? data[i].category.name : 'No Category' %></td>
                                                     <td>
                                                         <div class="rounded" style="width: 50px; height: 50px;">
                                                             <img src="<%= data[i].productImage[0]%>" alt="Product" class="img-fluid rounded">

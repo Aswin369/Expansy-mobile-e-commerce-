@@ -117,8 +117,8 @@ const getListCategory = async (req, res) => {
   
 const getEditCategory = async (req,res)=>{
     try {
-        const id = req.query.id
-       
+        const id = req.params.id
+      
         const category = await Category.findOne({_id:id})
         res.render("category-update", {category:category})
     } catch (error) {
@@ -127,27 +127,41 @@ const getEditCategory = async (req,res)=>{
     }
 }
 
-const editCategory = async (req,res)=>{
-    try {
-        const id = req.params.id
-        const {name, description, croppedImage} = req.body
-        
-        const updateCategory = await Category.findByIdAndUpdate(id,{
-            name:name,
-            description:description,
-            croppedImage:croppedImage
-        },{new:true})
+const updateCategory = async (req, res) => {
+  try {
+      const id = req.params.id;
+      const { name, description } = req.body;
+      const category = await Category.findById(id);
+      if (!category) {
+          return res.status(404).json({ message: "Category not found" });
+      }
 
-        if(updateCategory){
-            res.redirect("/admin/category")
-        }else{
-            res.status(404).json({error:"Category not found"})
-        }
-    } catch (error) {
-        console.error("Category update error",error)
-        res.status(500).json({error:"Internal server error"})
+      if(!req.file){
+        return res.status(404).json({ message: "Image not found" });
+      }
+
+      if (req.file) {
+        const b64 = Buffer.from(req.file.buffer).toString("base64");
+        let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+        const cldRes = await handleUpload(dataURI);
+        console.log(cldRes)
+        category.image = cldRes.secure_url; 
     }
-}
+
+      category.name = name || category.name;
+      category.description = description || category.description;
+      
+      await category.save();
+      
+      
+      return res.json({message:"Category updated successfull"});
+
+  } catch (error) {
+      console.error("Category update error:", error);
+      res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
 module.exports = {
     categoryInfo,
@@ -156,5 +170,5 @@ module.exports = {
     getListCategory,
     getUnlistCategory,
     getEditCategory,
-    editCategory
+    updateCategory
 }

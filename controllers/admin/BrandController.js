@@ -43,7 +43,9 @@ const addBrand = async (req, res) => {
             const brand = req.body.brandName;
             // console.log(brand)
             const findBrand = await Brand.findOne({ brandName: brand });
-    
+            
+            console.log("Findsafjksdjk",findBrand)
+
             if (findBrand) {
                 return res.status(400).json({ message: "Brand already exists" });
             }

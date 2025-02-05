@@ -26,8 +26,8 @@ router.post("/addCategory", upload.single('file'),adminAuth, categoryController.
 router.get("/addCategory", adminAuth,categoryController.loadAddCategory)
 router.get('/listCategory', adminAuth,categoryController.getListCategory);
 router.get('/unlistCategory', adminAuth, categoryController.getUnlistCategory);
-router.get("/editCategory",adminAuth, categoryController.getEditCategory)
-router.post("/editCategory/:id", adminAuth, categoryController.editCategory)
+router.get("/editCategory/:id", adminAuth, categoryController.getEditCategory)
+router.post("/editCategory/:id",upload.single('image'),adminAuth,categoryController.updateCategory)
 // Brand Management
 router.get("/brands", adminAuth, brandController.getBrandPage);
 router.post("/addBrand",upload.single('brandImage'),adminAuth, brandController.addBrand)

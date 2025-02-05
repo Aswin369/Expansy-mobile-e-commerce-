@@ -141,12 +141,10 @@ const addProducts = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
     try {
-        
-
         const search = req.query.search ? req.query.search.trim() : "";
         const page = parseInt(req.query.page) || 1;
         const limit = 4;
-        // console.log("2");
+       
         const message = req.message
 
         const productData = await Product.find({
@@ -158,18 +156,16 @@ const getAllProducts = async (req, res) => {
         .populate("brand")
         .exec();
 
-        // console.log("this is product data", productData)
-        // console.log("Page is not rendering");
+        console.log("Fetched Product Data:", JSON.stringify(productData, null, 2));
 
         const count = await Product.countDocuments({
             productName: { $regex: new RegExp(".*" + search + ".*", "i") } 
         });
 
-        // console.log("3")
+      
         const category = await Category.find({ isListed: true })
         const brand = await Brand.find({ isBlocked: false })
-        // console.log("this is brand",brand)
-        // console.log("category", category )
+
       
         res.render("products", {
             data: productData,
@@ -181,7 +177,7 @@ const getAllProducts = async (req, res) => {
         });
 
     } catch (error) {
-        // console.log("page error");
+
         console.error("Error in getAllProducts:", error);
         res.redirect("/pagerror");
     }
