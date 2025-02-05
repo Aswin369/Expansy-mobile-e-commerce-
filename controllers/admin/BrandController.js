@@ -8,6 +8,7 @@ const getBrandPage = async (req, res) => {
     try {
         
         const page = parseInt(req.query.page) || 1; 
+        console.log("resdjfajkfd", req.query.page)
         const limit = 4;
         const skip = (page - 1) * limit;
 

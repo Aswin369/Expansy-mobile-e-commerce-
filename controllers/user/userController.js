@@ -7,16 +7,38 @@ const productSchema = require("../../models/productSchema")
 const loadHomepage = async (req, res) => {
     try {
         const user = req.session.user;
-        const products = await productSchema.find({ isBlocked: false }); // Await the result
-        console.log(products); // Check if it prints an array
+        const page = parseInt(req.query.page) || 1;
+        const limit = 4;
+        const skip = (page - 1) * limit;
+
+        console.log("page number", page)
+    
+        const products = await productSchema.find({ isBlocked: false })
+            .sort({ createdAt: 1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalProducts = await productSchema.countDocuments({ isBlocked: false });
+        const totalPages = Math.ceil(totalProducts / limit);
 
         if (user) {
             const userData = await User.findOne({ _id: user._id });
             
-            res.render("home", { user: userData, product: products }); // Pass products to the view
-            console.log("1111111111111111111",user)
+            res.render("home", { 
+                user: userData, 
+                product: products,
+                currentPage: page,
+                totalProducts: totalProducts,
+                totalPages: totalPages
+            }); 
         } else {
-            res.render("home", { user: null, product: products }); // Pass products to the view
+            res.render("home", { 
+                user: null, 
+                product: products,
+                currentPage: page,
+                totalProducts: totalProducts,
+                totalPages: totalPages
+            }); 
         }
     } catch (error) {
         console.error("Error loading home page:", error);
