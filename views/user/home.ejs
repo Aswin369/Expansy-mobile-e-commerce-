@@ -428,7 +428,7 @@
 
 						<div class="block2-txt flex-w flex-t p-t-14">
 							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+								<a href="/productDetail/<%= pro._id%>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
 									<%=pro.productName %>
 								</a>
 
@@ -467,6 +467,78 @@
 		
 		</div>
 	</section>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script>
+		// Add event listeners when the document is loaded
+		document.addEventListener('DOMContentLoaded', function() {
+			// Get all product containers
+			const productContainers = document.querySelectorAll('.block2');
+	
+			productContainers.forEach(container => {
+				// Get the product ID from the detail link
+				const productDetailLink = container.querySelector('.js-name-b2');
+				if (!productDetailLink) {
+					Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Product detail link not found'
+					});
+					return;
+				}
+	
+				const productId = productDetailLink.href.split('/').pop();
+				if (!productId) {
+					Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Could not extract product ID'
+					});
+					return;
+				}
+	
+				// Add click handler to product image
+				const productImage = container.querySelector('.block2-pic img');
+				if (productImage) {
+					productImage.style.cursor = 'pointer';
+					productImage.addEventListener('click', () => handleProductClick(productId));
+				}
+	
+				// Add click handler to product name
+				productDetailLink.addEventListener('click', function(e) {
+					e.preventDefault();
+					handleProductClick(productId);
+				});
+			});
+	
+			async function handleProductClick(productId) {
+    try {
+        // Show loading state
+        Swal.fire({
+            title: 'Loading...',
+            text: 'Please wait while we process your request',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Simply redirect to the product detail page
+        window.location.href = `/productDetailPage/${productId}`;
+    } catch (error) {
+        // Handle error
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong'
+        });
+        console.error(error);
+    }
+}
+
+		});
+	</script>
+	
 
 <%-include("../../views/partials/user/footer")%>
 	

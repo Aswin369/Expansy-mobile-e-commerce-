@@ -2,6 +2,9 @@ const express = require("express")
 const router = express.Router()
 const userController = require("../controllers/user/userController")
 const passport = require("../config/passport.js")
+const {userAuth} = require("../middlewares/auth")
+const productController = require("../controllers/user/productDetailController.js")
+
 
 router.get("/",userController.loadHomepage)
 router.get("/signup",userController.loadsignup)
@@ -17,6 +20,8 @@ router.get("/auth/google",passport.authenticate('google',{scope:["profile","emai
 router.get("/auth/google/callback",passport.authenticate("google",{failureRedirect:"/signup"}), (req, res)=>{
     res.redirect("/")
 })
+
+router.get("/productDetailPage/:id",userAuth,productController.productDetail)
 
 // router.use("*",userController.loadPageNotFound)
 

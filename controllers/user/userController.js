@@ -12,7 +12,9 @@ const loadHomepage = async (req, res) => {
 
         if (user) {
             const userData = await User.findOne({ _id: user._id });
+            
             res.render("home", { user: userData, product: products }); // Pass products to the view
+            console.log("1111111111111111111",user)
         } else {
             res.render("home", { user: null, product: products }); // Pass products to the view
         }
