@@ -1285,33 +1285,43 @@
                                                        </tr>
                                                   </thead>
                                                   <tbody>
+                                                       <% ramData.forEach((variantRam, index)=>{%>
                                                        <tr>
                                                             <td>
                                                                  <div >
-                                                                     1
+                                                                     <%= index+1%>
                                                                  </div>
                                                             </td>
-                                                            <td>1GB</td>
-                                                            <td>500</td>
+                                                            <td><%= variantRam.value%></td>
+                                                            <td><%= variantRam.price%></td>
                                                             <td>
+                                                                 <%if(variantRam.isBlocked){%>
                                                                 <span class="badge bg-success">Enabled</span>
-                                                                
+                                                                <%}else{%>
                                                                 <span class="badge bg-danger">Disabled</span>
-                                                                
+                                                                <%}%>
                                                             <td>
                                                                  <div class="d-flex gap-2">
-                                                                      <button class=" btn btn-warning">
-                                                                        <a href="" style="text-decoration: none;" class="text-white">Delete</a>
+
+                                                                      <button class=" btn btn-warning" id="sweetalert-params">
+                                                                        <a href="/admin/deleteVariant/<%= variantRam._id%>" style="text-decoration: none;" class="text-white">Delete</a>
                                                                       </button>
-                                                                      <button class=" btn btn-danger">
-                                                                        <a href="" style="text-decoration: none;" class="text-white">Block</a>
-                                                                      </button>
-                                                                      <button class=" btn btn-success">
-                                                                        <a href="" style="text-decoration: none;" class="text-white">unblock</a>
-                                                                      </button>
+                                                                      <% if (variantRam.isBlocked) { %>
+                                                                          
+                                                                           <button class="btn btn-success">
+                                                                               <a href="/admin/UnBlockRam/<%= variantRam._id %>" style="text-decoration: none;" class="text-white">Unblock</a>
+                                                                           </button>
+                                                                       <% } else { %>
+                                                                           
+                                                                           <button class="btn btn-danger">
+                                                                               <a href="/admin/blockedRam/<%= variantRam._id %>" style="text-decoration: none;" class="text-white">Block</a>
+                                                                           </button>
+                                                                       <% } %>
+                                                                       
                                                                  </div>
                                                             </td>
                                                        </tr>
+                                                       <%})%>
                                                   </tbody>
                                              </table>
                                         </div>
@@ -1362,34 +1372,41 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                             <% StorageData.forEach((storage, index)=>{%>
                                                 <tr>
                                                     <td>
                                                         <div >
-                                                            1
+                                                            <%= index+1%>
                                                         </div>
                                                     </td>
-                                                    <td>1GB</td>
-                                                    <td>500rs</td>
+                                                    <td><%= storage.value%></td>
+                                                    <td><%= storage.price%></td>
                                                     <td>
+                                                       <%if(storage.isBlocked){%>
                                                         <span class="badge bg-success">Enabled</span>
-                                                                
+                                                            <%}else{%>
                                                         <span class="badge bg-danger">Disabled</span>
+                                                       <%}%> 
                                                     </td>
                                                     <td>
                                                         <div class="d-flex gap-2">
-                                                            <button class=" btn btn-warning">
-                                                                <a href="" style="text-decoration: none;" class="text-white">Delete</a>
-                                                              </button>
+                                                                 <button class=" btn btn-warning">
+                                                                  <a href="/admin/deleteStorage/<%= storage._id%>" style="text-decoration: none;" class="text-white">Delete</a>
+                                                                 </button>
+                                                                 <%if(storage.isBlocked){%>
                                                               <button class=" btn btn-danger">
-                                                                <a href="" style="text-decoration: none;" class="text-white">Block</a>
+                                                                <a href="/admin/unBlockStorage/<%= storage._id %>" style="text-decoration: none;" class="text-white">Unblock</a>
                                                               </button>
+                                                              <%}else{%>
                                                               <button class=" btn btn-success">
-                                                                <a href="" style="text-decoration: none;" class="text-white">Unblock</a>
+                                                                <a href="/admin/blockedStorage/<%= storage._id %>" style="text-decoration: none;" class="text-white">Block</a>
                                                               </button>
+                                                              <%}%>
                                                         </div>
                                                     </td>
                                                 </tr>
                                             </tbody>
+                                            <%})%>
                                         </table>
                                     </div>
                                     <!-- end table-responsive -->
@@ -1435,6 +1452,8 @@
 
      <!-- App Javascript (Require in all Page) -->
      <script src="/assets/js/app.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 </body>
 
