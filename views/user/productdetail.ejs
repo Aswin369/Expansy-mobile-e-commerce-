@@ -58,6 +58,37 @@
             text-decoration: line-through;
             color: #6c757d;
         }
+
+		/* Basic styles */
+.wrap-pic-w {
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.wrap-pic-w img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Circular Zoom Lens */
+.zoom-lens {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    display: none;
+    background-repeat: no-repeat;
+    z-index: 10;
+}
+
+
 </style>
 </head>
 <body class="animsition">
@@ -362,7 +393,8 @@
 								<% productData.productImage.forEach((image) => { %>
 									<div class="item-slick3" data-thumb="<%= image %>">
 										<div class="wrap-pic-w pos-relative">
-											<img src="<%= image %>" alt="IMG-PRODUCT">
+											<img src="<%= image %>" alt="IMG-PRODUCT" class="product-image">
+											<div class="zoom-lens"></div>
 											<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="<%= image %>">
 												<i class="fa fa-expand"></i>
 											</a>
@@ -370,6 +402,7 @@
 									</div>
 								<% }); %>
 							</div>
+							
 							
 						</div>
 					</div>
@@ -415,10 +448,10 @@
 									<div class="rs1-select2 bor8 bg0">
 										<select class="js-select2" name="time">
 											<option>Choose an option</option>
-											<option>Size S</option>
-											<option>Size M</option>
-											<option>Size L</option>
-											<option>Size XL</option>
+											<option>Size 6GB</option>
+											<option>Size 12GB</option>
+											<option>Size 16GB</option>
+											<option>Size 18GB</option>
 										</select>
 										<div class="dropDownSelect2"></div>
 									</div>
@@ -1027,6 +1060,53 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 			</div>
 		</div>
 	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+    const productImages = document.querySelectorAll('.wrap-pic-w img');
+
+    productImages.forEach(image => {
+        // Create zoom lens
+        const lens = document.createElement('div');
+        lens.className = 'zoom-lens';
+        image.parentNode.appendChild(lens);
+
+        image.addEventListener('mouseenter', function () {
+            lens.style.display = 'block';
+            lens.style.backgroundImage = `url(${image.src})`; // Set zoomed image
+        });
+
+        image.addEventListener('mousemove', function (e) {
+            const rect = image.getBoundingClientRect();
+            const lensSize = 120;
+            const zoomFactor = 2; // Adjust zoom level
+
+            let x = e.clientX - rect.left - lensSize / 2;
+            let y = e.clientY - rect.top - lensSize / 2;
+
+            x = Math.max(0, Math.min(x, rect.width - lensSize));
+            y = Math.max(0, Math.min(y, rect.height - lensSize));
+
+            lens.style.width = `${lensSize}px`;
+            lens.style.height = `${lensSize}px`;
+            lens.style.left = `${x}px`;
+            lens.style.top = `${y}px`;
+
+            // Adjust background position for zoom effect inside the circle
+            const backgroundX = -(x * zoomFactor);
+            const backgroundY = -(y * zoomFactor);
+
+            lens.style.backgroundSize = `${rect.width * zoomFactor}px ${rect.height * zoomFactor}px`;
+            lens.style.backgroundPosition = `${backgroundX}px ${backgroundY}px`;
+        });
+
+        image.addEventListener('mouseleave', function () {
+            lens.style.display = 'none';
+        });
+    });
+});
+
+	</script>
 
 <!--===============================================================================================-->	
 	<script src="/vendor/jquery/jquery-3.2.1.min.js"></script>
