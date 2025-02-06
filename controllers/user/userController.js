@@ -8,7 +8,7 @@ const loadHomepage = async (req, res) => {
     try {
         const user = req.session.user;
         const page = parseInt(req.query.page) || 1;
-        const limit = 4;
+        const limit = 8;
         const skip = (page - 1) * limit;
 
         console.log("page number", page)

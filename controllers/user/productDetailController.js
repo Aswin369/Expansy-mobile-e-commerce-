@@ -11,14 +11,16 @@ const productDetail = async (req,res)=>{
         const user = req.session.user
 
         console.log("product id",id)
+        const allProduct = await Product.find({isBlocked:false})
         const productData = await Product.findOne({ _id: id, isBlocked:false}); 
         if (!productData) {
             return res.status(404).json({ error: 'Product not found' });
         }
-
+        console.log("productData",productData)
         res.render("productdetail",{
             productData,
-            user
+            user,
+            allProduct
         })
     } catch (error) {
         console.error("Error from product detail page", error)

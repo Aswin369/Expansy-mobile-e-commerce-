@@ -4,6 +4,7 @@ const userController = require("../controllers/user/userController")
 const passport = require("../config/passport.js")
 const {userAuth} = require("../middlewares/auth")
 const productController = require("../controllers/user/productDetailController.js")
+const shopPageController = require("../controllers/user/shopPageController.js")
 
 
 router.get("/",userController.loadHomepage)
@@ -22,7 +23,7 @@ router.get("/auth/google/callback",passport.authenticate("google",{failureRedire
 })
 
 router.get("/productDetailPage/:id",userAuth,productController.productDetail)
+router.get("/shopPage",userAuth,shopPageController.getShopPage)
 
-// router.use("*",userController.loadPageNotFound)
 
 module.exports = router 
