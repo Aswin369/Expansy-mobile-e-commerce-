@@ -21,6 +21,7 @@ const userAuth = (req,res,next)=>{
 
 
 const adminAuth = (req,res,next)=>{
+    if(req.session.admin){
     User.findOne({isAdmin:true})
     .then((data)=>{
         if(data){
@@ -33,6 +34,9 @@ const adminAuth = (req,res,next)=>{
         console.log("Error in adminAuth middleware",err)
         res.status(500).send("Internal server error")
     })
+}else{
+    res.redirect("/admin/login")
+}
 }
 
 

@@ -538,11 +538,11 @@
 									<ul class="p-lr-28 p-lr-15-sm">
 										<li class="flex-w flex-t p-b-7">
 											<span class="stext-102 cl3 size-205">
-												Weight
+												Processor
 											</span>
 
 											<span class="stext-102 cl6 size-206">
-												0.79 kg
+												<%= productData.processor%>
 											</span>
 										</li>
 
@@ -562,7 +562,7 @@
 											</span>
 
 											<span class="stext-102 cl6 size-206">
-												60% cotton
+												Steel
 											</span>
 										</li>
 
@@ -572,17 +572,17 @@
 											</span>
 
 											<span class="stext-102 cl6 size-206">
-												Black, Blue, Grey, Green, Red, White
+												<%= productData.color%>
 											</span>
 										</li>
 
 										<li class="flex-w flex-t p-b-7">
 											<span class="stext-102 cl3 size-205">
-												Size
+												Storage
 											</span>
 
 											<span class="stext-102 cl6 size-206">
-												XL, L, M, S
+												<%= productData.storage ? productData.storage.storage : 'N/A' %>
 											</span>
 										</li>
 									</ul>

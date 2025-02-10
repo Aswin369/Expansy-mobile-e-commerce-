@@ -57,5 +57,49 @@
       </div>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+   document.querySelector("form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const name = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    if (!name || !password) {
+        Swal.fire({
+            icon: "error",
+            title: "Validation Error",
+            text: "Please fill in all fields",
+        });
+        return;
+    }
+
+    try {
+        const response = await fetch("/admin/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, password }),
+        });
+
+        
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("text/html")) {
+
+            document.documentElement.innerHTML = await response.text();
+            return;
+        }
+        const result = await response.json();
+        throw new Error(result.message);
+
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Login Failed",
+            text: error.message || "An error occurred during login",
+        });
+    }
+});
+  </script>
 </body>
 </html>

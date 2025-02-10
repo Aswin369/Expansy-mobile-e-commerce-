@@ -198,25 +198,23 @@
 <script>
 // Frontend logout function
 async function handleLogout() {
-try {
-// Make a request to the backend logout route
-const response = await fetch('/admin/logout', {
- method: 'GET', // Ensure the method matches your backend route
- credentials: 'include', // Include cookies/session in the request
-});
+    try {
+        const response = await fetch('/admin/logout', {
+            method: 'GET',
+            credentials: 'include' // Include cookies/session in the request
+        });
 
-if (response.ok) {
- // Redirect to the login page after successful logout
- window.location.href = '/admin/login';
-} else {
- // Handle error if logout fails
- alert('Failed to logout. Please try again.');
- console.error('Error logging out:', response.statusText);
+        if (response.ok) {
+            console.log("Successfully logged out");
+            window.location.href = '/admin/login'; // Redirect after successful logout
+        } else {
+            const result = await response.json();
+            alert(result.message || 'Failed to logout. Please try again.');
+        }
+    } catch (error) {
+        alert('An unexpected error occurred.');
+        console.error('Error in handleLogout:', error);
+    }
 }
-} catch (error) {
-// Handle unexpected errors
-alert('An unexpected error occurred.');
-console.error('Error in handleLogout:', error);
-}
-}
+
 </script>

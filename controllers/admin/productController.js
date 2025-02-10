@@ -156,7 +156,7 @@ const getAllProducts = async (req, res) => {
         .populate("brand")
         .exec();
 
-        console.log("Fetched Product Data:", JSON.stringify(productData, null, 2));
+        // console.log("Fetched Product Data:", JSON.stringify(productData, null, 2));
 
         const count = await Product.countDocuments({
             productName: { $regex: new RegExp(".*" + search + ".*", "i") } 

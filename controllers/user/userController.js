@@ -16,7 +16,7 @@ const loadHomepage = async (req, res) => {
         const products = await productSchema.find({ isBlocked: false })
             .sort({ createdAt: 1 })
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
 
         const totalProducts = await productSchema.countDocuments({ isBlocked: false });
         const totalPages = Math.ceil(totalProducts / limit);

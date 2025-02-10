@@ -11,7 +11,7 @@ const customerInfo = async (req, res) => {
         let page = parseInt(req.query.page) || 1;
         const limit = 9;
 
-        // Fetch filtered customer data
+        
         const userData = await User.find({
             isAdmin: false,
             $or: [
@@ -23,7 +23,7 @@ const customerInfo = async (req, res) => {
             .skip((page - 1) * limit)
             .exec();
 
-        // Format the join date
+        
         const formattedUserData = userData.map(user => ({
             id: user._id,
             name: user.name,
@@ -57,9 +57,9 @@ const customerInfo = async (req, res) => {
 
 const customerBlocked = async (req, res) => {
     try {
-        let id = req.query.id; // Correct the query parameter
-        await User.updateOne({ _id: id }, { $set: { isBlocked: true } }); // Set isBlocked to true
-        res.redirect("/admin/users"); // Redirect to the correct path
+        let id = req.query.id; 
+        await User.updateOne({ _id: id }, { $set: { isBlocked: true } }); 
+        res.redirect("/admin/users");
     } catch (error) {
         console.error("Error blocking customer:", error.message);
         res.redirect("/pageerror");
@@ -68,9 +68,9 @@ const customerBlocked = async (req, res) => {
 
 const uncustomerBlocked = async (req, res) => {
     try {
-        let id = req.query.id; // Correct the query parameter
-        await User.updateOne({ _id: id }, { $set: { isBlocked: false } }); // Set isBlocked to false
-        res.redirect("/admin/users"); // Redirect to the correct path
+        let id = req.query.id; 
+        await User.updateOne({ _id: id }, { $set: { isBlocked: false } }); 
+        res.redirect("/admin/users"); 
     } catch (error) {
         console.error("Error unblocking customer:", error.message);
         res.redirect("/pageerror");
