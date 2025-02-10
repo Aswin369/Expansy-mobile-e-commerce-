@@ -53,11 +53,17 @@ const addCategory = async (req, res) => {
         if (!name || !description) {
             return res.status(400).json({ error: "Name and description are required"});
         }
+
+        const existingCategory = await Category.findOne({ name: name })
+        if (existingCategory) {
+            return res.status(400).json({ message: "Category already exists" })
+        }
         const newCategory = new Category({
             name,
             description,
         });
 
+        
         
         if (croppedImage) {
             

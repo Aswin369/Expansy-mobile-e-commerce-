@@ -6,6 +6,10 @@ const productSchema = require("../../models/productSchema")
 
 const loadHomepage = async (req, res) => {
     try {
+        const userPass = req.session.passport
+        if(userPass) {
+            req.session.user = req.session.passport.user;      
+          }
         const user = req.session.user;
         const page = parseInt(req.query.page) || 1;
         const limit = 8;
@@ -25,7 +29,7 @@ const loadHomepage = async (req, res) => {
             const userData = await User.findOne({ _id: user._id });
             
             res.render("home", { 
-                user: userData, 
+                user:user, 
                 product: products,
                 currentPage: page,
                 totalProducts: totalProducts,
@@ -58,7 +62,12 @@ const verification = async (req,res)=>{
 
 const loadsignup = async (req,res)=>{
     try {
-        return res.render("signup")
+        if(!req.session.user){
+            return res.render("signup")
+        }else{
+            res.redirect("/")
+        }
+       
     } catch (error) {
         console.log("Signup page not found")
         res.status(500).send("Server Error")
@@ -313,6 +322,25 @@ const loadPageNotFound = async (req,res)=>{
     }
 }
 
+const logout = async (req,res)=>{
+    try {
+       
+       req.session.destroy((err)=>{
+        if(err){
+            console.error("Error destroying session",err)
+            return res.redirect("/pageerror")
+        }
+        res.clearCookie("Connect.sid", {path: "/"})
+        console.log("Session successfully destroyed")
+
+        res.status(200).json({message: "Logged out seccusseful"})
+       })
+    } catch (error) {
+        console.error("Unexpected error in logout", error)
+        res.status(500).json({message:"logout failed"})
+    }
+}
+
 module.exports = {
     loadHomepage,
     verification,
@@ -322,6 +350,6 @@ module.exports = {
     signup,
     loadPageNotFound,
     verifyOtp,
-    resendOtp
-    
+    resendOtp,
+    logout
 }

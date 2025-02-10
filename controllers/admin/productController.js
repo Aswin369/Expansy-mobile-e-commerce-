@@ -28,7 +28,7 @@ const getProductAddPage = async (req,res)=>{
 
 const addProducts = async (req, res) => {
     try {
-        const {productName, productCategories, brand, quantity, regularPrice, salePrice, description, ram, storage, processor, color, Stocks} = req.body;
+        const {productName, productCategories, brand, quantity, regularPrice, salePrice, description, ram, storage, processor, color} = req.body;
         console.log("Stoger",req.body)
         // console.log(req.body)
         // console.log("request body is printing",req.body)
@@ -105,7 +105,7 @@ const addProducts = async (req, res) => {
             category:categoryId._id,
             brand:brandId._id,
             quantity:quantity,
-            stockes:Stocks,
+            
             regularPrice:regularPrice,
             salePrice:salePrice,
             ram:ramId._id,
@@ -212,7 +212,9 @@ const UnBlockProduct = async (req, res) => {
 const getEditProduct = async (req, res) => {
     try {
         const id = req.params.id;
-        const product = await Product.findOne({ _id: id });
+        const product = await Product.findOne({ _id: id })
+        .populate("ram")  
+            .populate("storage");
         const category = await Category.find({});
         const brand = await Brand.find({});
 

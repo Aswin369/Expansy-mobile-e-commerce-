@@ -2,8 +2,6 @@ const User = require("../../models/userSchema")
 const Product = require("../../models/productSchema")
 const Brand = require("../../models/brandSchema")
 const Category = require("../../models/categorySchema")
-// const { findById } = require("../../models/variantSchema")
-
 
 const productDetail = async (req,res)=>{
     try {

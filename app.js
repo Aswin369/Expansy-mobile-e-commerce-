@@ -6,6 +6,8 @@ const session = require("express-session")
 const passport = require("./config/passport")
 const userRouter = require("./routes/userRouter")
 const adminRouter = require("./routes/adminRouter")
+const nocache = require("nocache")
+
 const db = require("./config/db")
 db()
 const PORT = process.env.PORT 
@@ -13,6 +15,7 @@ const PORT = process.env.PORT
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 
+app.use(nocache())
 app.use(session({
     secret: process.env.SESSION_SECRECT,
     resave: false,
@@ -23,7 +26,6 @@ app.use(session({
         maxAge:72*60*60*1000
     }
 }))
-
 app.use(passport.initialize())
 app.use(passport.session())
 

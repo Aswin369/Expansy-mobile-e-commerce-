@@ -431,10 +431,15 @@
                                <div>
                                    <h4 class="card-title">All Customers List</h4>
                                </div>
-                               <div class="dropdown">
-                                   <a href="#" class="dropdown-toggle btn btn-sm btn-outline-light rounded" data-bs-toggle="dropdown" aria-expanded="false">
-                                       This Month
-                                   </a>
+                               
+                               <div>
+                                   <form class="app-search d-none d-md-block ms-2" method="GET" action="/admin/customers">
+                                        <div class="d-flex align-items-center">
+                                            <input type="search" class="form-control me-2" placeholder="Search..." autocomplete="off" value="">
+                                            <button type="button" class="btn btn-primary">Search</button>
+                                        </div>
+                                    </form>
+                                    
                                    <div class="dropdown-menu dropdown-menu-end">
                                        <!-- item-->
                                        <a href="#!" class="dropdown-item">Download</a>

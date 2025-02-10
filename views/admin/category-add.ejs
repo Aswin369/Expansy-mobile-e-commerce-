@@ -718,7 +718,7 @@
                                              .then((response) => {
                                                   if (!response.ok) {
                                                        return response.json().then((err) => {
-                                                            throw new Error(err.error || "Unknown error");
+                                                            throw new Error(err.error || "Category already exists");
                                                        });
                                                   }
                                                   return response.json();
@@ -729,7 +729,7 @@
                                                        title: "Success",
                                                        text: data.message,
                                                   }).then(() => {
-                                                       location.reload(); // Reload the page after success
+                                                       location.reload(); 
                                                   });
                                              })
                                              .catch((error) => {

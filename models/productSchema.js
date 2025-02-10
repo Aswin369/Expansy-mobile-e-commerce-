@@ -37,10 +37,6 @@ const productSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    stocks:{
-        type:String,
-        require:true
-    },
     color:{
         type:String,
         required:true
