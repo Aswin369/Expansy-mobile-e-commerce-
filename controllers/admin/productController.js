@@ -212,9 +212,8 @@ const UnBlockProduct = async (req, res) => {
 const getEditProduct = async (req, res) => {
     try {
         const id = req.params.id;
-        const product = await Product.findOne({ _id: id })
-        .populate("ram")  
-            .populate("storage");
+        const product = await Product.findOne({ _id: id }).populate("ram").populate("storage")
+        
         const category = await Category.find({});
         const brand = await Brand.find({});
 

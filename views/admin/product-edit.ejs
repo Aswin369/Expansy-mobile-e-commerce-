@@ -626,24 +626,30 @@
                                    <div class="row mb-3">
                                        <div class="col-lg-4">
                                            <label for="ram" class="form-label">RAM</label>
-                                           <select class="form-control" id="RAM" name="ram" >
-                                               <option value="<%=product.ram %>"><%=product.ram %></option>
-                                               <option value="4GB">4GB</option>
-                                               <option value="8GB">8GB</option>
-                                               <option value="16GB">16GB</option>
-                                               <option value="32GB">32GB</option>
-                                           </select>
+                                           <select class="form-control" id="RAM" name="ram">
+                                             <option value="<%= product.ram ? product.ram._id : '' %>" selected>
+                                                 <%= product.ram ? product.ram.value : 'Select RAM' %>
+                                             </option>
+                                             <option value="65ram1">4GB</option>
+                                             <option value="65ram2">8GB</option>
+                                             <option value="65ram3">16GB</option>
+                                             <option value="65ram4">32GB</option>
+                                         </select>
+                                         
                                        </div>
                                        <div class="col-lg-4">
                                            <label for="storage" class="form-label">Internal Storage</label>
-                                           <select class="form-control" id="storage" name="storage" >
-                                               <option value="<%=product.storage%>"><%=product.storage%></option>
-                                               <option value="64GB">64GB</option>
-                                               <option value="128GB">128GB</option>
-                                               <option value="256GB">256GB</option>
-                                               <option value="512GB">512GB</option>
-                                               <option value="1TB">1TB</option>
-                                           </select>
+                                           <select class="form-control" id="storage" name="storage">
+                                             <option value="<%= product.storage ? product.storage._id : '' %>" selected>
+                                                 <%= product.storage ? product.storage.value : 'Select Storage' %>
+                                             </option>
+                                             <option value="64GB">64GB</option>
+                                             <option value="128GB">128GB</option>
+                                             <option value="256GB">256GB</option>
+                                             <option value="512GB">512GB</option>
+                                             <option value="1TB">1TB</option>
+                                         </select>
+                                         
                                        </div>
                                        <div class="col-lg-4">
                                            <label for="processor" class="form-label">Processor</label>

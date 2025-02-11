@@ -5,7 +5,9 @@ const passport = require("../config/passport.js")
 const {userAuth} = require("../middlewares/auth")
 const productController = require("../controllers/user/productDetailController.js")
 const shopPageController = require("../controllers/user/shopPageController.js")
-
+const profileController = require("../controllers/user/profileController.js")
+const shoppingCartController = require('../controllers/user/shoppingCartController.js')
+const wishListController = require("../controllers/user/whishListController.js")
 
 router.get("/",userController.loadHomepage)
 router.get("/signup",userController.loadsignup)
@@ -26,4 +28,12 @@ router.get("/productDetailPage/:id",productController.productDetail)
 router.get("/shopPage",shopPageController.getShopPage)
 
 
+// user profile management
+router.get("/profilePage",profileController.getProfilePage)
+
+// shopping cart management
+router.get('/shoppingCart',shoppingCartController.getShoppingCart)
+
+// WhishList management
+router.get("/getWhishlist",wishListController.getWhishList)
 module.exports = router 

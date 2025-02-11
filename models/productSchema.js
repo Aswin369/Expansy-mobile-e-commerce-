@@ -51,12 +51,12 @@ const productSchema = new mongoose.Schema({
     },
     ram:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Ram",
+        ref:"Variant",
         required:true
     },
     storage:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Storage",
+        ref:"Variant",
         required:true
     },
     processor:{
