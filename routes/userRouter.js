@@ -31,6 +31,7 @@ router.get("/shopPage",shopPageController.getShopPage)
 // user profile management
 router.get("/profilePage",userAuth,profileController.getProfilePage)
 router.post("/editProfile",userAuth,profileController.editUserProfile)
+router.post("/addaddress",userAuth,profileController.addUserAddress)
 // shopping cart management
 router.get('/shoppingCart',userAuth,shoppingCartController.getShoppingCart)
 

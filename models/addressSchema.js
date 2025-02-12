@@ -1,4 +1,4 @@
-const mogoose = require("mongoose")
+const mongoose = require("mongoose")
 const {Schema} = mongoose;
 
 const addressSchema = new mongoose.Schema({
@@ -9,10 +9,6 @@ const addressSchema = new mongoose.Schema({
     },
     address:[{
         addressType:{
-            type:String,
-            required: true
-        },
-        name:{
             type:String,
             required: true
         },
