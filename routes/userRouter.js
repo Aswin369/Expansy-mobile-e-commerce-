@@ -29,11 +29,11 @@ router.get("/shopPage",shopPageController.getShopPage)
 
 
 // user profile management
-router.get("/profilePage",profileController.getProfilePage)
-
+router.get("/profilePage",userAuth,profileController.getProfilePage)
+router.post("/editProfile",userAuth,profileController.editUserProfile)
 // shopping cart management
-router.get('/shoppingCart',shoppingCartController.getShoppingCart)
+router.get('/shoppingCart',userAuth,shoppingCartController.getShoppingCart)
 
 // WhishList management
-router.get("/getWhishlist",wishListController.getWhishList)
+router.get("/getWhishlist",userAuth,wishListController.getWhishList)
 module.exports = router 

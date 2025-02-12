@@ -294,7 +294,7 @@
                                         <h6 class="mb-0">Full Name</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        John Doe
+                                        <%= data.name%>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -302,7 +302,7 @@
                                         <h6 class="mb-0">Email</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        john.doe@example.com
+                                        <%= data.email%>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -310,7 +310,7 @@
                                         <h6 class="mb-0">Phone</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        (239) 816-9029
+                                        <%= data.phone%>
                                     </div>
                                 </div>
                             </div>
@@ -361,18 +361,18 @@
                                 <h5 class="card-title mb-0">Update Profile</h5>
                             </div>
                             <div class="card-body">
-                                <form>
+                                <form id="formSubmit">
                                     <div class="mb-3">
                                         <label class="form-label">Full Name</label>
-                                        <input type="text" class="form-control" value="John Doe">
+                                        <input type="text" name="name" id="name" class="form-control" value="<%= data.name%>">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Email</label>
-                                        <input type="email" class="form-control" value="john.doe@example.com">
+                                        <input type="email" class="form-control" value="<%= data.email%>" disabled>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Phone</label>
-                                        <input type="tel" class="form-control" value="(239) 816-9029">
+                                        <input type="tel" name="phone" id="phone" class="form-control" value="<%= data.phone%>">
                                     </div>
                                     <button type="submit" class="btn btn-primary">Update Profile</button>
                                 </form>
@@ -632,6 +632,85 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 			<i class="zmdi zmdi-chevron-up"></i>
 		</span>
 	</div>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script>
+		document.getElementById("formSubmit").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const phone = document.getElementById("phone").value;
+
+    if (name.trim() === "") {
+        Swal.fire({
+            title: "Validation error",
+            text: "Name cannot be empty",
+            icon: "error"
+        });
+        return;
+    }
+
+    if (phone.trim() === "") {
+        Swal.fire({
+            title: "Validation error",
+            text: "Phone cannot be empty",
+            icon: "error"
+        });
+        return;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+        Swal.fire({
+            title: "Validation error",
+            text: "Enter a valid phone number",
+            icon: "error"
+        });
+        return;
+    }
+
+    fetch("/editProfile", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, phone })
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.fire({
+            title: "Update successfully",
+            text: data.message,
+            icon: "success"
+        });
+		window.location.reload()
+    })
+    .catch(error => {
+        Swal.fire({
+            title: "Something went wrong",
+            text: "Failed to update profile",
+            icon: "error"
+        });
+    });
+});
+
+	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			let activeTab = localStorage.getItem("activeTab");
+			if (activeTab) {
+				let tabElement = document.querySelector(`[href="${activeTab}"]`);
+				if (tabElement) {
+					new bootstrap.Tab(tabElement).show();
+				}
+			}
+			document.querySelectorAll('.list-group a').forEach(tab => {
+				tab.addEventListener('click', function (e) {
+					let selectedTab = this.getAttribute('href');
+					localStorage.setItem("activeTab", selectedTab);
+				});
+			});
+		});
+	</script>
+	
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <!--===============================================================================================-->	
 	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
