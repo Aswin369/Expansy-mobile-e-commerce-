@@ -32,6 +32,7 @@ router.get("/shopPage",shopPageController.getShopPage)
 router.get("/profilePage",userAuth,profileController.getProfilePage)
 router.post("/editProfile",userAuth,profileController.editUserProfile)
 router.post("/addaddress",userAuth,profileController.addUserAddress)
+router.delete("/deleteAddress/:addressId",userAuth,profileController.deleteAddress)
 // shopping cart management
 router.get('/shoppingCart',userAuth,shoppingCartController.getShoppingCart)
 

@@ -393,30 +393,34 @@
 								</div>
 								<div class="card-body">
 									<div class="row">
-										<div class="col-md-6 mb-3">
-											<div class="card">
-												<div class="card-body">
-													<h6 class="card-subtitle mb-2 text-muted">Home</h6>
-													<p class="card-text">123 Main Street, Apt 4B<br>New York, NY 10001</p>
-													<div class="btn-group">
-														<button class="btn btn-sm btn-outline-primary">Edit</button>
-														<button class="btn btn-sm btn-outline-danger">Delete</button>
+										<% address.forEach(user => { %>
+											<% user.address.forEach(addr => { %>
+												<div class="col-md-6 mb-3">
+													<div class="card">
+														<div class="card-body">
+															<p class="card-text">
+																<strong>Address:</strong> <%= addr.addressType %> <br>
+																<strong>City:</strong> <%= addr.city %> <br>
+																<strong>Landmark:</strong> <%= addr.landMark %> <br>
+																<strong>State:</strong> <%= addr.state %> <br>
+																<strong>Pincode:</strong> <%= addr.pincode %> <br>
+																<strong>Phone:</strong> <%= addr.phone %> <br>
+																<strong>Alternate Phone:</strong> <%= addr.altPhone %>
+															</p>
+															<div class="btn-group">
+																<button type="button" class="btn btn-primary" onclick="loadEditForm('<%= addr._id%>')">
+																	Edit
+																</button>
+																<button type="button" class="btn btn-danger" onclick="confirmDelete('<%= addr._id %>')">
+																	Delete
+																</button>
+																
+															</div>
+														</div>
 													</div>
 												</div>
-											</div>
-										</div>
-										<div class="col-md-6 mb-3">
-											<div class="card">
-												<div class="card-body">
-													<h6 class="card-subtitle mb-2 text-muted">Office</h6>
-													<p class="card-text">456 Business Ave<br>New York, NY 10002</p>
-													<div class="btn-group">
-														<button class="btn btn-sm btn-outline-primary">Edit</button>
-														<button class="btn btn-sm btn-outline-danger">Delete</button>
-													</div>
-												</div>
-											</div>
-										</div>
+											<% }) %>
+										<% }) %>
 									</div>
 								</div>
 							</div>
@@ -430,7 +434,7 @@
 									</button>
 								</div>
 								<div class="card-body">
-									<form id="newAddressForm" onsubmit="handleAddressSubmit(event)" novalidate>
+									<form id="newAddressForm" novalidate>
 										<div class="mb-3">
 											<label for="address" class="form-label">Address</label>
 											<textarea class="form-control" id="address" name="address" rows="3" required></textarea>
@@ -466,6 +470,54 @@
 									</form>
 								</div>
 							</div>
+
+
+							<div id="editAddressForm" style="display: none;">
+								<div class="card-header d-flex justify-content-between align-items-center">
+									<h5 class="card-title mb-0">Edit Address</h5>
+									<button class="btn btn-secondary btn-sm" onclick="hideEditAddressForm()">
+										<i class="fas fa-arrow-left me-1"></i> Back to Addresses
+									</button>
+								</div>
+								<div class="card-body">
+									<form id="editAddressFormElement" action="/updateAddress" method="POST" novalidate>
+										<input type="hidden" id="edit_addressId" name="addressId">
+										<div class="mb-3">
+											<label for="edit_address" class="form-label">Address</label>
+											<textarea class="form-control" id="edit_address" name="address" rows="3" required></textarea>
+										</div>
+										<div class="mb-3">
+											<label for="edit_city" class="form-label">City</label>
+											<input type="text" class="form-control" id="edit_city" name="city" required>
+										</div>
+										<div class="mb-3">
+											<label for="edit_landmark" class="form-label">Landmark</label>
+											<input type="text" class="form-control" id="edit_landmark" name="landmark">
+										</div>
+										<div class="mb-3">
+											<label for="edit_state" class="form-label">State</label>
+											<input type="text" class="form-control" id="edit_state" name="state" required>
+										</div>
+										<div class="mb-3">
+											<label for="edit_pincode" class="form-label">Pincode</label>
+											<input type="text" class="form-control" id="edit_pincode" name="pincode" required>
+										</div>
+										<div class="mb-3">
+											<label for="edit_phone" class="form-label">Phone Number</label>
+											<input type="tel" class="form-control" id="edit_phone" name="phone" required>
+										</div>
+										<div class="mb-3">
+											<label for="edit_altPhone" class="form-label">Alternative Phone Number</label>
+											<input type="tel" class="form-control" id="edit_altPhone" name="altPhone">
+										</div>
+										<div class="d-flex justify-content-end gap-2">
+											<button type="button" class="btn btn-secondary" onclick="hideEditAddressForm()">Cancel</button>
+											<button type="submit" class="btn btn-primary">Update Address</button>
+										</div>
+									</form>
+								</div>
+							</div>
+
 						</div>
 					</div>
 				
@@ -856,6 +908,7 @@ async function handleAddressSubmit(event) {
 				text: 'Address saved successfully!',
 				showConfirmButton: true
 				});
+				window.location.reload()
 				form.reset();
 							showAddressesList();
 			} else {
@@ -982,6 +1035,125 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	</script>
 	
+
+	<!-- This is for delete address -->
+
+	<script>
+		function confirmDelete(addressId){
+			Swal.fire({
+				title: 'Are you sure?',
+        		text: "You won't be able to revert this!",
+        		icon: 'warning',
+        		showCancelButton: true,
+        		confirmButtonText: 'Yes, delete it!',
+        		cancelButtonText: 'Cancel',
+			}).then((result)=>{
+				if(result.isConfirmed){
+					deleteAddress(addressId)
+				}
+			})
+		}
+
+		function deleteAddress(addressId){
+			fetch(`/deleteAddress/${addressId}`,{
+				method: "DELETE",
+				headers:{
+					"Content-Type": "application/json",
+				},
+
+			}).then(response => response.json())
+			.then(data=>{
+				if(data.success){
+					Swal.fire(
+						'Deleted!',
+						'Your address has been deleted.',
+						'success'
+					);
+					window.location.reload()
+
+				}else{
+					Swal.fire(
+						"Error!",
+						'There was an issue deleting the address.',
+						'error'
+					)
+				}
+			})
+			.catch(error=>{
+				Swal.fire(
+					"Error!",
+					"Something went wrong",
+					"error"
+				)
+				console.error("Error",error)
+			})
+		}
+	</script>
+
+
+<!-- This script for edit address	 -->
+<script>
+	// Function to load the edit form
+	async function loadEditForm(addressId) {
+		try {
+			// Hide the addresses list
+			document.getElementById('addressesList').style.display = 'none';
+			
+			// Show the edit form
+			document.getElementById('editAddressForm').style.display = 'block';
+			
+			// Fetch address data
+			const response = await fetch(`/getAddress/${addressId}`);
+			const addressData = await response.json();
+			
+			// Set the address ID in hidden field
+			document.getElementById('edit_addressId').value = addressId;
+			
+			// Fill the form with existing data
+			document.getElementById('edit_address').value = addressData.addressType;
+			document.getElementById('edit_city').value = addressData.city;
+			document.getElementById('edit_landmark').value = addressData.landMark;
+			document.getElementById('edit_state').value = addressData.state;
+			document.getElementById('edit_pincode').value = addressData.pincode;
+			document.getElementById('edit_phone').value = addressData.phone;
+			document.getElementById('edit_altPhone').value = addressData.altPhone || '';
+			
+		} catch (error) {
+			console.error('Error loading address data:', error);
+			alert('Error loading address data. Please try again.');
+		}
+	}
+	
+	// Function to hide the edit form and show the addresses list
+	function hideEditAddressForm() {
+		document.getElementById('editAddressForm').style.display = 'none';
+		document.getElementById('addressesList').style.display = 'block';
+	}
+	
+	// Function to handle edit form submission
+	document.getElementById('editAddressFormElement').addEventListener('submit', async function(e) {
+		e.preventDefault();
+		
+		try {
+			const formData = new FormData(this);
+			const response = await fetch('/updateAddress', {
+				method: 'POST',
+				body: formData
+			});
+			
+			if (response.ok) {
+				// Redirect or refresh the page after successful update
+				window.location.reload();
+			} else {
+				throw new Error('Failed to update address');
+			}
+		} catch (error) {
+			console.error('Error updating address:', error);
+			alert('Error updating address. Please try again.');
+		}
+	});
+	</script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <!--===============================================================================================-->	
 	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
