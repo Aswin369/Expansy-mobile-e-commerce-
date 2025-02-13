@@ -33,6 +33,8 @@ router.get("/profilePage",userAuth,profileController.getProfilePage)
 router.post("/editProfile",userAuth,profileController.editUserProfile)
 router.post("/addaddress",userAuth,profileController.addUserAddress)
 router.delete("/deleteAddress/:addressId",userAuth,profileController.deleteAddress)
+router.get("/getAddress/:addressId",userAuth,profileController.getUserAddressId)
+router.post("/updateAddress/:addressId",userAuth,profileController.updateAddress)
 // shopping cart management
 router.get('/shoppingCart',userAuth,shoppingCartController.getShoppingCart)
 

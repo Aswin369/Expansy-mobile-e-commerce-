@@ -411,6 +411,7 @@
 																<button type="button" class="btn btn-primary" onclick="loadEditForm('<%= addr._id%>')">
 																	Edit
 																</button>
+																
 																<button type="button" class="btn btn-danger" onclick="confirmDelete('<%= addr._id %>')">
 																	Delete
 																</button>
@@ -488,7 +489,8 @@
 										</div>
 										<div class="mb-3">
 											<label for="edit_city" class="form-label">City</label>
-											<input type="text" class="form-control" id="edit_city" name="city" required>
+											<input type="text" class="form-control" id="edit_city"  name="city" required>
+											console.log()
 										</div>
 										<div class="mb-3">
 											<label for="edit_landmark" class="form-label">Landmark</label>
@@ -1096,6 +1098,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Function to load the edit form
 	async function loadEditForm(addressId) {
 		try {
+
+			console.log("this is address  id ",addressId)
 			// Hide the addresses list
 			document.getElementById('addressesList').style.display = 'none';
 			
@@ -1105,10 +1109,11 @@ document.addEventListener('DOMContentLoaded', () => {
 			// Fetch address data
 			const response = await fetch(`/getAddress/${addressId}`);
 			const addressData = await response.json();
-			
+
+			console.log("addrsess data", addressData)
 			// Set the address ID in hidden field
 			document.getElementById('edit_addressId').value = addressId;
-			
+			console.log("this is address id ", addressId)
 			// Fill the form with existing data
 			document.getElementById('edit_address').value = addressData.addressType;
 			document.getElementById('edit_city').value = addressData.city;
@@ -1118,6 +1123,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			document.getElementById('edit_phone').value = addressData.phone;
 			document.getElementById('edit_altPhone').value = addressData.altPhone || '';
 			
+			console.log("addressData.state", addressData.state)
+
 		} catch (error) {
 			console.error('Error loading address data:', error);
 			alert('Error loading address data. Please try again.');
@@ -1132,24 +1139,45 @@ document.addEventListener('DOMContentLoaded', () => {
 	
 	// Function to handle edit form submission
 	document.getElementById('editAddressFormElement').addEventListener('submit', async function(e) {
+
+		const formData = {
+    addressType: document.getElementById('edit_address').value,
+    city: document.getElementById('edit_city').value,
+    landMark: document.getElementById('edit_landmark').value,
+    state: document.getElementById('edit_state').value,
+    pincode: document.getElementById('edit_pincode').value,
+    phone: document.getElementById('edit_phone').value,
+    altPhone: document.getElementById('edit_altPhone').value
+};
+		const addressId = document.getElementById('edit_addressId').value;
+		console.log("thidif sfretund dsfjakslsdkjflasjdfhildfhiu",addressId)
 		e.preventDefault();
-		
 		try {
-			const formData = new FormData(this);
-			const response = await fetch('/updateAddress', {
+			const response = await fetch(`/updateAddress/${addressId}`, {
 				method: 'POST',
-				body: formData
+    				headers: {
+        			'Content-Type': 'application/json'
+    			},
+    				body: JSON.stringify(formData)
 			});
-			
-			if (response.ok) {
-				// Redirect or refresh the page after successful update
+			const result = await response.json()
+			if (result.success) {
+				Swal.fire({
+            		title: "Update successfully",
+            		text: result.message,
+            		icon: "success"
+        		});
 				window.location.reload();
 			} else {
 				throw new Error('Failed to update address');
 			}
 		} catch (error) {
 			console.error('Error updating address:', error);
-			alert('Error updating address. Please try again.');
+			Swal.fire({
+            title: "Error updating address",
+            text: result.message,
+            icon: "error"
+        });
 		}
 	});
 	</script>

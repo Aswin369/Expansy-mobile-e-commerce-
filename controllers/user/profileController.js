@@ -85,10 +85,9 @@ const deleteAddress = async (req,res)=>{
     try {
         const userId = req.session.user
         const id = req.params.addressId 
-        console.log("This is user id ", userId)
-        console.log("Id is", id)
+      
         const objectIdUser = new mongoose.Types.ObjectId(userId)
-        console.log("this is user referance",objectIdUser)
+        
 
          const updatedUser = await Address.findOneAndUpdate({userId:objectIdUser},{$pull:{address:{_id: id}}},{new:true})
         if(!updatedUser){
@@ -101,9 +100,68 @@ const deleteAddress = async (req,res)=>{
     }
 }
 
+const getUserAddressId = async (req,res)=>{
+    try {
+        const userId = req.session.user
+        const addressId = req.params.addressId
+        
+        const objectIdUser = new mongoose.Types.ObjectId(userId)
+        const userAddress =  await Address.findOne({userId: objectIdUser,"address._id": addressId},{ "address.$":1})
+
+        if(userAddress){
+            return res.json(userAddress.address[0])
+        }else{
+            return res.json({message:"Address not found"})
+        }
+        
+    } catch (error) {
+        console.error("This error occured in getUserAddressId",error)
+        res.redirect("/pageerror")
+    }
+}
+
+const updateAddress = async (req,res)=>{
+    try {
+        const userId = req.session.user
+        const addressId = req.params.addressId
+        const {addressType, city, landMark, state, pincode, phone, altPhone} = req.body
+        const updateAddress = await Address.findOneAndUpdate(
+            {
+            userId:objectIdUser,
+            "address._id":addressId
+        },
+        {
+            $set:{
+                "address.$.addressType":addressType,
+                "address.$.city":city,
+                "address.$.landMark": landMark,
+                "address.$.state": state,
+                "address.$.pincode":pincode,
+                "address.$.phone":phone,
+                "address.$.altPhone": altPhone
+            }
+        },
+        {new:true}
+    )
+    console.log("completed");
+    
+    if(!updateAddress){
+        return res.status(404).json({message:"Address not found"})
+    }
+
+    res.status(200).json({message:"Address updated successfully", success:true})
+
+    } catch (error) {
+        console.error("This error occured in updateAddress",error)
+        res.redirect("/pageerror")
+    }
+}
+
 module.exports = {
     getProfilePage,
     editUserProfile,
     addUserAddress,
-    deleteAddress
+    deleteAddress,
+    getUserAddressId,
+    updateAddress
 }
