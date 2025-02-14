@@ -27,7 +27,9 @@ router.get("/logout",userController.logout)
 router.get("/productDetailPage/:id",productController.productDetail)
 router.get("/shopPage",shopPageController.getShopPage)
 
-
+// userForgot password
+router.get("/forgot-password",profileController.getForgotPassPage)
+router.post("/forgot-email-valid",profileController.forgotEmailValid)
 // user profile management
 router.get("/profilePage",userAuth,profileController.getProfilePage)
 router.post("/editProfile",userAuth,profileController.editUserProfile)

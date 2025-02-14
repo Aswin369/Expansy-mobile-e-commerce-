@@ -19,18 +19,10 @@ const categorySchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now 
-    },
     image: {
         type:String
     }
-});
+},{timestamps:true});
 
 
 const Category = mongoose.model("Category",categorySchema)

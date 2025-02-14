@@ -1,6 +1,10 @@
 const User = require("../../models/userSchema")
 const Address = require("../../models/addressSchema")
 const mongoose = require("mongoose")
+const nodemailer = require("nodemailer")
+const bcrypt = require("bcrypt")
+const env = require("dotenv").config()
+const session = require("express-session")
 
 const getProfilePage = async (req,res)=>{
     try {
@@ -125,9 +129,10 @@ const updateAddress = async (req,res)=>{
         const userId = req.session.user
         const addressId = req.params.addressId
         const {addressType, city, landMark, state, pincode, phone, altPhone} = req.body
+        
         const updateAddress = await Address.findOneAndUpdate(
             {
-            userId:objectIdUser,
+            userId:userId,
             "address._id":addressId
         },
         {
@@ -157,11 +162,90 @@ const updateAddress = async (req,res)=>{
     }
 }
 
+// forgot password controllers
+
+function generateOtp(){
+    return Math.floor(100000+Math.random()*900000).toString()
+}
+
+async function sendVerificationEmail(email,otp,name){
+    try{
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            port:587,
+            secure:false,
+            requireTLS: true,
+            auth:{
+                user: process.env.NODEMAILER_EMAIL,
+                pass: process.env.NODEMAILER_PASSWORD
+            }
+        })
+
+        const info = await transporter.sendMail({
+            from:process.env.NODEMAILER_EMAIL,
+            to:email,
+            subject: "Verify your account. OTP for password reset",
+            html:`<div style="font-family: Arial, sans-serif; color:rgb(69, 63, 63); ">
+            <h2 style="color: rgb(88, 85, 85);">Hi, ${name}</h2>
+            <p style="color: rgb(88, 85, 85);">Someone tried to log in to your Expansy account.</p>
+            <p style="color: rgb(88, 85, 85);">If this was you, please use the following code to confirm your identity:</p>
+            <h1 style="color:rgb(56, 51, 51);">${otp}</h1>
+            <p style="color: rgb(88, 85, 85);">If you did not make this request, please ignore this email or contact our support team.</p>
+        </div>`
+        })
+
+        return info.accepted.length>0
+
+    }catch(error){
+        console.error("Error sending email",error)
+        return false
+    }
+}
+
+const getForgotPassPage = async (req,res)=>{
+    try {
+        res.render("forgot-password")
+    } catch (error) {
+        res.redirect("/pageNotFound");
+    }
+}
+
+const forgotEmailValid = async (req,res)=>{
+    try {
+        const {email} = req.body
+        console.log("this is email", email)
+        const findUser = await User.findOne({email:email})
+        if(findUser){
+            const otp = generateOtp()
+            const emailSent = await sendVerificationEmail(email,otp)
+            if(emailSent){
+                req.session.userOtp = otp;
+                req.session.email = email
+                res.render("forgotpass-verfiyOtp")
+                console.log("ForgotPassword OTP", otp)
+    
+            }else{
+                res.json({success:false, message:"Failed to send OTP. Please try agian"})
+            }
+        }else{
+            res.render("forgot-password",{
+                message:"User with this email does not exists"
+            })
+        }
+        
+    } catch (error) {
+        console.error("This is error occured in forgot password send email",error)
+        res.redirect("/pageerror")
+    }
+}
+
 module.exports = {
     getProfilePage,
     editUserProfile,
     addUserAddress,
     deleteAddress,
     getUserAddressId,
-    updateAddress
+    updateAddress,
+    getForgotPassPage,
+    forgotEmailValid
 }

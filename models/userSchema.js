@@ -51,10 +51,6 @@ const userSchema = new mongoose.Schema({
         type:Schema.Types.ObjectId,
         ref:"Oder"
     }],
-    createdOn:{
-        type:Date,
-        default:Date.now,
-    },
     referalCode:{
         type:String,
         // required: true
@@ -81,7 +77,7 @@ const userSchema = new mongoose.Schema({
             default: Date.now
         }
     }]
-})
+},{timestamps:true})
 
 const User = mongoose.model("User",userSchema)
 
