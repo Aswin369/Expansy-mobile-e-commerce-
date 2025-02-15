@@ -30,6 +30,10 @@ router.get("/shopPage",shopPageController.getShopPage)
 // userForgot password
 router.get("/forgot-password",profileController.getForgotPassPage)
 router.post("/forgot-email-valid",profileController.forgotEmailValid)
+router.post("/verify-pass-forgot-otp",profileController.verifyForgotPassOtp)
+router.post("/verify-pass-resend-otp",profileController.verifyPasswordResendOTP)
+router.get("/change-password",profileController.getchangePasswordPage)
+router.post("/change-password",profileController.changePassword)
 // user profile management
 router.get("/profilePage",userAuth,profileController.getProfilePage)
 router.post("/editProfile",userAuth,profileController.editUserProfile)

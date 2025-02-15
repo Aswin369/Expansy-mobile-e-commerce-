@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
          <style>
         * {
@@ -222,81 +223,83 @@
     <div class="container">
         <div class="verify-otp-section">
             <div class="logo"> 
-                <img src="/public/images/BrandName.png" alt="Expansy">
+                <img src="/images/BrandName.png" alt="Expansy">
             </div>
         
             <h2>Verify OTP</h2>
             <p class="instruction">Please enter the 6-digit code sent to your email address</p>
             
-            <form method="post" action="/verify-otp" id="otpForm">
-                <div class="otp-inputs">
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+            <form id="otpForm">
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    <input type="text" class="form-control text-center" style="width: 45px; height: 45px;" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                    <input type="text" class="form-control text-center" style="width: 45px; height: 45px;" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                    <input type="text" class="form-control text-center" style="width: 45px; height: 45px;" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                    <input type="text" class="form-control text-center" style="width: 45px; height: 45px;" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                    <input type="text" class="form-control text-center" style="width: 45px; height: 45px;" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                    <input type="text" class="form-control text-center" style="width: 45px; height: 45px;" maxlength="1" pattern="[0-9]" inputmode="numeric">
                 </div>
-            
-                <div class="text-danger text-center" style="display: none;">
-                    <!-- Error message will be shown here via JavaScript -->
-                </div>
-            
-                <button type="submit" class="verify-btn">Verify OTP</button>
-                 
-                    <div class="resend-container">
-                        <a href="#" id="resend-link" class="resend-otp" onclick="resendOTP(event)">
-                            <p>Resend OTP</p>
-                        </a>
-                        <span id="timer" class="timer"></span>
+
+                <div class="alert alert-danger d-none" id="errorMessage"></div>
+                <div class="alert alert-success d-none" id="successMessage"></div>
+
+                <button type="submit" class="btn btn-primary w-100 mb-3">Verify OTP</button>
+
+                <div class="text-center">
+                    <div id="timerSection" class="mb-2">
+                        <span class="text-muted">Resend OTP in </span>
+                        <span class="text-danger" id="timer">60s</span>
                     </div>
-                
+                    <button type="button" id="resendButton" class="btn btn-link text-decoration-none d-none">
+                        Resend OTP
+                    </button>
+                </div>
             </form>
         
             <p class="back-to-login">Remember your password? <a href="/login">Back to Login</a></p>
         </div>
         
         <div class="image-section">
-            <img src="/public/images/two-factor-authentication-concept-illustration_114360-5488.avif" alt="Verify OTP">
+            <img src="/images/two-factor-authentication-concept-illustration_114360-5488.avif" alt="Verify OTP">
         </div>
     </div>
 
     <script>
-        // Auto-focus next input when a digit is entered
-        let timeLeft = 60;
-let timerId = null;
-const resendButton = document.getElementById('resendButton');
-const timerSpan = document.getElementById('timer');
-const errorDiv = document.querySelector('.text-danger');
-
-// Initialize OTP input handling
-const inputs = document.querySelectorAll('.otp-inputs input');
-inputs.forEach((input, index) => {
-    // Allow only numbers
-    input.addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
         
-        if (this.value.length === 1) {
-            if (index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
+        const inputs = document.querySelectorAll('input');
+const form = document.getElementById('otpForm');
+const timerElement = document.getElementById('timer');
+const timerSection = document.getElementById('timerSection');
+const resendButton = document.getElementById('resendButton');
+const errorMessage = document.getElementById('errorMessage');
+const successMessage = document.getElementById('successMessage');
+
+let timeLeft = 60;
+let timerId = null;
+
+// Handle OTP input
+inputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+        // Allow only numbers
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        
+        // Auto-focus next input
+        if (e.target.value && index < inputs.length - 1) {
+            inputs[index + 1].focus();
         }
     });
 
-    // Handle backspace
-    input.addEventListener('keydown', function(e) {
-        if (e.key === 'Backspace' && !this.value) {
-            if (index > 0) {
-                inputs[index - 1].focus();
-            }
+    input.addEventListener('keydown', (e) => {
+        // Handle backspace
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+            inputs[index - 1].focus();
         }
     });
 
-    // Handle paste
-    input.addEventListener('paste', function(e) {
+    input.addEventListener('paste', (e) => {
         e.preventDefault();
         const pasteData = e.clipboardData.getData('text').slice(0, inputs.length);
-        if (/^\d+$/.test(pasteData)) { // Check if all characters are digits
+        
+        if (/^\d+$/.test(pasteData)) {
             [...pasteData].forEach((digit, i) => {
                 if (inputs[i]) {
                     inputs[i].value = digit;
@@ -312,7 +315,8 @@ inputs.forEach((input, index) => {
 // Timer functionality
 function startTimer() {
     timeLeft = 60;
-    resendButton.disabled = true;
+    timerSection.classList.remove('d-none');
+    resendButton.classList.add('d-none');
     
     if (timerId) {
         clearInterval(timerId);
@@ -320,12 +324,12 @@ function startTimer() {
     
     timerId = setInterval(() => {
         timeLeft--;
-        timerSpan.textContent = `(${timeLeft}s)`;
+        timerElement.textContent = `${timeLeft}s`;
         
         if (timeLeft <= 0) {
             clearInterval(timerId);
-            resendButton.disabled = false;
-            timerSpan.textContent = '';
+            timerSection.classList.add('d-none');
+            resendButton.classList.remove('d-none');
         }
     }, 1000);
 }
@@ -333,90 +337,75 @@ function startTimer() {
 // Start timer on page load
 startTimer();
 
-// Function to collect OTP digits
+// Get OTP value
 function getOTPValue() {
     return Array.from(inputs).map(input => input.value).join('');
 }
 
-// Resend OTP function with fetch
-async function resendOTP() {
+// Show message function
+function showMessage(element, message) {
+    element.textContent = message;
+    element.classList.remove('d-none');
+    setTimeout(() => {
+        element.classList.add('d-none');
+    }, 3000);
+}
+
+// Resend OTP
+resendButton.addEventListener('click', async () => {
     try {
-        const response = await fetch('/api/resend-otp', {
+        const response = await fetch('/verify-pass-resend-otp', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                email: localStorage.getItem('userEmail') // Assuming email is stored in localStorage
-            })
+            
         });
 
         const data = await response.json();
 
-        if (response.ok) {
-            // Clear existing OTP inputs
+        if (data.success) {
             inputs.forEach(input => input.value = '');
             inputs[0].focus();
-            
-            // Start timer again
             startTimer();
-            
-            // Show success message
-            errorDiv.style.display = 'block';
-            errorDiv.style.color = '#198754';
-            errorDiv.textContent = 'OTP sent successfully!';
-            
-            // Hide success message after 3 seconds
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 3000);
+            showMessage(successMessage, data.message || 'OTP sent successfully!');
         } else {
             throw new Error(data.message || 'Failed to send OTP');
         }
     } catch (error) {
-        errorDiv.style.display = 'block';
-        errorDiv.style.color = '#dc3545';
-        errorDiv.textContent = error.message;
+        showMessage(errorMessage, error.message);
     }
-}
+});
 
-// Form submission with fetch
-document.getElementById('otpForm').addEventListener('submit', async function(e) {
+// Form submission
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const otp = getOTPValue();
     
-    // Validate OTP length
     if (otp.length !== 6) {
-        errorDiv.style.display = 'block';
-        errorDiv.textContent = 'Please enter all 6 digits';
+        showMessage(errorMessage, 'Please enter all 6 digits');
         return;
     }
 
     try {
-        const response = await fetch('/api/verify-otp', {
+        const response = await fetch('/verify-pass-forgot-otp', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                otp: otp,
-                email: localStorage.getItem('userEmail') // Assuming email is stored in localStorage
-            })
+            body: JSON.stringify({ otp })
         });
 
         const data = await response.json();
 
-        if (response.ok) {
-            // Redirect to next page or show success
-            window.location.href = '/reset-password';
+        if (data.success) {
+            window.location.href = data.redirectUrl || '/change-password';
         } else {
             throw new Error(data.message || 'Invalid OTP');
         }
     } catch (error) {
-        errorDiv.style.display = 'block';
-        errorDiv.style.color = '#dc3545';
-        errorDiv.textContent = error.message;
+        showMessage(errorMessage, error.message);
     }
 });
     </script>

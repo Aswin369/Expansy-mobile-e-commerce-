@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt")
 const env = require("dotenv").config()
 const session = require("express-session")
 
+
 const getProfilePage = async (req,res)=>{
     try {
         
@@ -168,7 +169,7 @@ function generateOtp(){
     return Math.floor(100000+Math.random()*900000).toString()
 }
 
-async function sendVerificationEmail(email,otp,name){
+async function sendVerificationEmail(email,otp){
     try{
         const transporter = nodemailer.createTransport({
             service: "gmail",
@@ -182,16 +183,17 @@ async function sendVerificationEmail(email,otp,name){
         })
 
         const info = await transporter.sendMail({
-            from:process.env.NODEMAILER_EMAIL,
-            to:email,
-            subject: "Verify your account. OTP for password reset",
-            html:`<div style="font-family: Arial, sans-serif; color:rgb(69, 63, 63); ">
-            <h2 style="color: rgb(88, 85, 85);">Hi, ${name}</h2>
-            <p style="color: rgb(88, 85, 85);">Someone tried to log in to your Expansy account.</p>
-            <p style="color: rgb(88, 85, 85);">If this was you, please use the following code to confirm your identity:</p>
-            <h1 style="color:rgb(56, 51, 51);">${otp}</h1>
-            <p style="color: rgb(88, 85, 85);">If you did not make this request, please ignore this email or contact our support team.</p>
-        </div>`
+            from: process.env.NODEMAILER_EMAIL,
+            to: email,
+            subject: "OTP for Resetting Your Password",
+            html: `
+                <div style="font-family: Arial, sans-serif; color: rgb(69, 63, 63);">
+                    <h2 style="color: rgb(88, 85, 85);">Password Reset Request</h2>
+                    <p style="color: rgb(88, 85, 85);">Use the OTP below to reset your password:</p>
+                    <h1 style="color: rgb(56, 51, 51);">${otp}</h1>
+                    <p style="color: rgb(88, 85, 85);">This OTP is valid for 60 seconds.</p>
+                    <p style="color: rgb(88, 85, 85);">If you didn't request this, ignore this email.</p>
+                </div>`
         })
 
         return info.accepted.length>0
@@ -213,17 +215,17 @@ const getForgotPassPage = async (req,res)=>{
 const forgotEmailValid = async (req,res)=>{
     try {
         const {email} = req.body
-        console.log("this is email", email)
         const findUser = await User.findOne({email:email})
         if(findUser){
             const otp = generateOtp()
+            const otpExpiry = Date.now() + 1 * 60 * 1000;
             const emailSent = await sendVerificationEmail(email,otp)
             if(emailSent){
                 req.session.userOtp = otp;
                 req.session.email = email
+                req.session.otpExpiry = otpExpiry
                 res.render("forgotpass-verfiyOtp")
-                console.log("ForgotPassword OTP", otp)
-    
+                console.log("THis is first otp", otp)
             }else{
                 res.json({success:false, message:"Failed to send OTP. Please try agian"})
             }
@@ -239,6 +241,116 @@ const forgotEmailValid = async (req,res)=>{
     }
 }
 
+const verifyForgotPassOtp = async (req, res) => {
+    try {
+        const { otp } = req.body;
+        
+        const {userOtp, otpExpiry}  = req.session;
+        
+        
+        if( Date.now() > otpExpiry){
+            return res.status(400).json({success:false, message:"OTP expired. Please try again"})
+        }
+
+        if (!otp || !userOtp) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP is required"
+            });
+        }
+        if (otp === userOtp) { 
+            req.session.userOtp = null;
+            return res.json({
+                success: true,
+                redirectUrl: "/change-password"
+            });
+        } else {
+            return res.json({
+                success: false,
+                message: "Invalid OTP. Please try again."
+            });
+        }
+    } catch (error) {
+        console.error("Error occurred in verify OTP:", error);
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred. Please try again"
+        });
+    }
+};
+
+const verifyPasswordResendOTP = async (req, res) => {
+    try {
+        const userData = req.session;
+        
+        const {email} = userData
+        
+        if (!email || !userData) {
+            return res.status(400).json({
+                success: false,
+                message: "You has expried. Please try agian"
+            });
+        }
+        const otp = generateOtp();  
+        const otpExpiry = Date.now() + 1 * 60 * 1000;
+        req.session.userOtp = otp
+        req.session.otpExpiry = otpExpiry
+        console.log("this is resend otp", otp)
+        const sentEmail = await sendVerificationEmail(email,otp);
+        if (!sentEmail) {
+            return res.status(500).json({
+                success: false,
+                message: "Failed to send OTP. Please try again."
+            });
+        }
+        return res.json({
+            success: true,
+            message: "OTP sent successfully! Please check your email."
+        });
+
+    } catch (error) {
+        console.error("Error in verifyPasswordResendOTP:", error);
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred. Please try again."
+        });
+    }
+};
+
+const getchangePasswordPage = async (req, res) => {
+    try {   
+        if (!req.session.userOtp === null) {
+            return res.redirect('/forgot-password');
+        }
+        res.render("enterNewPassword");
+    } catch (error) {
+        console.error("Error in changePassword:", error);
+        res.redirect("/pageerror");
+    }
+}
+
+
+// const securePassword = async (password)=>{
+//     try{
+//         const passwordHash = await bcrypt.hash(password,10)
+//         return passwordHash
+//     }catch(error){
+
+//     }
+// }
+
+
+const changePassword = async (req,res)=>{
+    try {
+        const password = req.body
+        console.log("This is new password",password)
+        res.end()
+    } catch (error) {
+        console.error("This error occured in change password", error)
+        res.redirect("/pageerror")
+    }
+}
+
 module.exports = {
     getProfilePage,
     editUserProfile,
@@ -247,5 +359,9 @@ module.exports = {
     getUserAddressId,
     updateAddress,
     getForgotPassPage,
-    forgotEmailValid
+    forgotEmailValid,
+    verifyForgotPassOtp,
+    verifyPasswordResendOTP,
+    getchangePasswordPage,
+    changePassword
 }
