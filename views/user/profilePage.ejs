@@ -568,10 +568,10 @@
                                 <h5 class="card-title mb-0">Change Password</h5>
                             </div>
                             <div class="card-body">
-                                <form>
+                                <form method="post" action="/forgot-email-valid" id="emailForm" novalidate>
                                     <div class="mb-3">
                                         <label class="form-label">Email Address</label>
-                                        <input type="email" class="form-control" placeholder="Enter your email">
+                                        <input   name="email" id="email"  type="email" class="form-control" placeholder="Enter your email">
                                     </div>
                                     <button type="submit" class="btn btn-primary">Send OTP</button>
                                 </form>
@@ -1182,6 +1182,72 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 	</script>
 
+
+<!-- Change password script -->
+
+<script>
+	// Get the form element
+const form = document.getElementById('emailForm');
+
+// Add submit event listener
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Get the email value
+    const email = document.getElementById('email').value;
+
+    try {
+        // Show loading state
+        Swal.fire({
+            title: 'Processing...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Send POST request to backend
+        const response = await fetch('/forgot-email-valid', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email })
+        });
+
+        // Check if the response is JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            
+            if (!data.success) {
+                // Show error message from backend
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Something went wrong. Please try again.',
+                });
+                return;
+            }
+        } else {
+            // If it's not JSON, it's likely a page render response
+            // Handle the redirect manually
+            window.location.href = response.url || '/forgot-email-valid';
+            return;
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        // Show error message
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+        });
+    }
+});
+</script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <!--===============================================================================================-->	
 	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
@@ -1219,6 +1285,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			})
 		});
 	</script>
+
+
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
 	

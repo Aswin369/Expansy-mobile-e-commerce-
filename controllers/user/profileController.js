@@ -208,14 +208,31 @@ const getForgotPassPage = async (req,res)=>{
     try {
         res.render("forgot-password")
     } catch (error) {
-        res.redirect("/pageNotFound");
+        console.error("This error occured in getForgotPassPage",error)
+        res.redirect("/pageerror");
+    }
+}
+
+const getVerifyOtpPage = async (req,res)=>{
+    try {
+        res.render("forgotpass-verfiyOtp")
+    } catch (error) {
+        console.error("This error occured in getVerifyOtpPage",error)
+        res.redirect("/pageerror")
     }
 }
 
 const forgotEmailValid = async (req,res)=>{
     try {
         const {email} = req.body
+        console.log("Tisd email", req.body)
         const findUser = await User.findOne({email:email})
+        console.log("This is the user",findUser)
+
+        if(!findUser){
+            res.status(400).json({success:false, message:"Please use valid email"})
+        }
+
         if(findUser){
             const otp = generateOtp()
             const otpExpiry = Date.now() + 1 * 60 * 1000;
@@ -234,6 +251,8 @@ const forgotEmailValid = async (req,res)=>{
                 message:"User with this email does not exists"
             })
         }
+
+        console.log("This user session form verify email", req.session)
         
     } catch (error) {
         console.error("This is error occured in forgot password send email",error)
@@ -260,24 +279,19 @@ const verifyForgotPassOtp = async (req, res) => {
         }
         if (otp === userOtp) { 
             req.session.userOtp = null;
+            console.log("This is from comparing otp now printing session", req.session)
             return res.json({
                 success: true,
                 redirectUrl: "/change-password"
             });
         } else {
-            return res.json({
-                success: false,
-                message: "Invalid OTP. Please try again."
-            });
+            return res.json({success: false, message: "Invalid OTP. Please try again."})
         }
     } catch (error) {
         console.error("Error occurred in verify OTP:", error);
-        return res.status(500).json({
-            success: false,
-            message: "An error occurred. Please try again"
-        });
+        return res.status(500).json({success: false, message: "An error occurred. Please try again"})
     }
-};
+}
 
 const verifyPasswordResendOTP = async (req, res) => {
     try {
@@ -286,10 +300,7 @@ const verifyPasswordResendOTP = async (req, res) => {
         const {email} = userData
         
         if (!email || !userData) {
-            return res.status(400).json({
-                success: false,
-                message: "You has expried. Please try agian"
-            });
+            return res.status(400).json({success: false, message: "You has expried. Please try agian"})
         }
         const otp = generateOtp();  
         const otpExpiry = Date.now() + 1 * 60 * 1000;
@@ -298,10 +309,7 @@ const verifyPasswordResendOTP = async (req, res) => {
         console.log("this is resend otp", otp)
         const sentEmail = await sendVerificationEmail(email,otp);
         if (!sentEmail) {
-            return res.status(500).json({
-                success: false,
-                message: "Failed to send OTP. Please try again."
-            });
+            return res.status(500).json({success: false, message: "Failed to send OTP. Please try again."})
         }
         return res.json({
             success: true,
@@ -315,7 +323,7 @@ const verifyPasswordResendOTP = async (req, res) => {
             message: "An error occurred. Please try again."
         });
     }
-};
+}
 
 const getchangePasswordPage = async (req, res) => {
     try {   
@@ -329,22 +337,38 @@ const getchangePasswordPage = async (req, res) => {
     }
 }
 
+const securePassword = async (password)=>{
+    try{
+        const passwordHash = await bcrypt.hash(password,10)
+        return passwordHash
+    }catch(error){
 
-// const securePassword = async (password)=>{
-//     try{
-//         const passwordHash = await bcrypt.hash(password,10)
-//         return passwordHash
-//     }catch(error){
-
-//     }
-// }
-
+    }
+}
 
 const changePassword = async (req,res)=>{
     try {
-        const password = req.body
-        console.log("This is new password",password)
-        res.end()
+        const {confirmPassword} = req.body
+        const {email} = req.session
+        
+        if(!confirmPassword){
+             res.status(400).json({success:false, message:"Please try again"})
+        }
+        const hashPassword = await securePassword(confirmPassword)
+        if(!hashPassword){
+            res.status(400).json({success:false, message:"Please try again"})
+        }
+        const finduser = await User.findOneAndUpdate({email:email}, {$set:{password:hashPassword}})
+        
+        console.log("This is findUser", finduser)
+
+        if(!finduser){
+            res.status(400).json({success:false, message:"Password not saved please try again"})
+        }
+
+        console.log("saved password")
+        res.status(200).json({success:true})
+        
     } catch (error) {
         console.error("This error occured in change password", error)
         res.redirect("/pageerror")
@@ -363,5 +387,6 @@ module.exports = {
     verifyForgotPassOtp,
     verifyPasswordResendOTP,
     getchangePasswordPage,
-    changePassword
+    changePassword,
+    getVerifyOtpPage
 }

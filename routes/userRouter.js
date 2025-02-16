@@ -29,6 +29,7 @@ router.get("/shopPage",shopPageController.getShopPage)
 
 // userForgot password
 router.get("/forgot-password",profileController.getForgotPassPage)
+router.get("/forgot-email-valid",profileController.getVerifyOtpPage)
 router.post("/forgot-email-valid",profileController.forgotEmailValid)
 router.post("/verify-pass-forgot-otp",profileController.verifyForgotPassOtp)
 router.post("/verify-pass-resend-otp",profileController.verifyPasswordResendOTP)
@@ -43,7 +44,12 @@ router.get("/getAddress/:addressId",userAuth,profileController.getUserAddressId)
 router.post("/updateAddress/:addressId",userAuth,profileController.updateAddress)
 // shopping cart management
 router.get('/shoppingCart',userAuth,shoppingCartController.getShoppingCart)
-
+router.post("/addToCart",userAuth,shoppingCartController.productAddToCart)
+router.delete("/deleteCartProduct/:productId",shoppingCartController.deleteProductFromCart)
 // WhishList management
 router.get("/getWhishlist",userAuth,wishListController.getWhishList)
+
+
+
+
 module.exports = router 
