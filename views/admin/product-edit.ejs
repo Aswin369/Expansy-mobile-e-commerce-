@@ -592,25 +592,23 @@
                                              </select>
                                         </div>
                                        <div class="col-lg-6">
-                                           <label for="quantity" class="form-label">Quantity</label>
-                                           <input type="number" value="<%=product.quantity%>" id="quantity" name="quantity" class="form-control" placeholder="Enter quantity" >
+                                           <label for="quantity" class="form-label">Battery</label>
+                                           <input type="text" value="<%=product.battery%>" id="battery" name="battery" class="form-control" placeholder="hgfh">
                                        </div>
                                    </div>
            
                                    <!-- Price Information -->
                                    <div class="row mb-3">
                                        <div class="col-lg-6">
-                                           <label for="regular-price" class="form-label">Regular Price</label>
+                                           <label for="regular-price" class="form-label">Processor</label>
                                            <div class="input-group">
-                                               <span class="input-group-text"><i class='bx bx-dollar'></i></span>
-                                               <input type="number" value="<%=product.regularPrice%>" id="regularPrice" name="regularPrice" class="form-control" placeholder="0.00" >
+                                               <input type="text"  id="Processor" value="<%= product.processor%>" name="Processor" class="form-control" >
                                            </div>
                                        </div>
                                        <div class="col-lg-6">
-                                           <label for="sale-price" class="form-label">Sale Price</label>
+                                           <label for="sale-price" class="form-label">Display Size</label>
                                            <div class="input-group">
-                                               <span class="input-group-text"><i class='bx bx-dollar'></i></span>
-                                               <input value="<%=product.salePrice%>" type="number" id="salePrice" name="salePrice" class="form-control" placeholder="0.00">
+                                               <input  type="text" id="displaySize" value="<%= product.displaySize%>" name="displaySize" class="form-control" >
                                            </div>
                                        </div>
                                    </div>
@@ -622,135 +620,137 @@
                                    </div>
            
                                    <!-- Specifications -->
-                                   <h5 class="mb-3">Specifications</h5>
-                                   <div class="row mb-3">
-                                       <div class="col-lg-4">
-                                           <label for="ram" class="form-label">RAM</label>
-                                           <select class="form-control" id="RAM" name="ram">
-                                             <option value="<%= product.ram ? product.ram._id : '' %>" selected>
-                                                 <%= product.ram ? product.ram.value : 'Select RAM' %>
-                                             </option>
-                                             <option value="65ram1">4GB</option>
-                                             <option value="65ram2">8GB</option>
-                                             <option value="65ram3">16GB</option>
-                                             <option value="65ram4">32GB</option>
-                                         </select>
-                                         
-                                       </div>
-                                       <div class="col-lg-4">
-                                           <label for="storage" class="form-label">Internal Storage</label>
-                                           <select class="form-control" id="storage" name="storage">
-                                             <option value="<%= product.storage ? product.storage._id : '' %>" selected>
-                                                 <%= product.storage ? product.storage.value : 'Select Storage' %>
-                                             </option>
-                                             <option value="64GB">64GB</option>
-                                             <option value="128GB">128GB</option>
-                                             <option value="256GB">256GB</option>
-                                             <option value="512GB">512GB</option>
-                                             <option value="1TB">1TB</option>
-                                         </select>
-                                         
-                                       </div>
-                                       <div class="col-lg-4">
-                                           <label for="processor" class="form-label">Processor</label>
-                                           <input type="text" id="processor" value="<%=product.processor%>" name="processor" class="form-control" placeholder="Enter processor details" >
-                                       </div>
-                                   </div>
-                                   <div class="col-lg-4">
-                                       <label for="color" class="form-label">Choose Color</label>
-                                       <select class="form-control" id="color" name="color" >
-                                           <option value="<%=product.color%>"><%=product.color%></option>
-                                           <option value="Red" style="background-color: red; color: white;">Red</option>
-                                           <option value="Blue" style="background-color: blue; color: white;">Blue</option>
-                                           <option value="Green" style="background-color: green; color: white;">Green</option>
-                                           <option value="Black" style="background-color: black; color: white;">Black</option>
-                                           <option value="White" style="background-color: white; color: black;">White</option>
-                                       </select>
-                                   </div>
+                                   <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5>Specifications</h5>
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#variantModal">
+                                                Add Stocks
+                                            </button>
+                                        </div>
                                    
-                                  <div style="margin: 5%;"></div>
+                                        <!-- List of stocks -->
+                                        <div id="variants-container" class="mb-4">
+                                             <table class="table table-bordered">
+                                                 <thead>
+                                                     <tr>
+                                                         <th>RAM</th>
+                                                         <th>Storage</th>
+                                                         <th>Color</th>
+                                                         <th>Quantity</th>
+                                                         <th>Regular Price</th>
+                                                         <th>Sale Price</th>
+                                                         <th>Actions</th>
+                                                     </tr>
+                                                 </thead>
+                                                 <tbody>
+                                                     <% if (product.specification.length > 0) { %>
+                                                         <% product.specification.forEach(variant => { %>
+                                                             <tr>
+                                                                 <td><%= variant.ram.value %></td>
+                                                                 <td><%= variant.storage.value %></td>
+                                                                 <td><%= variant.color.value %></td>
+                                                                 <td><%= variant.quantity %></td>
+                                                                 <td><%= variant.regularPrice %></td>
+                                                                 <td><%= variant.salePrice %></td>
+                                                                 <td>
+                                                                     <button class="btn btn-danger btn-sm delete-variant" data-variant-id="<%= variant._id %>">
+                                                                         Delete
+                                                                     </button>
+                                                                 </td>
+                                                             </tr>
+                                                         <% }) %>
+                                                     <% } else { %>
+                                                         <tr>
+                                                             <td colspan="7" class="text-center">No variants added yet</td>
+                                                         </tr>
+                                                     <% } %>
+                                                 </tbody>
+                                             </table>
+                                         </div>
+                                         
+                                     </div>
                                    <!-- Product Images -->
-                                   <!-- Image Section 1 -->
-<div class="image-section mb-4" id="image-section-1">
-    <h6 class="mb-3">Image 1</h6>
-    <div class="image-preview-circle mb-3">
-        <img src="<%= product.productImage[0]%>" id="imagePreview1" class="preview-image" alt="Product Image 1">
-    </div>
+                                                                      <!-- Image Section 1 -->
+                                   <div class="image-section mb-4" id="image-section-1">
+                                   <h6 class="mb-3">Image 1</h6>
+                                   <div class="image-preview-circle mb-3">
+                                        <img src="<%= product.productImage[0]%>" id="imagePreview1" class="preview-image" alt="Product Image 1">
+                                   </div>
 
-    <!-- Control Buttons -->
-    <div class="button-group mb-3">
-        <button class="btn btn-outline-dark mb-2 me-2 crop-btn" id="cropButton1">Crop Image</button>
-        <button type="button" class="btn btn-outline-danger mb-2 delete-btn" id="delete-btn-1">Delete Image</button>
-    </div>
+                                   <!-- Control Buttons -->
+                                   <div class="button-group mb-3">
+                                        <button class="btn btn-outline-dark mb-2 me-2 crop-btn" id="cropButton1">Crop Image</button>
+                                        
+                                   </div>
 
-    <!-- File Input Section -->
-    <div class="file-input-section mb-4">
-        <label for="file-1" class="mb-2">Choose Image 1</label>
-        <div class="custom-file-input">
-            <input type="file" class="form-control" id="productImage1" name="productImage-1" accept="image/*">
-        </div>
-    </div>
+                                   <!-- File Input Section -->
+                                   <div class="file-input-section mb-4">
+                                        <label for="file-1" class="mb-2">Choose Image 1</label>
+                                        <div class="custom-file-input">
+                                             <input type="file" class="form-control" id="productImage1" name="productImage-1" accept="image/*">
+                                        </div>
+                                   </div>
 
-    <!-- Hidden inputs -->
-    <input type="hidden" name="imageModified-1" id="image-modified-1" value="<%= product.productImage[0]%>">
-    <input type="hidden" name="deleteImage-1" id="delete-1" value="false">
-</div>
+                                   <!-- Hidden inputs -->
+                                   <input type="hidden" name="imageModified-1" id="image-modified-1" value="<%= product.productImage[0]%>">
+                                   <input type="hidden" name="deleteImage-1" id="delete-1" value="false">
+                                   </div>
 
-<!-- Image Section 2 -->
-<div class="image-section mb-4" id="image-section-2">
-    <h6 class="mb-3">Image 2</h6>
-    <div class="image-preview-circle mb-3">
-        <img src="<%= product.productImage[1]%>" id="imagePreview2" class="preview-image" alt="Product Image 2">
-    </div>
+                                   <!-- Image Section 2 -->
+                                   <div class="image-section mb-4" id="image-section-2">
+                                   <h6 class="mb-3">Image 2</h6>
+                                   <div class="image-preview-circle mb-3">
+                                        <img src="<%= product.productImage[1]%>" id="imagePreview2" class="preview-image" alt="Product Image 2">
+                                   </div>
 
-    <!-- Control Buttons -->
-    <div class="button-group mb-3">
-        <button class="btn btn-outline-dark mb-2 me-2 crop-btn" id="cropButton2">Crop Image</button>
-        <button type="button" class="btn btn-outline-danger mb-2 delete-btn" id="delete-btn-2">Delete Image</button>
-    </div>
-    <div id="cropModal" style="display: none;">
-     <img id="imageToCrop">
-     <button id="saveCrop">Save Crop</button>
-     <button id="cancelCrop">Cancel</button>
- </div>
-    <!-- File Input Section -->
-    <div class="file-input-section mb-4">
-        <label for="file-2" class="mb-2">Choose Image 2</label>
-        <div class="custom-file-input">
-            <input type="file" class="form-control" id="productImage2" name="productImage-2" accept="image/*">
-        </div>
-    </div>
+                                   <!-- Control Buttons -->
+                                   <div class="button-group mb-3">
+                                        <button class="btn btn-outline-dark mb-2 me-2 crop-btn" id="cropButton2">Crop Image</button>
+                                        
+                                   </div>
+                                   <div id="cropModal" style="display: none;">
+                                        <img id="imageToCrop">
+                                        <button id="saveCrop">Save Crop</button>
+                                        <button id="cancelCrop">Cancel</button>
+                                   </div>
+                                   <!-- File Input Section -->
+                                   <div class="file-input-section mb-4">
+                                        <label for="file-2" class="mb-2">Choose Image 2</label>
+                                        <div class="custom-file-input">
+                                             <input type="file" class="form-control" id="productImage2" name="productImage-2" accept="image/*">
+                                        </div>
+                                   </div>
 
-    <!-- Hidden inputs -->
-    <input type="hidden" name="imageModified-2" id="image-modified-2" value="<%= product.productImage[1]%>">
-    <input type="hidden" name="deleteImage-2" id="delete-2" value="false">
-</div>
+                                   <!-- Hidden inputs -->
+                                   <input type="hidden" name="imageModified-2" id="image-modified-2" value="<%= product.productImage[1]%>">
+                                   <input type="hidden" name="deleteImage-2" id="delete-2" value="false">
+                                   </div>
 
-<!-- Image Section 3 -->
-<div class="image-section mb-4" id="image-section-3">
-    <h6 class="mb-3">Image 3</h6>
-    <div class="image-preview-circle mb-3">
-        <img src="<%= product.productImage[2]%>" id="imagePreview3" class="preview-image" alt="Product Image 3">
-    </div>
+                                   <!-- Image Section 3 -->
+                                   <div class="image-section mb-4" id="image-section-3">
+                                   <h6 class="mb-3">Image 3</h6>
+                                   <div class="image-preview-circle mb-3">
+                                        <img src="<%= product.productImage[2]%>" id="imagePreview3" class="preview-image" alt="Product Image 3">
+                                   </div>
 
-    <!-- Control Buttons -->
-    <div class="button-group mb-3">
-        <button class="btn btn-outline-dark mb-2 me-2 crop-btn" id="cropButton3">Crop Image</button>
-        <button type="button" class="btn btn-outline-danger mb-2 delete-btn" id="delete-btn-3">Delete Image</button>
-    </div>
+                                   <!-- Control Buttons -->
+                                   <div class="button-group mb-3">
+                                        <button class="btn btn-outline-dark mb-2 me-2 crop-btn" id="cropButton3">Crop Image</button>
+                                        
+                                   </div>
 
-    <!-- File Input Section -->
-    <div class="file-input-section mb-4">
-        <label for="file-3" class="mb-2">Choose Image 3</label>
-        <div class="custom-file-input">
-            <input type="file" class="form-control" id="productImage3" name="productImage-3" accept="image/*">
-        </div>
-    </div>
+                                   <!-- File Input Section -->
+                                   <div class="file-input-section mb-4">
+                                        <label for="file-3" class="mb-2">Choose Image 3</label>
+                                        <div class="custom-file-input">
+                                             <input type="file" class="form-control" id="productImage3" name="productImage-3" accept="image/*">
+                                        </div>
+                                   </div>
 
-    <!-- Hidden inputs -->
-    <input type="hidden" name="imageModified-3" id="image-modified-3" value="<%= product.productImage[2]%>">
-    <input type="hidden" name="deleteImage-3" id="delete-3" value="false">
-</div>
+                                   <!-- Hidden inputs -->
+                                   <input type="hidden" name="imageModified-3" id="image-modified-3" value="<%= product.productImage[2]%>">
+                                   <input type="hidden" name="deleteImage-3" id="delete-3" value="false">
+                                   </div>
                                
            
                                    <!-- Form Actions -->
@@ -763,11 +763,73 @@
                                        </div>
                                    </div>
                                </form>
+                               
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+
+            <!-- modal for add stocks -->
+          <form id="addVariant" action="/admin/updateVariantStocks">
+            <div class="modal fade" id="variantModal" tabindex="-1" aria-labelledby="variantModalLabel" aria-hidden="true">
+               <div class="modal-dialog">
+                   <div class="modal-content">
+                       <div class="modal-header">
+                           <h5 class="modal-title" id="variantModalLabel">Add Product Variant</h5>
+                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                       </div>
+                       <div class="modal-body">
+                           <div class="mb-3">
+                               <label for="modal-ram" class="form-label">RAM</label>
+                               <select class="form-control" id="modal-ram">
+                                   <option value="">Select RAM</option>
+                                   <% product.specification.forEach(item => { %>
+                                       <option value="<%= item.ram._id %>"><%= item.ram.value %></option>
+                                   <% }) %>
+                               </select>
+                           </div>
+                           <div class="mb-3">
+                               <label for="modal-storage" class="form-label">Internal Storage</label>
+                               <select class="form-control" id="modal-storage">
+                                   <option value="">Select Storage</option>
+                                   <% product.specification.forEach(item =>{%>
+                                   <option value="<%= item.storage._id%>"><%= item.storage.value%></option>
+                                   
+                                   <%})%>
+                               </select>
+                           </div>
+                           <div class="mb-3">
+                               <label for="modal-color" class="form-label">Color</label>
+                               <select class="form-control" id="modal-color">
+                                   <option value="">Select Color</option>
+                                   <%product.specification.forEach(item=>{%>
+                                   <option value="<%= item.color._id%>"><%= item.color.value%></option>
+                                   <%})%>
+                               </select>
+                           </div>
+                           <div class="mb-3">
+                               <label for="modal-quantity" class="form-label">Stock Quantity</label>
+                               <input type="number" class="form-control" id="modal-quantity" min="0">
+                           </div>
+                           <div class="mb-3">
+                               <label for="modal-RegularPrice" class="form-label">Regular Price</label>
+                               <input type="number" class="form-control" id="modal-RegularPrice" min="0">
+                           </div>
+                           <div class="mb-3">
+                               <label for="modal-SalePrice" class="form-label">Sale Price</label>
+                               <input type="number" class="form-control" id="modal-SalePrice" min="0">
+                           </div>
+                       </div>
+                       <div class="modal-footer">
+                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                           <button type="submit" class="btn btn-primary" id="add-variant-btn">Add Variant</button>
+                       </div>
+                   </div>
+               </div>
+           </div>
+          </form>
                <!-- End Container Fluid -->
 
                <!-- ========== Footer Start ========== -->
@@ -967,29 +1029,23 @@ productForm.addEventListener("submit", async function(event) {
     const name = document.getElementById("name").value.trim();
     const description = document.getElementById("description").value.trim();
     const brand = document.getElementById("brand").value.trim();
-    const category = document.getElementById("category").value;
-    const regularPrice = parseFloat(document.getElementById("regularPrice").value);
-    const salePrice = document.getElementById("salePrice").value;
-    const quantity = parseInt(document.getElementById("quantity").value);
-    const RAM = document.getElementById("RAM").value;
-    const processor = document.getElementById("processor").value;
-    const color = document.getElementById("color").value.trim();
-    const storage = document.getElementById("storage").value;
+    const category = document.getElementById("category").value.trim();
+    const Processor = document.getElementById("Processor").value.trim()
+    const displaySize = document.getElementById("displaySize").value.trim()
+    const battery = document.getElementById("battery").value.trim()
 
+
+    console.log("This is my ordof", productId)
     // Basic Validation
     let errorMessage = "";
     if (!name) errorMessage = "Product name is required.";
     else if (!description) errorMessage = "Product description is required.";
     else if (!brand) errorMessage = "Product brand is required.";
     else if (!category) errorMessage = "Product category is required.";
-    else if (!regularPrice || regularPrice <= 0) errorMessage = "Regular price must be a positive number.";
-    else if (!salePrice || salePrice < 0) errorMessage = "Sale price must be a non-negative number.";
-    else if (!quantity || quantity < 0) errorMessage = "Quantity must be a non-negative number.";
-    else if (parseFloat(salePrice) > regularPrice) errorMessage = "Sale price cannot be greater than regular price.";
-    else if (!RAM) errorMessage = "RAM specification is required.";
-    else if (!processor) errorMessage = "Processor specification is required.";
-    else if (!storage) errorMessage = "Storage specification is required.";
-    else if (!color) errorMessage = "color is required.";
+    else if (!Processor) errorMessage = "Processor specification is required.";
+    else if(!displaySize) errorMessage = "Display field is required"
+    else if(!battery) errorMessage = "Battery field is required"
+    
 
     if (errorMessage) {
         swal('Validation Error', errorMessage, 'error');
@@ -1011,16 +1067,12 @@ productForm.addEventListener("submit", async function(event) {
             body: JSON.stringify({
                 name,
                 description,
-                quantity,
-                RAM,
-                processor,
-                storage,
+                Processor,
                 brand,
                 category,
-                regularPrice,
-                salePrice,
                 productId,
-                color
+                displaySize,
+                battery
             })
         });
 
@@ -1041,6 +1093,102 @@ productForm.addEventListener("submit", async function(event) {
     } finally {
         submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
+    }
+});
+
+// Get the form element
+const addVariantForm = document.getElementById('addVariant');
+
+// Add event listeners to number inputs to prevent 'e' character
+const numberInputs = document.querySelectorAll('input[type="number"]');
+numberInputs.forEach(input => {
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'e' || e.key === 'E') {
+            e.preventDefault();
+        }
+    });
+});
+
+// Form submission handler
+addVariantForm.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+
+    // Get form values
+    const ram = document.getElementById('modal-ram').value;
+    const storage = document.getElementById('modal-storage').value;
+    const color = document.getElementById('modal-color').value;
+    const quantity = document.getElementById('modal-quantity').value;
+    const regularPrice = document.getElementById('modal-RegularPrice').value;
+    const salePrice = document.getElementById('modal-SalePrice').value;
+    const productId = document.getElementById("productId").value.trim();
+     console.log("sdajkf",productId)
+    // Validation checks
+    if (!ram || !storage || !color) {
+        alert('Please select RAM, Storage, and Color');
+        return;
+    }
+
+    if (!quantity || quantity < 0) {
+        alert('Please enter a valid quantity');
+        return;
+    }
+
+    if (!regularPrice || regularPrice <= 0) {
+        alert('Please enter a valid regular price');
+        return;
+    }
+
+    if (!salePrice || salePrice <= 0) {
+        alert('Please enter a valid sale price');
+        return;
+    }
+
+    // Check if sale price is greater than regular price
+    if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
+        alert('Sale price must be less than regular price');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/admin/updateVariantStocks/${productId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ram,
+                storage,
+                color,
+                quantity,
+                regularPrice,
+                salePrice
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to add variant');
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('variantModal'));
+            modal.hide();
+            
+            // Optional: Reset form
+            addVariantForm.reset();
+            
+            // Show success message
+            alert('Variant added successfully');
+        } else {
+            alert(data.message || 'Failed to add variant');
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while adding the variant');
     }
 });
 

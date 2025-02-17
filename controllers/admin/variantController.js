@@ -1,14 +1,17 @@
 const express = require("express")
 const Variant = require("../../models/variantSchema")
+const { findByIdAndUpdate, updateOne } = require("../../models/userSchema")
 
 
 const getVariantList = async (req,res)=>{
     try {
         const ramData = await Variant.find({category:"Ram"})
         const StorageData = await Variant.find({category:"Storage"})
+        const colorData = await Variant.find({category:"Color"})
         res.render("variant",{
             ramData,
-            StorageData
+            StorageData,
+            colorData
         })
         // console.log(StorageData)
     } catch (error) {
@@ -124,6 +127,55 @@ const deleteStorage = async (req,res)=>{
     }
 }
 
+const deleteColor = async(req,res)=>{
+    try {
+        const id = req.params.id
+        console.log("This delectdjfk",id)
+        if(!id){
+            res.redirect("/pageerror")
+        }
+
+        await Variant.deleteOne({_id:id})
+        console.log("!")
+        res.redirect("/admin/getVariant")
+
+    } catch (error) {
+        console.error("This error occured in delete color function",error)
+        res.redirect("/pageerror")
+    }
+}
+
+const unBlockColor = async(req,res)=>{
+    try {
+        const id = req.params.id
+        console.log("Unblock id", id)
+        if(!id){
+            res.redirect("/pageerror")
+        }
+
+        await Variant.updateOne({_id:id},{$set:{isBlocked:false}})
+        console.log("unblocked seussesd")
+        res.redirect("/admin/getVariant")
+    } catch (error) {
+        
+    }
+}
+
+const blockColor = async(req,res)=>{
+    try {
+        const id = req.params.id
+        console.log("block id", id)
+        if(!id){
+            res.redirect("/pageerror")
+        }
+        await Variant.updateOne({_id:id},{$set:{isBlocked:true}})
+        console.log("blocked seussesd")
+        res.redirect('/admin/getVariant')
+    } catch (error) {
+        
+    }
+}
+
 module.exports = {
     getVariantList,
     addVariants,
@@ -133,5 +185,8 @@ module.exports = {
     deleteVariant,
     blockedStorage,
     unBlockStorage,
-    deleteStorage
+    deleteStorage,
+    deleteColor,
+    unBlockColor,
+    blockColor
 }

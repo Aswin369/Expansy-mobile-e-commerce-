@@ -4,9 +4,9 @@ const Category = require("../../models/categorySchema")
 const Brand = require("../../models/brandSchema")
 const Variant = require("../../models/variantSchema")
 const User = require("../../models/userSchema")
-const sharp = require("sharp")
 const {handleUpload } = require("../../config/cloudinary")
 const streamifier = require("streamifier");
+const { json } = require("body-parser")
 
 const getProductAddPage = async (req,res)=>{
     try {
@@ -14,11 +14,13 @@ const getProductAddPage = async (req,res)=>{
         const brand = await Brand.find({isBlocked:false})
         const ram = await Variant.find({category:"Ram", isBlocked:false})
         const storage = await Variant.find({category:"Storage",isBlocked:false})
+        const color = await Variant.find({category:"Color", isBlocked:false})
         res.render("product-add",{
             category:category,
             brand:brand,
             storage:storage,
-            ram:ram
+            ram:ram,
+            color:color
         })
         
     } catch (error) {
@@ -28,17 +30,12 @@ const getProductAddPage = async (req,res)=>{
 
 const addProducts = async (req, res) => {
     try {
-        const {productName, productCategories, brand, quantity, regularPrice, salePrice, description, ram, storage, processor, color} = req.body;
-        console.log("Stoger",req.body)
-        // console.log(req.body)
-        // console.log("request body is printing",req.body)
-
+        const {productName, description, processor, brand, productCategories, battery, displaySize, variants} = req.body;
+        
         const brandId = await Brand.findOne({
             brand:brand._id
         })
 
-        // console.log("brand id ",brandId)
-        
         if(!brand){
             return res.status(400).json({
                 success:false,
@@ -59,34 +56,21 @@ const addProducts = async (req, res) => {
             })
         }
 
+        const variant = typeof variants  === "string" ? JSON.parse(variants) : variants
 
-        const ramId = await Variant.findOne({
-            ram:ram._id
-        })
-        if(!ramId){
-            return res.status(400).json({
-                success:false,
-                message: "Ram is not exists"
-            })
-        }
-       
-        const storageId = await Variant.findOne({
-            storage:storage._id
-        })
+        console.log("VAriat typof", typeof variant)
 
-        console.log("storage?????",storageId)
-
-        if(!storageId){
-            return res.status(400).json({
-                success:false,
-                message: "Storage is not exists"
-            })
-        }
-    
-        const imagePaths = [];
+        console.log("This is parsed variant", variant)
         
-       
-
+        const specification = variant.map(items=>({
+            ram: items.ram.id,
+            storage: items.storage.id,
+            color: items.color.id,
+            quantity:items.quantity,
+            regularPrice: items.regularPrice,
+            salePrice:items.salePrice
+        }))
+        const imagePaths = [];
             if (req.files && req.files.length > 0) {
                 for (let i = 0; i < req.files.length; i++) {
                     const b64 = Buffer.from(req.files[i].buffer).toString("base64");
@@ -96,32 +80,19 @@ const addProducts = async (req, res) => {
                 }
             }
 
-// console.log("Images ",imagePaths);
-
-
         const newProduct = new Product({
             productName:productName,
             description:description,
-            category:categoryId._id,
-            brand:brandId._id,
-            quantity:quantity,
-            
-            regularPrice:regularPrice,
-            salePrice:salePrice,
-            ram:ramId._id,
-            storage:storageId._id,
+            brand:brandId,
+            category:categoryId,
+            battery:battery,
+            displaySize:displaySize,
             processor:processor,
-            color:color,
             status:"Available",
+            specification: specification,
             productImage: imagePaths
         });
-
-        // console.log("Now product detail checking properly",newProduct)
-        
         await newProduct.save();
-        
-        console.log("Saved conformed", newProduct)
-
         return res.status(201).json({
             success: true,
             message: 'Product added successfully',
@@ -212,8 +183,14 @@ const UnBlockProduct = async (req, res) => {
 const getEditProduct = async (req, res) => {
     try {
         const id = req.params.id;
-        const product = await Product.findOne({ _id: id }).populate("ram").populate("storage")
         
+        const product = await Product.findOne({ _id: id })
+        .populate({path: "specification.ram",model: 'Variant'})
+        .populate({path: "specification.storage", model: "Variant"})
+        .populate({path: "specification.color", model:"Variant"})
+        
+        
+
         const category = await Category.find({});
         const brand = await Brand.find({});
 
@@ -230,7 +207,7 @@ const getEditProduct = async (req, res) => {
         console.error('Get edit product error:', error);
         res.redirect("/pageerror");
     }
-};
+}
 
 const updateImage = async (req,res)=>{
     try {
@@ -272,6 +249,7 @@ const updateImage = async (req,res)=>{
 const updateForm = async (req,res)=>{
     try {
         const id = req.params.productId
+        console.log("update form id", id);
         if(!id){
             return res.status(400).json({message:"Product id not found"})
         }
@@ -342,6 +320,15 @@ const viewProduct = async (req, res) => {
     }
 }
 
+const updateStocks = async(req,res)=>{
+    try {
+        const id = req.params.productId
+        console.log("this req.body",req.body)
+        console.log("This is dsjk", id)
+    } catch (error) {
+        
+    }
+}
 
 module.exports = {
     getProductAddPage,
@@ -352,5 +339,6 @@ module.exports = {
     updateImage,
     getEditProduct,
     viewProduct,
-    updateForm
+    updateForm,
+    updateStocks
 }

@@ -5,7 +5,7 @@ const variantSchema = new mongoose.Schema({
     category:{
         type:String,
         required:true,
-        enum:["Ram", "Storage"]
+        enum:["Ram", "Storage", "Color"]
     },
     value:{
         type:String,
@@ -13,7 +13,7 @@ const variantSchema = new mongoose.Schema({
     },
     price:{
         type:Number,
-        required:true
+        required:false
     },
     isBlocked:{
         type:Boolean,

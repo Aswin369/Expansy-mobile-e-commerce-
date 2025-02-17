@@ -45,6 +45,7 @@ router.get('/editProduct/:id', adminAuth,productController.getEditProduct);
 router.put('/editProduct/:productId',upload.single("productImage"),adminAuth,productController.updateImage);
 router.get("/viewProducts/:id",adminAuth,productController.viewProduct)
 router.put("/updateForm/:productId",adminAuth,productController.updateForm)
+router.put("/updateVariantStocks/:productId",adminAuth,productController.updateStocks)
 // Variant Management
 router.get("/getVariant",adminAuth,variantController.getVariantList)
 router.get("/getAddVariant",adminAuth,variantController.getAddVariant)
@@ -55,4 +56,7 @@ router.get("/deleteVariant/:id",adminAuth,variantController.deleteVariant)
 router.get("/blockedStorage/:id",adminAuth,variantController.blockedStorage)
 router.get("/unBlockStorage/:id",adminAuth, variantController.unBlockStorage)
 router.get("/deleteStorage/:id",adminAuth,variantController.deleteStorage)
+router.get("/deleteColor/:id",adminAuth,variantController.deleteColor)
+router.get("/UnBlockColor/:id",adminAuth,variantController.unBlockColor)
+router.get("/blockColor/:id",adminAuth,variantController.blockColor)
 module.exports = router

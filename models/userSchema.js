@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
         type:String,
         // required: true
     },
+    createdOn:{
+        type: Date,
+        default: Date.now
+    },
     redeemed:{
         type:Boolean,
         // default: false

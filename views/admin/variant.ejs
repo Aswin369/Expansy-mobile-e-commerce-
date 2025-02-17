@@ -619,8 +619,73 @@
                 <!-- Second table end -->
 
               
+                <!-- Third table start -->
+                <div class="container-xxl">
 
+                    <div class="row">
+                         <div class="col-xl-12">
+                              <div class="card">
+                                   <div>
+                                        <div class="table-responsive">
+                                             <table class="table align-middle mb-0 table-hover table-centered">
+                                                  <thead class="bg-light-subtle">
+                                                       <tr>
+                                                            <th>No.</th>
+                                                            <th>Ram Size</th>
+                                                            <th>price</th>
+                                                            <th>Status</th>
+                                                            <th>Action</th>
+                                                       </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                       <% colorData.forEach((variantColor, index)=>{%>
+                                                       <tr>
+                                                            <td>
+                                                                 <div >
+                                                                     <%= index+1%>
+                                                                 </div>
+                                                            </td>
+                                                            <td><%= variantColor.value%></td>
+                                                            <td><%= variantColor.price%></td>
+                                                            <td>
+                                                                 <%if(variantColor.isBlocked){%>
+                                                                <span class="badge bg-success">Enabled</span>
+                                                                <%}else{%>
+                                                                <span class="badge bg-danger">Disabled</span>
+                                                                <%}%>
+                                                            <td>
+                                                                 <div class="d-flex gap-2">
 
+                                                                      <button class=" btn btn-warning" id="sweetalert-params">
+                                                                        <a href="/admin/deleteColor/<%= variantColor._id%>" style="text-decoration: none;" class="text-white">Delete</a>
+                                                                      </button>
+                                                                      <% if (variantColor.isBlocked) { %>
+                                                                          
+                                                                           <button class="btn btn-success">
+                                                                               <a href="/admin/UnBlockColor/<%= variantColor._id %>" style="text-decoration: none;" class="text-white">Unblock</a>
+                                                                           </button>
+                                                                       <% } else { %>
+                                                                           
+                                                                           <button class="btn btn-danger">
+                                                                               <a href="/admin/blockColor/<%= variantColor._id %>" style="text-decoration: none;" class="text-white">Block</a>
+                                                                           </button>
+                                                                       <% } %>
+                                                                       
+                                                                 </div>
+                                                            </td>
+                                                       </tr>
+                                                       <%})%>
+                                                  </tbody>
+                                             </table>
+                                        </div>
+                                        <!-- end table-responsive -->
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Third table end -->
 
 
 

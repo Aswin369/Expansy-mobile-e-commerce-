@@ -21,25 +21,17 @@ const productSchema = new mongoose.Schema({
         ref: "Category",
         required: true
     },
-    regularPrice:{
-        type:Number,
-        required:true,
+    battery:{
+        type: String,
+        required:true
     },
-    salePrice:{
-        type:Number,
+    displaySize:{
+        type: String,
         required:true
     },
     productOffer:{
         type:Number,
         default:0, 
-    },
-    quantity:{
-        type:Number,
-        required:true
-    },
-    color:{
-        type:String,
-        required:true
     },
     productImage:{
         type:[String],
@@ -49,20 +41,39 @@ const productSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    ram:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Variant",
-        required:true
-    },
-    storage:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Variant",
-        required:true
-    },
+    specification:[{
+        ram:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Variant",
+            required:true
+        },
+        storage:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Variant",
+            required:true
+        },
+        color:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Color",
+            required:true
+        },
+        quantity:{
+            type:Number,
+            required:true
+        },
+        regularPrice:{
+            type:Number,
+            required:true
+        },
+        salePrice:{
+            type:Number,
+            required:true
+        }
+    }],
     processor:{
         type:String,
         required:true
-    },
+    }, 
     status:{
         type:String,
         enum:["Available","out of stock", "Discountinued"],
