@@ -1,11 +1,14 @@
 const User = require("../models/userSchema")
 
 const userAuth = (req,res,next)=>{
+    
     if(req.session.user){
+        console.log(1)
         User.findById(req.session.user)
         .then(data=>{
             if(data && !data.isBlocked){
                 next()
+                console.log(2)
             }else{
                 res.redirect("/login")
             }
@@ -15,7 +18,7 @@ const userAuth = (req,res,next)=>{
             res.status(500).send("internal server error")
         })
     }else{
-        res.redirect("/login")
+      return  res.redirect("/login")
     }
 }
 

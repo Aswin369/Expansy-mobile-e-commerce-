@@ -18,41 +18,41 @@ const getShoppingCart = async(req,res)=>{
 
 const productAddToCart = async(req,res)=>{
     try {
-        
-        const userId = req.session.user
-        const {productId, quantity} = req.body
-        if(!userId){
-            return res.status(400).json({success:false, message:"User not found"})
+         
+        if(!req.session.user){
+          return  res.redirect("/login")
         }
-
-        if(quantity<0){
-            return res.status(400).json({success:false, message:"Quantity cannot be less than zero"})
+        const userId = req.session.user
+        const {productId, quantity, price, selectedSpecId} = req.body
+        console.log("This is user id",userId)
+        console.log("KTHis sdfkasdfhaif",req.body)
+        if(quantity<=0){
+            return res.status(400).json({success:false, message:"quantity cannot be zero"})
+        }
+        if(!userId){
+             return res.status(400).json({success:false, message:"User not found"})
         }
 
         if(!productId){
             return res.status(400).json({success:false, message: "Please try again"})
         }
         const productDetail = await Product.findOne({_id:productId})
-        const price  = productDetail.salePrice
-        const totalPiceOfProduct = price*quantity
-        const cartDart = {
 
+        const totalPiceOfProduct = price*quantity
+        console.log("totalPiceOfProduct",totalPiceOfProduct)
+        const cartDart = {
             productId: productId,
             quantity: quantity,
-            price: productDetail.salePrice,
-            totalPrice: totalPiceOfProduct
+            price: price,
+            totalPrice: totalPiceOfProduct,
+            specId:selectedSpecId
         }
-
-        
-
         const userCart = await Cart.findOne({userId})
 
       
         if(userCart){
             userCart.items.push(cartDart)
             await userCart.save()
-
-           
             return res.status(201).json({success:true, message:"Product saved to cart"})
         }else{
             const newCart = new Cart({

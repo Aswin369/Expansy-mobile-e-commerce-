@@ -12,6 +12,9 @@ const productDetail = async (req,res)=>{
         const productData = await Product.findOne({ _id: id, isBlocked:false})
         .populate("brand")
         .populate("category")
+        .populate({path: "specification.ram", model:"Variant"})
+        .populate({path:"specification.storage", model: "Variant"})
+        .populate({path:"specification.color", model:"Variant"})
         if (!productData) {
             return res.status(404).json({ error: 'Product not found' });
         }

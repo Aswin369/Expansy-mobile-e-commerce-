@@ -653,9 +653,9 @@
                                                                  <td><%= variant.regularPrice %></td>
                                                                  <td><%= variant.salePrice %></td>
                                                                  <td>
-                                                                     <button class="btn btn-danger btn-sm delete-variant" data-variant-id="<%= variant._id %>">
-                                                                         Delete
-                                                                     </button>
+                                                                      <button class="btn btn-danger btn-sm delete-variant" data-product-id="<%= product._id %>">
+                                                                           <a href="/admin/deleteVariantFromEditProduct/<%= variant._id%>" style="text-decoration: none; color: white;">Delete</a>
+                                                                       </button>
                                                                  </td>
                                                              </tr>
                                                          <% }) %>
@@ -785,28 +785,27 @@
                                <label for="modal-ram" class="form-label">RAM</label>
                                <select class="form-control" id="modal-ram">
                                    <option value="">Select RAM</option>
-                                   <% product.specification.forEach(item => { %>
-                                       <option value="<%= item.ram._id %>"><%= item.ram.value %></option>
-                                   <% }) %>
+                                   <% for(let i=0; i<ram.length; i++){ %>
+                                       <option value="<%= ram[i]._id %>"><%= ram[i].value %></option>
+                                   <% } %>
                                </select>
                            </div>
                            <div class="mb-3">
                                <label for="modal-storage" class="form-label">Internal Storage</label>
                                <select class="form-control" id="modal-storage">
                                    <option value="">Select Storage</option>
-                                   <% product.specification.forEach(item =>{%>
-                                   <option value="<%= item.storage._id%>"><%= item.storage.value%></option>
-                                   
-                                   <%})%>
+                                   <% for(let i=0; i<storage.length; i++){%>
+                                   <option value="<%= storage[i]._id%>"><%= storage[i].value%></option>
+                                   <%}%>
                                </select>
                            </div>
                            <div class="mb-3">
                                <label for="modal-color" class="form-label">Color</label>
                                <select class="form-control" id="modal-color">
                                    <option value="">Select Color</option>
-                                   <%product.specification.forEach(item=>{%>
-                                   <option value="<%= item.color._id%>"><%= item.color.value%></option>
-                                   <%})%>
+                                   <% for(let i=0; i<color.length; i++){%>
+                                   <option value="<%= color[i]._id%>"><%= color[i].value%></option>
+                                   <%}%>
                                </select>
                            </div>
                            <div class="mb-3">
@@ -1125,28 +1124,48 @@ addVariantForm.addEventListener('submit', async function(event) {
      console.log("sdajkf",productId)
     // Validation checks
     if (!ram || !storage || !color) {
-        alert('Please select RAM, Storage, and Color');
+     Swal.fire({
+          title: "Error!",
+          text: "Required Ram, Storage, Color",
+          icon: "error"
+          })
         return;
     }
 
     if (!quantity || quantity < 0) {
-        alert('Please enter a valid quantity');
+     Swal.fire({
+          title: "Error!",
+          text: 'Please enter a valid quantity',
+          icon: "error"
+          })
         return;
     }
 
     if (!regularPrice || regularPrice <= 0) {
-        alert('Please enter a valid regular price');
+     Swal.fire({
+          title: "Error!",
+          text: 'Please enter a valid quantity',
+          icon: "error"
+          })
         return;
     }
 
     if (!salePrice || salePrice <= 0) {
-        alert('Please enter a valid sale price');
+     Swal.fire({
+          title: "Error!",
+          text: 'Please enter a valid sale price',
+          icon: "error"
+          })
         return;
     }
 
     // Check if sale price is greater than regular price
     if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
-        alert('Sale price must be less than regular price');
+     Swal.fire({
+          title: "Error!",
+          text: 'Sale price must be less than regular price',
+          icon: "error"
+          })
         return;
     }
 
@@ -1173,23 +1192,103 @@ addVariantForm.addEventListener('submit', async function(event) {
         const data = await response.json();
         
         if (data.success) {
-            // Close the modal
+          await Swal.fire({
+                    title: "Stock Updated!",
+                    text: data.message,
+                    icon: "success"
+               })
             const modal = bootstrap.Modal.getInstance(document.getElementById('variantModal'));
             modal.hide();
             
             // Optional: Reset form
             addVariantForm.reset();
-            
+            window.location.reload()
             // Show success message
-            alert('Variant added successfully');
+            
         } else {
-            alert(data.message || 'Failed to add variant');
+          Swal.fire({
+          title: "Error!",
+          text: 'Failed to add variant, Please try again',
+          icon: "error"
+          })
         }
 
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while adding the variant');
+        Swal.fire({
+          title: "Error!",
+          text: 'An error occurred while adding the variant',
+          icon: "error"
+          })
     }
+});
+
+
+// Add click event listener to all delete variant buttons
+document.querySelectorAll('.delete-variant').forEach(button => {
+    button.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        // Get the href value which contains the variant ID
+        const deleteUrl = this.querySelector('a').getAttribute('href');
+        const variantId = deleteUrl.split('/').pop();
+        const productId = document.getElementById("productId").value.trim();
+        // Show confirmation dialog
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        // If user confirms deletion
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`/admin/deleteVariantFromEditProduct`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        variantId: variantId,
+                        productId: productId // Make sure productId is available in your scope
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show success message
+                    await Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Variant has been deleted successfully.',
+                        icon: 'success'
+                    });
+                    window.location.reload()
+                    // Remove the variant element from the DOM
+                    const variantElement = this.closest('.variant-container'); // Add appropriate class to your variant container
+                    if (variantElement) {
+                        variantElement.remove();
+                    } else {
+                        // Reload the page if we can't find the element to remove
+                        window.location.reload();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to delete variant');
+                }
+            } catch (error) {
+                // Show error message
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.message || 'Something went wrong while deleting the variant.',
+                    icon: 'error'
+                });
+            }
+        }
+    });
 });
 
 </script>

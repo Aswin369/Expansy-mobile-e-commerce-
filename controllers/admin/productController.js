@@ -188,7 +188,9 @@ const getEditProduct = async (req, res) => {
         .populate({path: "specification.ram",model: 'Variant'})
         .populate({path: "specification.storage", model: "Variant"})
         .populate({path: "specification.color", model:"Variant"})
-        
+        const ram = await Variant.find({category:"Ram", isBlocked:false})
+        const storage = await Variant.find({category:"Storage",isBlocked:false})
+        const color = await Variant.find({category:"Color", isBlocked:false})
         
 
         const category = await Category.find({});
@@ -201,7 +203,10 @@ const getEditProduct = async (req, res) => {
         res.render("product-edit", {
             product: product,
             category: category,
-            brand: brand
+            brand: brand,
+            ram:ram,
+            storage:storage,
+            color:color
         });
     } catch (error) {
         console.error('Get edit product error:', error);
@@ -325,8 +330,43 @@ const updateStocks = async(req,res)=>{
         const id = req.params.productId
         console.log("this req.body",req.body)
         console.log("This is dsjk", id)
-    } catch (error) {
+
+        const {ram, storage, color, quantity, regularPrice, salePrice} = req.body
+
+        const stocksObject = {
+            ram:ram,
+            storage: storage,
+            color: color,
+            quantity: quantity,
+            regularPrice: regularPrice,
+            salePrice:salePrice,
+        }
+
+        await Product.findByIdAndUpdate(id,{$push:{specification:stocksObject}})
         
+        res.status(201).json({success:true, message:"Added successfull"})
+        console.log("1");
+        
+    } catch (error) {
+        console.error("This error occurred in updateStocks function",error)
+        res.redirect("/pageerror")
+    }
+}
+
+const deleteVariantEditProduct = async (req,res)=>{
+    try {
+        
+        const {variantId, productId} = req.body
+        if(!variantId || !productId){
+            return res.status(400).json({success:false, message:"Please try again"})
+        }
+        
+        await Product.findByIdAndUpdate(productId,{$pull:{"specification":{_id:variantId}}})
+        res.status(201).json({success:true})
+        console.log("1")
+    } catch (error) {
+        console.error("This error occured in deleteVariantEditProduct",error)
+        res.redirect("/pageerror")
     }
 }
 
@@ -340,5 +380,6 @@ module.exports = {
     getEditProduct,
     viewProduct,
     updateForm,
-    updateStocks
+    updateStocks,
+    deleteVariantEditProduct
 }

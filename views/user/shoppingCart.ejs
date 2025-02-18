@@ -509,7 +509,7 @@
 		<div class="container">
 			<!-- Cart Items Section -->
 			<div class="wrap-table-shopping-cart">
-				<% if (cartData?.items?.length > 0) { %>
+				
 				<table class="table-shopping-cart">
 					<tr class="table_head">
 						<th class="column-1">Product</th>
@@ -520,15 +520,15 @@
 						<th class="column-6">Action</th>
 					</tr>
 	
-					<% cartData?.items?.forEach(item => {%>
+					
 					<tr class="table_row">
 						<td class="column-1">
 							<div class="how-itemcart1">
-								<img src="<%= item?.productId?.productImage[0]%>" alt="IMG">
+								<img src="" alt="IMG">
 							</div>
 						</td>
-						<td class="column-2"><%= item?.productId?.productName%></td>
-						<td class="column-3"><%= item?.productId?.salePrice%></td>
+						<td class="column-2"></td>
+						<td class="column-3"></td>
 						<td class="column-4">
 							<div class="wrap-num-product flex-w m-l-auto m-r-0">
 								<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
@@ -540,16 +540,16 @@
 								</div>
 							</div>
 						</td>
-						<td class="column-5"><%= item?.totalPrice%></td>
+						<td class="column-5"></td>
 						<td class="column-6">
-							<button class="btn-delete-item" data-product-id="<%= item?.productId._id %>">
+							<button class="btn-delete-item" data-product-id="">
 								<i class="zmdi zmdi-delete"></i>
 							</button>
 						</td>
 					</tr>
-					<%})%>
+					
 				</table>
-				<% } else { %>
+				
 					<div class="empty-cart-message">
 						<div class="cart-icon">
 							<i class="zmdi zmdi-shopping-cart"></i>
@@ -561,7 +561,7 @@
 							Start Shopping
 						</a>
 					</div>
-				<% } %>
+				
 			</div>
 	
 			<!-- Coupon and Update Cart Section -->

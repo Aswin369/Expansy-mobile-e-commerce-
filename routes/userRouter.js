@@ -49,7 +49,4 @@ router.delete("/deleteCartProduct/:productId",shoppingCartController.deleteProdu
 // WhishList management
 router.get("/getWhishlist",userAuth,wishListController.getWhishList)
 
-
-
-
 module.exports = router 

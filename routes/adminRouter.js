@@ -46,6 +46,7 @@ router.put('/editProduct/:productId',upload.single("productImage"),adminAuth,pro
 router.get("/viewProducts/:id",adminAuth,productController.viewProduct)
 router.put("/updateForm/:productId",adminAuth,productController.updateForm)
 router.put("/updateVariantStocks/:productId",adminAuth,productController.updateStocks)
+router.delete("/deleteVariantFromEditProduct",adminAuth,productController.deleteVariantEditProduct)
 // Variant Management
 router.get("/getVariant",adminAuth,variantController.getVariantList)
 router.get("/getAddVariant",adminAuth,variantController.getAddVariant)
