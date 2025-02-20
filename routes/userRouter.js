@@ -8,6 +8,7 @@ const shopPageController = require("../controllers/user/shopPageController.js")
 const profileController = require("../controllers/user/profileController.js")
 const shoppingCartController = require('../controllers/user/shoppingCartController.js')
 const wishListController = require("../controllers/user/whishListController.js")
+const palceOderController = require("../controllers/user/placeOderController.js")
 
 router.get("/",userController.loadHomepage)
 router.get("/signup",userController.loadsignup)
@@ -44,9 +45,13 @@ router.get("/getAddress/:addressId",userAuth,profileController.getUserAddressId)
 router.post("/updateAddress/:addressId",userAuth,profileController.updateAddress)
 // shopping cart management
 router.get('/shoppingCart',userAuth,shoppingCartController.getShoppingCart)
-router.post("/addToCart",userAuth,shoppingCartController.productAddToCart)
+router.post("/addToCart",shoppingCartController.productAddToCart)
 router.delete("/deleteCartProduct/:productId",shoppingCartController.deleteProductFromCart)
+router.post('/update-cart-item',userAuth,shoppingCartController.updateCart)
+router.get("/process-checkout",userAuth, shoppingCartController.loadCheckOutPage)
+router.get("/checkout",userAuth, shoppingCartController.loadplaceOrder)
 // WhishList management
 router.get("/getWhishlist",userAuth,wishListController.getWhishList)
-
+// Place order
+router.get("/palceOder",userAuth,palceOderController.getPlaceOrderPage)
 module.exports = router 

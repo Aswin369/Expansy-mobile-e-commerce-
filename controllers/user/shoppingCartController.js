@@ -1,26 +1,43 @@
 const User = require("../../models/cartSchema")
 const Product = require("../../models/productSchema")
 const Cart = require("../../models/cartSchema")
+const Address = require("../../models/addressSchema")
+const mongoose = require("mongoose")
 
 const getShoppingCart = async(req,res)=>{
     try {
         const userId = req.session.user
+        if(!userId){
+            res.redirect("/login")
+        }
         
-        const cartUser = await Cart.findOne({userId}).populate("items.productId")
-        console.log("dskhflkash", cartUser)
-        res.render("shoppingCart",{
-            cartData:cartUser
-        })
+        const cartUser = await Cart.findOne({userId: new mongoose.Types.ObjectId(userId)})
+        .populate("items.productId")
+        console.log("hhsdaifjk",cartUser)
+        const populatedCartItems = await Promise.all(
+            cartUser.items.map(async (item) => {
+                const product = item.productId;
+                if (!product) return item;
+                const specification = product.specification.find(spec => spec._id.equals(item.specId));
+                return {
+                    ...item.toObject(),
+                    specification
+                }
+            })
+        )
+        
+        res.render("shoppingCart", {
+            cartData: { ...cartUser.toObject(), items: populatedCartItems }
+        });
     } catch (error) {
         console.error("Error found in shopping cart", error)
     }
-} 
+}
 
 const productAddToCart = async(req,res)=>{
     try {
-         
         if(!req.session.user){
-          return  res.redirect("/login")
+          return  res.status(401).json({success:false ,message : "Login first"})
         }
         const userId = req.session.user
         const {productId, quantity, price, selectedSpecId} = req.body
@@ -73,13 +90,13 @@ const productAddToCart = async(req,res)=>{
 const deleteProductFromCart = async(req,res)=>{
     try {
         const userId = req.session.user
-        const productId = req.params.productId
-        if(!productId){
+        const cartId = req.params.productId
+        if(!cartId){
             return res.status(400).json({success:true, message:"There is no product please add any product to cart"})
         }
-        console.log("1");
+        // console.log("1");
         
-        const updateCart = await Cart.findOneAndDelete({userId}, {$pull:{items:{_id:productId}}},{new:true})
+        const updateCart = await Cart.updateOne({ userId: userId },{$pull:{items:{_id:cartId}}})
 
         console.log("thskdfk",updateCart)
 
@@ -94,8 +111,70 @@ const deleteProductFromCart = async(req,res)=>{
     }
 }
 
+const updateCart = async (req,res)=>{
+    try {
+        
+        const {cartId, productId, quantity, price, totalPrice, itemIndex} = req.body
+        console.log("sakjdfh",quantity);
+        
+        if(!cartId){
+            return res.status(400).json({success:false, message:"Something went wrong"})
+        }
+        const updatedCart = await Cart.findOneAndUpdate({ _id: cartId },{ 
+                $set: { 
+                    [`items.${itemIndex}.productId`]: productId,
+                    [`items.${itemIndex}.quantity`]: quantity,
+                    [`items.${itemIndex}.price`]: price,
+                    [`items.${itemIndex}.totalPrice`]:totalPrice}
+                },{ new: true })
+
+        res.status(201).json({success:true})        
+    } catch (error) {
+        console.error("This error occured in updateCart",error)
+        res.redirect("/pageerror")
+    }
+}
+
+const loadplaceOrder = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const { cartId } = req.query;
+        console.log("this is userid",userId)
+        if (!userId) {
+            return res.redirect("/login");
+        }
+        console.log("Cart ID received in loadplaceOrder:", cartId);
+
+        const cartDetails = await Cart.findById(cartId).populate("items.productId")
+        const addressDetails = await Address.findOne({userId:userId})
+        console.log("THis is cart details",cartDetails)
+        console.log("THis is address details",addressDetails)
+        res.render("checkoutPage", { 
+            cartData: cartDetails,  
+            addrressData: addressDetails}); 
+    } catch (error) {
+        console.error("Error in loadplaceOrder:", error);
+        res.redirect("/pageerror");
+    }
+};
+
+
+
+const loadCheckOutPage = async(req,res)=>{
+    try {
+        const { cartId } = req.query;
+        res.status(200).json({ success: true, redirectUrl: `/checkout?cartId=${cartId}`});
+    } catch (error) {
+        console.error("This error occured in loadCheckOutPage",error)
+        res.redirect("/pageerror")
+    }
+}
+
 module.exports = {
     getShoppingCart,
     productAddToCart,
-    deleteProductFromCart
+    deleteProductFromCart,
+    updateCart,
+    loadCheckOutPage,
+    loadplaceOrder
 }

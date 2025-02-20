@@ -1,64 +1,66 @@
 const mongoose = require("mongoose")
-const {Schema} = mongoose
-const {v4:uuidv4} = require("uuid")
 
 const orderSchema = new mongoose.Schema({
-    oderId:{
-        type: String,
-        default:()=>uuidv4(),
-        unique: true
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId, ref: 'User', 
+        required: true 
     },
-    orderedItems:[{
-        product:{
-            type:Schema.Types.ObjectId,
-            ref:"Product",
+    products: [
+      {
+        productId:{ 
+            type: mongoose.Schema.Types.ObjectId, ref: 'Product', 
+            required: true 
+        },
+        specId:{
+            type: mongoose.Schema.Types.ObjectId,
             required: true
         },
         quantity:{
-            type: Number,
-            required:true
+             type: Number, 
+             required: true 
+            },
+        price: { 
+            type: Number, 
+            required: true 
         },
-        price:{
+        totalPrice:{
             type:Number,
-            default:0,
-            required: true
+            required:true
         }
-    }],
-    totalPrice:{
-        type: Number,
-        required:true
+      },
+    ],
+    status: { 
+        type: String, default: 'Pending', 
+        enum:['Return Requested','Return Approved','Return Rejected','Pending','Delivered','Cancelled'] 
     },
-    discount:{
-        type:Number,
-        default: 0
+    deliveryAddress: { 
+        addressId: String, 
+        required: true 
     },
-    finalAmount:{
-        type:Number,
-        required: true
+    totalAmount: { 
+        type: Number, 
+        required: true 
     },
-    address:{
-        type:Schema.Types.ObjectId,
-        ref:"User",
-        required:true
+    payableAmount: { 
+        type: Number, 
+        required: true, 
+        default: 0 
     },
-    invoiceDate:{
-        type:Date
+    paymentMethod: { 
+        type: String, 
+        enum: ['cod', 'razorpay'], 
+        required: true 
     },
-    status:{
-        type:String,
-        required: true,
-        enum:["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Request", "Returned"]
+    paymentStatus: { 
+        type: String, 
+        enum: ['pending', 'paid', 'failed'], default: 'pending' 
     },
-    createdOn:{
-        type:Date,
-        default: Date.now,
-        required: true
-    },
-    couponApplied:{
-        type:Boolean,
-        default: false
+    returnReason:{
+        type: String,
+        default:null
     }
-})
+  },{timestamps:true});
+  
 
 const Order = new mongoose.model("Order",orderSchema)
 module.exports = Order;
