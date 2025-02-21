@@ -1,14 +1,22 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid")
 
 const orderSchema = new mongoose.Schema({
     userId: { 
-        type: mongoose.Schema.Types.ObjectId, ref: 'User', 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
         required: true 
     },
+    orderId: {
+        type: String,
+        unique: true,
+        default: () => `EXPSYORDID-${uuidv4().split("-")[0].toUpperCase()}`, 
+      },
     products: [
       {
         productId:{ 
-            type: mongoose.Schema.Types.ObjectId, ref: 'Product', 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'Product', 
             required: true 
         },
         specId:{
@@ -18,24 +26,25 @@ const orderSchema = new mongoose.Schema({
         quantity:{
              type: Number, 
              required: true 
-            },
+        },
         price: { 
             type: Number, 
             required: true 
         },
         totalPrice:{
-            type:Number,
-            required:true
+            type: Number,
+            required: true
         }
       },
     ],
     status: { 
-        type: String, default: 'Pending', 
-        enum:['Return Requested','Return Approved','Return Rejected','Pending','Delivered','Cancelled'] 
+        type: String, 
+        default: 'Pending', 
+        enum: ['Return Requested', 'Return Approved', 'Return Rejected', 'Pending', 'Delivered', 'Cancelled'] 
     },
     deliveryAddress: { 
-        addressId: String, 
-        required: true 
+        type: Object, 
+        required: true
     },
     totalAmount: { 
         type: Number, 
@@ -53,14 +62,16 @@ const orderSchema = new mongoose.Schema({
     },
     paymentStatus: { 
         type: String, 
-        enum: ['pending', 'paid', 'failed'], default: 'pending' 
+        enum: ['pending', 'paid', 'failed'], 
+        default: 'pending' 
     },
-    returnReason:{
+    returnReason: {
         type: String,
-        default:null
+        default: null
     }
-  },{timestamps:true});
-  
+}, { timestamps: true });
 
-const Order = new mongoose.model("Order",orderSchema)
+
+
+const Order = mongoose.model("Order", orderSchema);
 module.exports = Order;

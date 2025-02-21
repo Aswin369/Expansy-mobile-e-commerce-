@@ -368,6 +368,8 @@
 										</div>
 									</td>
 									<td class="column-2"><%= item.productId.productName %></td>
+									<input type="hidden" value="<%= item.productId._id%>">
+									
 									<td class="column-3"><%= item.quantity %></td>
 									<td class="column-4">$ <%= item.price %></td>
 									<td class="column-5">$ <%= item.totalPrice %></td>
@@ -691,6 +693,194 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
 <!--===============================================================================================-->
 	<script src="vendor/select2/select2.min.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+	<script>
+		// Main checkout functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize variables
+    let cartItems = [];
+    let subtotal = 0;
+    let discount = 10.00; // Fixed discount amount from your HTML
+    let totalAmount = 0;
+    
+    // Get DOM elements
+    const subtotalElement = document.querySelector('.flex-w.flex-t.bor12.p-b-13 .size-209 .mtext-110');
+    const totalElement = document.querySelector('.flex-w.flex-t.p-t-27.p-b-33 .size-209 .mtext-110');
+    const placeOrderButton = document.querySelector('button.flex-c-m.stext-101.cl0.size-116');
+    
+    // Function to calculate totals
+    function calculateTotals() {
+        // Get all cart items
+        const itemRows = document.querySelectorAll('.table_row');
+        subtotal = 0;
+        cartItems = [];
+        
+        itemRows.forEach(row => {
+            // Get the hidden product ID field
+            const productIdInput = row.querySelector('input[type="hidden"]');
+            const productId = productIdInput.value;
+            
+            const quantity = parseInt(row.querySelector('.column-3').textContent);
+            const unitPrice = parseFloat(row.querySelector('.column-4').textContent.replace('$', '').trim());
+            const totalPrice = parseFloat(row.querySelector('.column-5').textContent.replace('$', '').trim());
+            
+            subtotal += totalPrice;
+            
+            // Store item data for submission
+            const productName = row.querySelector('.column-2').textContent;
+            
+            cartItems.push({
+                productId,
+                productName,
+                quantity,
+                price: unitPrice,
+                totalPrice
+            });
+        });
+        
+        // Calculate total after discount
+        totalAmount = subtotal - discount;
+        
+        // Update DOM elements
+        subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+        totalElement.textContent = `$${totalAmount.toFixed(2)}`;
+    }
+    
+    // Initialize totals on page load
+    calculateTotals();
+    
+    // Handle coupon application
+    const couponInput = document.querySelector('input[name="coupon"]');
+    const applyCouponButton = document.querySelector('.flex-c-m.stext-101.cl2.size-118');
+    
+    applyCouponButton.addEventListener('click', function() {
+        const couponCode = couponInput.value.trim();
+        if (couponCode) {
+            // You could implement coupon validation logic here
+            // For now, we'll just show an alert
+            swal({
+                title: "Coupon Applied!",
+                text: `Coupon "${couponCode}" has been applied.`,
+                icon: "success",
+                button: "Continue",
+            });
+            calculateTotals();
+        } else {
+            swal({
+                title: "Empty Coupon",
+                text: "Please enter a coupon code.",
+                icon: "warning",
+                button: "OK",
+            });
+        }
+    });
+    
+    // Add new address functionality
+    const addAddressButton = document.querySelector('.flex-c-m.stext-101.cl2.size-115');
+    addAddressButton.addEventListener('click', function() {
+        // Redirect to address page or show modal
+        swal({
+            title: "Add New Address",
+            text: "You'll be redirected to add a new address.",
+            icon: "info",
+            buttons: ["Cancel", "Continue"],
+        })
+        .then((willProceed) => {
+            if (willProceed) {
+                window.location.href = "/profilePage";
+            }
+        });
+    });
+    
+    // Form submission
+    placeOrderButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Get selected address
+        const selectedAddress = document.querySelector('input[name="address"]:checked');
+        if (!selectedAddress) {
+            swal({
+                title: "Address Required",
+                text: "Please select a delivery address.",
+                icon: "error",
+                button: "OK",
+            });
+            return;
+        }
+        
+        // Get selected payment method
+        const paymentMethod = document.querySelector('input[name="payment"]:checked').id === 'payment1' 
+            ? 'cod' : 'ONLINE';
+        
+        // Validate payment method
+        if (paymentMethod !== 'cod') {
+            swal({
+                title: "Payment Method",
+                text: "Currently only Cash on Delivery is available.",
+                icon: "warning",
+                button: "OK",
+            });
+            return;
+        }
+        
+        // Prepare data for submission
+        const orderData = {
+            deliveryAddressId: selectedAddress.value,
+            totalAmount: subtotal,
+            payableAmount: totalAmount,
+            paymentMethod: paymentMethod,
+            items: cartItems
+        };
+        
+        // Submit order
+        fetch('/placeOrder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            swal({
+                title: "Order Placed Successfully!",
+                text: `Your order ID is ${data.orderId}. Thank you for shopping with us!`,
+                icon: "success",
+                button: "Continue",
+            })
+            .then(() => {
+                window.location.href = "/ordersuccess";
+            });
+        })
+        .catch(error => {
+            swal({
+                title: "Error",
+                text: "There was an error placing your order. Please try again.",
+                icon: "error",
+                button: "OK",
+            });
+            console.error('Error:', error);
+        });
+    });
+    
+    // Quantity change event listeners
+    const updateQuantityButtons = document.querySelectorAll('.update-qty-btn');
+    if (updateQuantityButtons.length > 0) {
+        updateQuantityButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // After quantity update
+                calculateTotals();
+            });
+        });
+    }
+});
+	</script>
 	<script>
 		$(".js-select2").each(function(){
 			$(this).select2({

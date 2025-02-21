@@ -3,6 +3,7 @@ const Address = require("../../models/addressSchema")
 const mongoose = require("mongoose")
 const nodemailer = require("nodemailer")
 const bcrypt = require("bcrypt")
+const Order = require("../../models/orderSchema")
 const env = require("dotenv").config()
 const session = require("express-session")
 
@@ -13,10 +14,13 @@ const getProfilePage = async (req,res)=>{
         const id = req.session.user
         const userData = await User.findById({_id:id})
         const userAddress = await Address.find({userId:id})
-        
+        const oderDetails = await Order.find({userId:id})
+
+        console.log("dafhjk",oderDetails )
         res.render("profilePage",{
             data:userData,
-            address:userAddress
+            address:userAddress,
+            oderData: oderDetails
         })
 
     } catch (error) {

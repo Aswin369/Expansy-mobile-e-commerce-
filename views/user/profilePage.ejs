@@ -325,31 +325,34 @@
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Order ID</th>
-                                                <th>Date</th>
-                                                <th>Status</th>
-                                                <th>Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>#ORD-0001</td>
-                                                <td>2024-02-10</td>
-                                                <td><span class="badge bg-success">Delivered</span></td>
-                                                <td>$99.99</td>
-                                            </tr>
-                                            <tr>
-                                                <td>#ORD-0002</td>
-                                                <td>2024-02-08</td>
-                                                <td><span class="badge bg-warning">In Transit</span></td>
-                                                <td>$149.99</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+									<table class="table table-hover">
+										<thead>
+											<tr>
+												<th>Order ID</th>
+												<th>Date</th>
+												<th>Status</th>
+												<th>Total</th>
+												<th>Actions</th> <!-- New column for buttons -->
+											</tr>
+										</thead>
+										<tbody>
+											<%oderData.forEach((item)=>{%>
+											<tr>
+												<td><%= item.orderId%></td>
+												<td><%= item.createdAt.toISOString().split('T')[0] %></td>
+												<td><span class="badge bg-success"><%= item.status%></span></td>
+												<td><%= item.payableAmount%></td>
+												<td>
+													<input type= "hidden" value="<%= item._id%>">
+													<button class="btn btn-primary btn-sm">View</button>
+													<button class="btn btn-danger btn-sm">Cancel</button>
+												</td>
+											</tr>
+											<%})%>
+										</tbody>
+									</table>
+								</div>
+								
                             </div>
                         </div>
                     </div>
@@ -1247,6 +1250,106 @@ form.addEventListener('submit', async (e) => {
     }
 });
 </script>
+
+
+<!-- order show scritp -->
+ <script>
+	 document.querySelectorAll('.view-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const orderId = this.getAttribute('data-id');
+      viewOrder(orderId);
+    });
+  });
+
+  // Add event listeners to Cancel buttons
+  document.querySelectorAll('.cancel-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const orderId = this.getAttribute('data-id');
+      confirmCancelOrder(orderId);
+    });
+  });
+
+  // Function to handle View action
+  function viewOrder(orderId) {
+    fetch(`/ordersview/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if(response.ok) {
+        return response.json();
+      }
+      throw new Error('Network response was not ok');
+    })
+    .then(data => {
+      // Redirect to order details page or show modal with order details
+      window.location.href = `/orders/details/${orderId}`;
+      // Alternatively, show details in a modal if you prefer
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Failed to load order details!'
+      });
+    });
+  }
+
+  // Function to confirm and handle Cancel action
+  function confirmCancelOrder(orderId) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to cancel this order?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, cancel it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // User confirmed, proceed with cancellation
+        cancelOrder(orderId);
+      }
+    });
+  }
+
+  // Function to perform the actual cancellation
+  function cancelOrder(orderId) {
+    fetch(`/orderscancel/${orderId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if(response.ok) {
+        return response.json();
+      }
+      throw new Error('Network response was not ok');
+    })
+    .then(data => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Order Cancelled',
+        text: data.message || 'The order has been cancelled successfully'
+      }).then(() => {
+        // Reload the page to reflect changes
+        location.reload();
+      });
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Cancellation Failed',
+        text: 'Unable to cancel the order. Please try again.'
+      });
+    });
+  }
+ </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <!--===============================================================================================-->	

@@ -50,6 +50,8 @@ router.delete("/deleteCartProduct/:productId",shoppingCartController.deleteProdu
 router.post('/update-cart-item',userAuth,shoppingCartController.updateCart)
 router.get("/process-checkout",userAuth, shoppingCartController.loadCheckOutPage)
 router.get("/checkout",userAuth, shoppingCartController.loadplaceOrder)
+router.post("/placeOrder",userAuth, shoppingCartController.addOrderDetails)
+router.get("/ordersuccess",userAuth, shoppingCartController.loadSuccessPage)
 // WhishList management
 router.get("/getWhishlist",userAuth,wishListController.getWhishList)
 // Place order

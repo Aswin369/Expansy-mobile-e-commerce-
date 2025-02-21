@@ -2,6 +2,7 @@ const User = require("../../models/cartSchema")
 const Product = require("../../models/productSchema")
 const Cart = require("../../models/cartSchema")
 const Address = require("../../models/addressSchema")
+const Order = require("../../models/orderSchema")
 const mongoose = require("mongoose")
 
 const getShoppingCart = async(req,res)=>{
@@ -170,11 +171,69 @@ const loadCheckOutPage = async(req,res)=>{
     }
 }
 
+const addOrderDetails = async(req,res)=>{
+    try {
+        const userId = req.session.user
+        const {deliveryAddressId, totalAmount, payableAmount, paymentMethod, items} = req.body
+
+        console.log("lkdfa",deliveryAddressId)
+
+        
+
+        console.log("user id ",userId)
+        
+
+        const cartDetails = await Cart.findOne({userId:userId})
+
+        const orderProducts = cartDetails.items.map(item => ({
+            productId: item.productId,
+            specId: item.specId,
+            quantity: item.quantity,
+            price: item.price,
+            totalPrice: item.totalPrice
+        }))
+
+        const newOrder = new Order({
+            userId,
+            products: orderProducts,
+            deliveryAddress: deliveryAddressId,
+            totalAmount,
+            payableAmount,
+            paymentMethod
+        });
+
+        await newOrder.save();
+        console.log("1")
+        res.status(200).json({
+            success: true,
+            message: "Order placed successfully"
+        });
+
+    } catch (error) {
+        console.error("This error occured in addOrderDetails",error)
+        res.redirect("/pageerror")
+    }
+}
+
+const loadSuccessPage = async(req,res)=>{
+    try {
+        const userId = req.session.user
+        if(!userId){
+            res.redirect("/login")
+        }
+        res.render("orderSuccess")
+    } catch (error) {
+        
+    }
+}
+
 module.exports = {
     getShoppingCart,
     productAddToCart,
     deleteProductFromCart,
     updateCart,
     loadCheckOutPage,
-    loadplaceOrder
+    loadplaceOrder,
+    addOrderDetails,
+    loadSuccessPage
 }
