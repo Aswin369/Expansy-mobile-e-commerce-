@@ -379,6 +379,57 @@ const changePassword = async (req,res)=>{
     }
 }
 
+const loadOrderDetailPage = async (req, res) => {
+    try {
+        console.log("oderrid ", req.params.orderId);
+        const orderId = req.params.orderId;
+        const userId = req.session.user
+        const orderDetails = await Order.findById(orderId).populate("products.productId")
+        if (!orderDetails) {
+            
+            return res.status(404).json({ message: "Order not found" });
+        }
+        const addressId = orderDetails.deliveryAddress
+        if(!addressId){
+            return res.status(404).json({success:false, message:"Address is have no Id  "})
+        }
+        const addressDetails = await Address.findOne({userId:userId,"address._id":addressId},{"address.$":1}) 
+        if(!addressDetails){
+           return  res.status(404).json({success:false, message:"Address is have no Id  "})
+        }
+        res.render("oderDetailPage", {  
+            success: true,
+            orderData: orderDetails,
+            addressData:addressDetails
+        });
+    } catch (error) {
+        console.error("Error in loadOrderDetailPage:", error);
+        res.redirect("/pageerror");
+    }
+}
+
+const deleteOrder = async(req,res)=>{
+    try {
+        const {orderId, productId} = req.query
+        console.log("dshka",req.query)
+        console.log("asldfkjlasdkjf",req.query)
+        const userId = req.session.user
+        const order = await Order.findOneAndUpdate(
+            { _id: orderId, userId:userId},
+            { $pull: { products: { _id: productId } } },
+            {new:true})
+        
+        if(order.products<=0){
+            await Order.deleteOne({_id:orderId})
+           return  res.redirect("/profilePage")
+        }
+        return res.status(201).json({success:true})
+    } catch (error) {
+        console.error("This error found in deleteOrder", error)
+        res.redirect("/pagerror")
+    }
+}
+
 module.exports = {
     getProfilePage,
     editUserProfile,
@@ -392,5 +443,7 @@ module.exports = {
     verifyPasswordResendOTP,
     getchangePasswordPage,
     changePassword,
-    getVerifyOtpPage
+    getVerifyOtpPage,
+    loadOrderDetailPage,
+    deleteOrder
 }

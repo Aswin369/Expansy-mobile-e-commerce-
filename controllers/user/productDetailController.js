@@ -29,6 +29,11 @@ const productDetail = async (req,res)=>{
     }
 }
 
+
+    
+
+
 module.exports = {
-    productDetail
+    productDetail,
+    
 }

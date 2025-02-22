@@ -1132,16 +1132,16 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     }
 
     function showMessage(message, type = 'info') {
-        Swal.fire({
-            text: message,
-            icon: type,
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-        });
-    }
+    Swal.fire({
+        text: message,
+        icon: type,
+        position: 'center',  
+        showConfirmButton: true, 
+        timer: 3000,
+        timerProgressBar: true
+    });
+}
+
 
     // Initialize cart totals on page load
     updateCartTotals();

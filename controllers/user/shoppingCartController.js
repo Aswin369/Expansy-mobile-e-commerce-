@@ -15,6 +15,9 @@ const getShoppingCart = async(req,res)=>{
         const cartUser = await Cart.findOne({userId: new mongoose.Types.ObjectId(userId)})
         .populate("items.productId")
         console.log("hhsdaifjk",cartUser)
+        if (!cartUser || cartUser.items.length === 0) {
+            return res.render("shoppingCart",{cartData:{items:[]}});
+        }
         const populatedCartItems = await Promise.all(
             cartUser.items.map(async (item) => {
                 const product = item.productId;
@@ -174,16 +177,17 @@ const loadCheckOutPage = async(req,res)=>{
 const addOrderDetails = async(req,res)=>{
     try {
         const userId = req.session.user
-        const {deliveryAddressId, totalAmount, payableAmount, paymentMethod, items} = req.body
+        const {deliveryAddressId, totalAmount, payableAmount, paymentMethod} = req.body
 
         console.log("lkdfa",deliveryAddressId)
-
-        
-
         console.log("user id ",userId)
         
 
         const cartDetails = await Cart.findOne({userId:userId})
+
+        const cartId = cartDetails._id
+
+        console.log("Thisis sdkjfa acart id ", cartId)
 
         const orderProducts = cartDetails.items.map(item => ({
             productId: item.productId,
@@ -203,11 +207,15 @@ const addOrderDetails = async(req,res)=>{
         });
 
         await newOrder.save();
+        await Cart.deleteOne({_id:cartId})
+
         console.log("1")
         res.status(200).json({
             success: true,
             message: "Order placed successfully"
         });
+
+
 
     } catch (error) {
         console.error("This error occured in addOrderDetails",error)

@@ -54,7 +54,7 @@ const productSchema = new mongoose.Schema({
         },
         color:{
             type:mongoose.Schema.Types.ObjectId,
-            ref:"Color",
+            ref:"Variant",
             required:true
         },
         quantity:{

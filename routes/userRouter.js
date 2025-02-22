@@ -43,6 +43,8 @@ router.post("/addaddress",userAuth,profileController.addUserAddress)
 router.delete("/deleteAddress/:addressId",userAuth,profileController.deleteAddress)
 router.get("/getAddress/:addressId",userAuth,profileController.getUserAddressId)
 router.post("/updateAddress/:addressId",userAuth,profileController.updateAddress)
+router.get("/ordersview/:orderId",userAuth,profileController.loadOrderDetailPage)
+router.get("/deleteOrder",userAuth,profileController.deleteOrder)
 // shopping cart management
 router.get('/shoppingCart',userAuth,shoppingCartController.getShoppingCart)
 router.post("/addToCart",shoppingCartController.productAddToCart)
