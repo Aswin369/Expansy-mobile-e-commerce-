@@ -27,6 +27,13 @@ router.get("/auth/google/callback",passport.authenticate("google",{failureRedire
 router.get("/logout",userController.logout)
 router.get("/productDetailPage/:id",productController.productDetail)
 router.get("/shopPage",shopPageController.getShopPage)
+router.get("/sorting", shopPageController.getProducts)
+router.get("/priceSorting", shopPageController.getFilteredProducts);
+router.get("/filterByCategory", shopPageController.getFilteredProductsByCategory)
+router.get("/search", shopPageController.searchProducts)
+// router.get('/search-products', shopPageController.searchProducts);
+// router.get('/filter-products', shopPageController.filterProducts);
+// router.get('/filter-products', shopPageController.filterAndSortProducts);
 
 // userForgot password
 router.get("/forgot-password",profileController.getForgotPassPage)
