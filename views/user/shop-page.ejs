@@ -1456,6 +1456,16 @@ async function fetchAllProducts() {
 }
 
 	</script>
+	<script>
+		function handleProductClick(productId) {
+    if (productId) {
+        window.location.href = `/productDetailPage/${productId}`; // Redirects to product detail page
+    } else {
+        console.error("Product ID not found!");
+    }
+}
+
+	</script>
 
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
