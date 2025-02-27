@@ -8,6 +8,7 @@ const categoryController = require("../controllers/admin/categoryController")
 const productController = require("../controllers/admin/productController")
 const brandController = require("../controllers/admin/BrandController")
 const variantController = require("../controllers/admin/variantController")
+const orderController = require("../controllers/admin/orderController")
 
 // router.get("/pageerror",adminController.pageerror)
 router.get("/login",adminController.loadLogin)
@@ -60,4 +61,8 @@ router.get("/deleteStorage/:id",adminAuth,variantController.deleteStorage)
 router.get("/deleteColor/:id",adminAuth,variantController.deleteColor)
 router.get("/UnBlockColor/:id",adminAuth,variantController.unBlockColor)
 router.get("/blockColor/:id",adminAuth,variantController.blockColor)
+// Order Managment
+router.get("/getOrderPage",adminAuth,orderController.getOrderPage)
+router.get("/orderDetail/:id",adminAuth, orderController.getOrderDetailPage)
+
 module.exports = router
