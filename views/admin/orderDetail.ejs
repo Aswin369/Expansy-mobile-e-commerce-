@@ -491,12 +491,19 @@
                                                                  }) %></p>
                                                                  
                                                        </div>
-                                                       <div>
-                                                            <a href="#!" class="btn btn-outline-secondary">Refund</a>
-                                                            <a href="#!" class="btn btn-outline-secondary">Return</a>
-                                                            <a href="#!" class="btn btn-primary">Edit Order</a>
-                                                       </div>
-
+                                                       <div class="dropdown">
+                                                            <button class="btn btn-primary dropdown-toggle" type="button" id="orderStatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                Change Status
+                                                            </button>
+                                                            <ul class="dropdown-menu" aria-labelledby="orderStatusDropdown">
+                                                                <li><a class="dropdown-item status-option" data-status="Pending" href="#">Pending</a></li>
+                                                                <li><a class="dropdown-item status-option" data-status="Shipped" href="#">Shipped</a></li>
+                                                                <li><a class="dropdown-item status-option" data-status="Delivered" href="#">Delivered</a></li>
+                                                                <li><a class="dropdown-item status-option" data-status="Cancelled" href="#">Cancelled</a></li>
+                                                            </ul>
+                                                            <input type="hidden" value="<%= orderData._id%>">
+                                                        </div>
+                                                        <button class="btn btn-success mt-2" id="updateStatusBtn" style="margin-bottom: 10px;">Update Status</button>
                                                   </div>
 
                                                   
@@ -682,15 +689,15 @@
 
                                         <div class="d-flex justify-content-between mt-3">
                                              <h5 class="">Shipping Address</h5>
-                                             
                                         </div>
 
                                         <div>
-                                             <p class="mb-1">Wilson's Jewelers LTD</p>
-                                             <p class="mb-1">1344 Hershell Hollow Road ,</p>
-                                             <p class="mb-1">Tukwila, WA 98168 ,</p>
-                                             <p class="mb-1">United States</p>
-                                             <p class="">(723) 732-760-5760</p>
+                                             <p class="mb-1"><%= addressData.address?.[0]?.addressType || "No Address Found" %></p>
+                                             <p class="mb-1"><%= addressData.address?.[0]?.city%> ,</p>
+                                             <p class="mb-1"><%= addressData.address?.[0]?.state%> ,</p>
+                                             <p class="mb-1"><%= addressData.address?.[0]?.landMark%> ,</p>
+                                             <p class="mb-1"><%= addressData.address?.[0]?.pincode%> </p>
+                                             <p class=""><%= addressData.address?.[0]?.phone%></p>
                                         </div>
 
                                         <div class="d-flex justify-content-between mt-3">
@@ -732,9 +739,106 @@
 
      <!-- Vendor Javascript (Require in all Page) -->
      <script src="/assets/js/vendor.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
      <!-- App Javascript (Require in all Page) -->
      <script src="/assets/js/app.js"></script>
+     <script>
+          document.addEventListener('DOMContentLoaded', function() {
+    // Variables to store the selected status
+    let selectedStatus = '';
+    
+    // Get all status options and add click event listeners
+    const statusOptions = document.querySelectorAll('.status-option');
+    statusOptions.forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            selectedStatus = this.getAttribute('data-status');
+            
+            // Update dropdown button text to show selected status
+            document.getElementById('orderStatusDropdown').textContent = selectedStatus;
+        });
+    });
+    
+    // Add click event listener to the update button
+    const updateBtn = document.getElementById('updateStatusBtn');
+    updateBtn.addEventListener('click', function() {
+        if (selectedStatus) {
+            // Get the order ID from the hidden input
+            const orderId = document.querySelector('input[type="hidden"]').value;
+            
+            // Show confirmation dialog using SweetAlert
+            Swal.fire({
+                title: 'Confirm Status Update',
+                text: `Are you sure you want to change the order status to ${selectedStatus}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, update it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send the status update to the backend
+                    updateOrderStatus(orderId, selectedStatus);
+                }
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select a status first!'
+            });
+        }
+    });
+    
+    // Function to send the status to the backend
+    function updateOrderStatus(orderId, status) {
+     console.log("this is orderid",orderId)
+     console.log("this is status",status)
+        fetch('/admin/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                orderId: orderId,
+                status: status
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Status updated successfully:', data);
+            
+            // Show success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: `Order status has been updated to ${status}`,
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+               
+                window.location.reload();
+            });
+        })
+        .catch(error => {
+            console.error('Error updating status:', error);
+            
+            // Show error message
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: 'Failed to update order status. Please try again.'
+            });
+        });
+    }
+});
+     </script>
 
 </body>
 

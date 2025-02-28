@@ -1,4 +1,6 @@
 const Order = require("../../models/orderSchema")
+const Address = require("../../models/addressSchema")
+
 const getOrderPage = async (req,res)=>{
     try {
         const page = parseInt(req.query.page) || 1
@@ -9,8 +11,6 @@ const getOrderPage = async (req,res)=>{
         .skip(skip)
         .limit(limit)
         .populate("userId")
-
-       
 
         const totalOrder = await Order.countDocuments()
 
@@ -32,20 +32,50 @@ const getOrderPage = async (req,res)=>{
 const getOrderDetailPage = async(req,res)=>{
     try {
         const id = req.params.id
-        console.log("This is my id",id)
+        
         const orderDetailData = await Order.findById(id)
         .populate("userId")
         .populate({path: "products.productId", model: "Product",})
-        console.log("order data", orderDetailData)
+
+        const addressId = orderDetailData.deliveryAddress
+
+        const userId = orderDetailData.userId._id.toString()
+
+       
+
+        const addressDetail = await Address.findOne({userId: userId,"address._id":addressId },{"address.$":1})
+
+        
+
         res.render("orderDetail",{
-            orderData: orderDetailData
+            orderData: orderDetailData,
+            addressData: addressDetail
         })
     } catch (error) {
-        
+        console.error("This is getOrderDetailPage",error)
+        res.redirect("/pagerror")
     }
 }
 
+const changeStatus = async (req,res)=>{
+    try {
+        
+        const {orderId, status} = req.body
+        if(!orderId || !status){
+            return res.status(401).json({success:false, message:"select an option"})
+        }
+
+        const updateOrderStatus = await Order.findByIdAndUpdate(orderId,{$set:{status:status}},{new:true})
+        
+        return res.status(200).json({success:true})
+
+    } catch (error) {
+        console.error("This is error occured in changeStatus",changeStatus)
+        res.redirect("/pageerror")
+    }
+}
 module.exports = {
     getOrderPage,
-    getOrderDetailPage
+    getOrderDetailPage,
+    changeStatus
 }

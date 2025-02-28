@@ -64,5 +64,5 @@ router.get("/blockColor/:id",adminAuth,variantController.blockColor)
 // Order Managment
 router.get("/getOrderPage",adminAuth,orderController.getOrderPage)
 router.get("/orderDetail/:id",adminAuth, orderController.getOrderDetailPage)
-
+router.post("/update-status",adminAuth,orderController.changeStatus)
 module.exports = router
