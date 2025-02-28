@@ -40,7 +40,6 @@ const getShopPage = async (req, res) => {
         const totalProducts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / limit);
 
-        // ✅ Always return a JSON response for AJAX requests
         if (req.headers.accept && req.headers.accept.includes("application/json")) {
             return res.json({
                 products: productData,
@@ -51,7 +50,7 @@ const getShopPage = async (req, res) => {
             });
         }
 
-        // Default EJS render for normal page loads
+        
         res.render("shop-page", {
             user:user,
             product: productData,

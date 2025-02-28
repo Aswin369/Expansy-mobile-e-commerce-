@@ -495,19 +495,18 @@
                                                             <button class="btn btn-primary dropdown-toggle" type="button" id="orderStatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 Change Status
                                                             </button>
+                                                            <span id="currentOrderStatus" style="display:none;"><%=orderData.status%></span>
                                                             <ul class="dropdown-menu" aria-labelledby="orderStatusDropdown">
                                                                  <li><a class="dropdown-item status-option" data-status="Ordered" href="#">Ordered</a></li>
                                                                  <li><a class="dropdown-item status-option" data-status="Pending" href="#">Pending</a></li>
                                                                  <li><a class="dropdown-item status-option" data-status="Shipped" href="#">Shipped</a></li>
                                                                  <li><a class="dropdown-item status-option" data-status="Delivered" href="#">Delivered</a></li>
                                                                  <li><a class="dropdown-item status-option" data-status="Cancelled" href="#">Cancelled</a></li>
-                                                                 <li><a class="dropdown-item status-option" data-status="Return Requested" href="#">Return Requested</a></li>
-                                                                 <li><a class="dropdown-item status-option" data-status="Return Approved" href="#">Return Approved</a></li>
-                                                                 <li><a class="dropdown-item status-option" data-status="Return Rejected" href="#">Return Rejected</a></li>
+     
                                                             </ul>
                                                             <input type="hidden" value="<%= orderData._id%>">
                                                         </div>
-                                                        <button class="btn btn-success mt-2" id="updateStatusBtn" style="margin-bottom: 10px;">Update Status</button>
+                                                        <button id="updateStatusBtn" class="btn btn-primary">Update Status</button>
                                                   </div>
 
                                                   
@@ -696,12 +695,13 @@
                                         </div>
 
                                         <div>
-                                             <p class="mb-1"><%= addressData.address?.[0]?.addressType || "No Address Found" %></p>
-                                             <p class="mb-1"><%= addressData.address?.[0]?.city%> ,</p>
-                                             <p class="mb-1"><%= addressData.address?.[0]?.state%> ,</p>
-                                             <p class="mb-1"><%= addressData.address?.[0]?.landMark%> ,</p>
-                                             <p class="mb-1"><%= addressData.address?.[0]?.pincode%> </p>
-                                             <p class=""><%= addressData.address?.[0]?.phone%></p>
+                                             <p class="mb-1"><%= orderData.deliveryAddress.addressType%></p>
+                                             <p class="mb-1"><%= orderData.deliveryAddress.city%> ,</p>
+                                             <p class="mb-1"><%= orderData.deliveryAddress.landMark%> ,</p>
+                                             <p class="mb-1"><%= orderData.deliveryAddress.state%> ,</p>
+                                             <p class="mb-1"><%= orderData.deliveryAddress.pincode%> </p>
+                                             <p class=""><%= orderData.deliveryAddress.phone%></p>
+                                             <p class=""><%= orderData.deliveryAddress.altPhone%></p>
                                         </div>
 
                                         <div class="d-flex justify-content-between mt-3">
@@ -751,6 +751,7 @@
           document.addEventListener('DOMContentLoaded', function() {
     // Variables to store the selected status
     let selectedStatus = '';
+    let currentStatus = document.getElementById('currentOrderStatus').textContent.trim(); // Assuming you have an element with current status
     
     // Get all status options and add click event listeners
     const statusOptions = document.querySelectorAll('.status-option');
@@ -767,6 +768,16 @@
     // Add click event listener to the update button
     const updateBtn = document.getElementById('updateStatusBtn');
     updateBtn.addEventListener('click', function() {
+        // Check if the current status is already "Cancelled"
+        if (currentStatus === "Cancelled") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Action Not Allowed',
+                text: 'This order has already been cancelled and cannot be updated further.'
+            });
+            return; // Stop execution if order is already cancelled
+        }
+        
         if (selectedStatus) {
             // Get the order ID from the hidden input
             const orderId = document.querySelector('input[type="hidden"]').value;
@@ -797,8 +808,9 @@
     
     // Function to send the status to the backend
     function updateOrderStatus(orderId, status) {
-     console.log("this is orderid",orderId)
-     console.log("this is status",status)
+        console.log("this is orderid", orderId)
+        console.log("this is status", status)
+        
         fetch('/admin/update-status', {
             method: 'POST',
             headers: {
@@ -818,6 +830,15 @@
         .then(data => {
             console.log('Status updated successfully:', data);
             
+            // Update current status variable if status was successfully changed to "Cancelled"
+            if (status === "Cancelled") {
+                currentStatus = "Cancelled";
+                
+                // Optionally disable the update button visually
+                updateBtn.disabled = true;
+                updateBtn.classList.add('disabled');
+            }
+            
             // Show success message
             Swal.fire({
                 icon: 'success',
@@ -826,7 +847,6 @@
                 timer: 2000,
                 showConfirmButton: false
             }).then(() => {
-               
                 window.location.reload();
             });
         })
@@ -840,6 +860,15 @@
                 text: 'Failed to update order status. Please try again.'
             });
         });
+    }
+    
+    // Immediately check if the current status is "Cancelled" and disable the button if it is
+    if (currentStatus === "Cancelled") {
+        updateBtn.disabled = true;
+        updateBtn.classList.add('disabled');
+        
+        // Optionally add visual indication
+        updateBtn.title = "This order has been cancelled and cannot be updated";
     }
 });
      </script>

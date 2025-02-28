@@ -22,6 +22,7 @@
 	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
 <!--===============================================================================================-->
@@ -352,7 +353,7 @@
 													<button class="btn btn-primary btn-sm view-btn">
 														<a href="/ordersview/<%= item._id%>" style="text-decoration: none; color: white;">View</a> 
 													</button>
-													<button class="btn btn-danger btn-sm">Cancel</button>
+													
 												</td>
 											</tr>
 											<%})%>
@@ -500,7 +501,7 @@
 										<div class="mb-3">
 											<label for="edit_city" class="form-label">City</label>
 											<input type="text" class="form-control" id="edit_city"  name="city" required>
-											console.log()
+											
 										</div>
 										<div class="mb-3">
 											<label for="edit_landmark" class="form-label">Landmark</label>
@@ -968,7 +969,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 <!-- profile update -->
-	
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
 		document.getElementById("formSubmit").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -1029,24 +1030,35 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 	</script>
-	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-			let activeTab = localStorage.getItem("activeTab");
-			if (activeTab) {
-				let tabElement = document.querySelector(`[href="${activeTab}"]`);
-				if (tabElement) {
-					new bootstrap.Tab(tabElement).show();
-				}
-			}
-			document.querySelectorAll('.list-group a').forEach(tab => {
-				tab.addEventListener('click', function (e) {
-					let selectedTab = this.getAttribute('href');
-					localStorage.setItem("activeTab", selectedTab);
-				});
-			});
-		});
-	</script>
-	
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+    console.log("DOM fully loaded");
+
+    // Get the saved tab ID from localStorage
+    const savedTabId = localStorage.getItem("activeTabId");
+    console.log("Saved tab ID from localStorage:", savedTabId);
+
+    if (savedTabId) {
+        const activeTab = document.querySelector(`a[href="#${savedTabId}"]`);
+        if (activeTab) {
+            console.log("Activating saved tab:", savedTabId);
+            const tab = new bootstrap.Tab(activeTab);
+            tab.show();
+        }
+    }
+
+    // Listen for tab changes and save the active tab ID
+    document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tabEl => {
+        tabEl.addEventListener('shown.bs.tab', function (event) {
+            const tabId = event.target.getAttribute('href').substring(1); // Extract ID from href
+            console.log("Saving active tab ID:", tabId);
+            localStorage.setItem("activeTabId", tabId);
+        });
+    });
+});
+
+</script>
 
 	<!-- This is for delete address -->
 

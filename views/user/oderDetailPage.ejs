@@ -377,8 +377,14 @@
                 <div class="order-header d-flex justify-content-between align-items-center">
                     <div>
                         <h1 class="fs-30 fw-bold mb-0">Order Details</h1>
-                        <div class="order-status pending-status mt-2">Pending</div>
+                        <div class="order-status pending-status mt-2"><%= orderData.status%></div>
                     </div>
+					<input type="hidden" id="OrderIdVal" value="<%= orderData._id%>">
+					<div class="col-md-2 text-end">
+						<button class="cancel-btn" id="cancelOrder">
+							Cancel Order
+						  </button>
+					</div>
                 </div>
     
                 <!-- Payment Alert -->
@@ -386,7 +392,7 @@
                     <i class="bi bi-exclamation-circle text-primary me-2"></i>
                     <span>continue payment</span>
                 </div>
-    
+				
                 <!-- Order Info -->
                 <div class="p-4 bg-white">
                     <div class="row mb-4">
@@ -420,7 +426,6 @@
 										<p class="mb-1">Unit Price: ₹<%= product.price.toLocaleString() %></p>
 										<p class="fw-bold">Total Price: ₹<%= product.totalPrice.toLocaleString() %></p>
 									</div>
-									console.log("<%= orderData._id%>")
 									<div class="col-md-2 text-end">
 										<button class="cancel-btn" onclick="cancelOrder('<%= product._id %>', '<%= orderData._id %>')">
 											Cancel
@@ -436,9 +441,13 @@
                     <!-- Shipping Information -->
                     <div class="mb-4">
                         <h2 class="fs-26 fw-bold mb-3">Shipping Information</h2>
-                        <p class="mb-2"><span class="fw-bold">Shipping Address : </span><%= addressData.address[0].addressType%></p>
-                        <p class="mb-2"><span class="fw-bold">Shipping Date: </span>December 20, 2024</p>
-                        <p class="mb-2"><span class="fw-bold">Estimated Delivery: </span>December 25, 2024</p>
+                        <p class="mb-2"><span class="fw-bold">Shipping Address : </span><%= orderData.deliveryAddress.addressType%></p>
+                        <p class="mb-2"><span class="fw-bold">City : </span><%= orderData.deliveryAddress.city%></p>
+                        <p class="mb-2"><span class="fw-bold">landMark : </span><%= orderData.deliveryAddress.landMark%></p>
+                        <p class="mb-2"><span class="fw-bold">state : </span><%= orderData.deliveryAddress.state%></p>
+                        <p class="mb-2"><span class="fw-bold">pincode : </span><%= orderData.deliveryAddress.pincode%></p>
+                        <p class="mb-2"><span class="fw-bold">phone: </span><%= orderData.deliveryAddress.phone%></p>
+                        <p class="mb-2"><span class="fw-bold">altPhone: </span><%= orderData.deliveryAddress.altPhone%></p>
                     </div>
     
                     <!-- Order Summary -->
@@ -464,7 +473,7 @@
     
                     <!-- Actions -->
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="#" class="back-btn">
+                        <a href="/profilePage" class="back-btn">
                             <i class="bi bi-arrow-left me-1"></i> Back to Orders
                         </a>
                         <button class="download-btn">
@@ -673,6 +682,8 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <!--===============================================================================================-->
 	<script src="/js/main.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 	<script>
 		function cancelOrder(productId, orderId) {
 		  Swal.fire({
@@ -755,6 +766,55 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 					console.log("Error in handleLogout",error)
 				}
 			}
+		</script>
+
+		<script>
+	document.querySelector('#cancelOrder').addEventListener('click', function() {
+    const orderIdElement = document.getElementById("OrderIdVal");
+    if (!orderIdElement || !orderIdElement.value) {
+        console.error("Order ID not found!");
+        swal("Error", "Order ID is missing!", "error");
+        return;
+    }
+
+    const orderId = orderIdElement.value; // Get Order ID
+    console.log("Cancelling Order ID:", orderId);
+
+    // Show confirmation popup
+    swal({
+        title: "Are you sure?",
+        text: "Do you really want to cancel this order?",
+        icon: "warning",
+        buttons: ["No, keep my order", "Yes, cancel it"],
+        dangerMode: true,
+    }).then((willCancel) => {
+        if (willCancel) {
+            cancelOrder1(orderId);
+        }
+    });
+});
+
+function cancelOrder1(orderId) {
+    fetch('/cancelOrder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: orderId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            swal("Cancelled!", "Your order has been cancelled successfully.", "success")
+            .then(() => { location.reload(); }); // Reload the page after success
+        } else {
+            swal("Error!", data.message || "Failed to cancel your order.", "error");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        swal("Error!", "Failed to cancel your order. Please try again.", "error");
+    });
+}
+
 		</script>
 	
 </body>

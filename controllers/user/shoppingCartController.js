@@ -66,7 +66,6 @@ const productAddToCart = async(req,res)=>{
             return res.status(404).json({ success: false, message: "Product not found" });
         }
 
-       
         const spec = productDetail.specification.find(s => s._id.toString() === selectedSpecId);
         if (!spec) {
             return res.status(404).json({ success: false, message: "Specification not found" });
@@ -209,8 +208,14 @@ const addOrderDetails = async(req,res)=>{
         const userId = req.session.user
         const {deliveryAddressId, totalAmount, payableAmount, paymentMethod} = req.body
 
-        console.log("lkdfa",deliveryAddressId)
+        console.log("this is req.bosdy",req.body)
+
+        const addressData = await Address.findOne({userId: new mongoose.Types.ObjectId(userId),"address._id": new mongoose.Types.ObjectId(deliveryAddressId)},{"address.$":1})
+        
+        const deliveryAddress = { ...addressData.address[0]}
+        console.log("lkdfa",addressData)
         console.log("user id ",userId)
+        console.log("user address id ",deliveryAddressId)
         
 
         const cartDetails = await Cart.findOne({userId:userId})
@@ -227,10 +232,11 @@ const addOrderDetails = async(req,res)=>{
             totalPrice: item.totalPrice
         }))
 
+        console.log("T",orderProducts)
         const newOrder = new Order({
             userId,
             products: orderProducts,
-            deliveryAddress: deliveryAddressId,
+            deliveryAddress: deliveryAddress,
             totalAmount,
             payableAmount,
             paymentMethod
@@ -245,7 +251,28 @@ const addOrderDetails = async(req,res)=>{
             message: "Order placed successfully"
         });
 
+        for (const item of orderProducts) {
+            const { productId, specId, quantity } = item;
+            const product = await Product.findOneAndUpdate(
+              {
+                _id: productId,
+                'specification._id': specId
+              },
+              {
+                $inc: { 'specification.$.quantity': -quantity } 
+              },
+              {
+                new: true, 
+                runValidators: true 
+              }
+            );
+      
+            if (!product) {
+              throw new Error(`Product with ID ${productId} or specification ${specId} not found`);
+            }
 
+            // console.log(`Stock updated for product ${productId}, spec ${specId}. New quantity: ${updatedSpec.quantity}`);
+          }
 
     } catch (error) {
         console.error("This error occured in addOrderDetails",error)

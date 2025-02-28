@@ -36,20 +36,9 @@ const getOrderDetailPage = async(req,res)=>{
         const orderDetailData = await Order.findById(id)
         .populate("userId")
         .populate({path: "products.productId", model: "Product",})
-
-        const addressId = orderDetailData.deliveryAddress
-
-        const userId = orderDetailData.userId._id.toString()
-
-       
-
-        const addressDetail = await Address.findOne({userId: userId,"address._id":addressId },{"address.$":1})
-
-        
-
         res.render("orderDetail",{
             orderData: orderDetailData,
-            addressData: addressDetail
+            
         })
     } catch (error) {
         console.error("This is getOrderDetailPage",error)

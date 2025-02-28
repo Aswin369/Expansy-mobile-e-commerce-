@@ -386,22 +386,15 @@ const loadOrderDetailPage = async (req, res) => {
         const orderId = req.params.orderId;
         const userId = req.session.user
         const orderDetails = await Order.findById(orderId).populate("products.productId")
+        
         if (!orderDetails) {
             
             return res.status(404).json({ message: "Order not found" });
         }
-        const addressId = orderDetails.deliveryAddress
-        if(!addressId){
-            return res.status(404).json({success:false, message:"Address is have no Id  "})
-        }
-        const addressDetails = await Address.findOne({userId:userId,"address._id":addressId},{"address.$":1}) 
-        if(!addressDetails){
-           return  res.status(404).json({success:false, message:"Address is have no Id  "})
-        }
+        
         res.render("oderDetailPage", {  
             success: true,
             orderData: orderDetails,
-            addressData:addressDetails
         });
     } catch (error) {
         console.error("Error in loadOrderDetailPage:", error);
@@ -421,13 +414,25 @@ const deleteOrder = async(req,res)=>{
             {new:true})
         
         if(order.products<=0){
-            await Order.deleteOne({_id:orderId})
+            await Order.findByIdAndUpdate({_id:orderId},{$set:{status:"Cancelled"}})
            return  res.redirect("/profilePage")
         }
         return res.status(201).json({success:true})
     } catch (error) {
         console.error("This error found in deleteOrder", error)
         res.redirect("/pagerror")
+    }
+}
+
+const cancelOrder = async (req,res)=>{
+    try {
+        console.log("req.boy",req.body)
+        const {orderId} = req.body
+        await Order.findByIdAndUpdate(orderId,{$set:{status:"Cancelled"}})
+        console.log("THiscompelfjkasdkjfhasdfasdf")
+        return res.status(201).json({success:true})
+    } catch (error) {
+        
     }
 }
 
@@ -446,5 +451,6 @@ module.exports = {
     changePassword,
     getVerifyOtpPage,
     loadOrderDetailPage,
-    deleteOrder
+    deleteOrder,
+    cancelOrder
 }
