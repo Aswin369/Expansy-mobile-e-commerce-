@@ -8,6 +8,7 @@ const mongoose = require("mongoose")
 const getShoppingCart = async(req,res)=>{
     try {
         const userId = req.session.user
+        console.log("This is userid", userId)
         if(!userId){
             res.redirect("/login")
         }
@@ -16,7 +17,7 @@ const getShoppingCart = async(req,res)=>{
         .populate("items.productId")
         console.log("hhsdaifjk",cartUser)
         if (!cartUser || cartUser.items.length === 0) {
-            return res.render("shoppingCart",{cartData:{items:[]}});
+            return res.render("shoppingCart",{cartData:{items:[]}, user:userId});
         }
         const populatedCartItems = await Promise.all(
             cartUser.items.map(async (item) => {
@@ -29,10 +30,9 @@ const getShoppingCart = async(req,res)=>{
                 }
             })
         )
-        
         res.render("shoppingCart", {
-            cartData: { ...cartUser.toObject(), items: populatedCartItems }
-        });
+            cartData: { ...cartUser.toObject(), items: populatedCartItems },user: userId
+        })
     } catch (error) {
         console.error("Error found in shopping cart", error)
     }
@@ -45,8 +45,12 @@ const productAddToCart = async(req,res)=>{
         }
         const userId = req.session.user
         const {productId, quantity, price, selectedSpecId} = req.body
-        console.log("This is user id",userId)
-        console.log("KTHis sdfkasdfhaif",req.body)
+        
+        const cartDetail = await Cart.find({userId:userId},{"items.productId":productId},{"items.$":1})
+        
+
+        console.log("This is cartDetail",cartDetail)
+
         if(quantity<=0){
             return res.status(400).json({success:false, message:"quantity cannot be zero"})
         }
@@ -57,7 +61,34 @@ const productAddToCart = async(req,res)=>{
         if(!productId){
             return res.status(400).json({success:false, message: "Please try again"})
         }
-        const productDetail = await Product.findOne({_id:productId})
+        const productDetail = await Product.findOne({ _id: productId });
+        if (!productDetail) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
+       
+        const spec = productDetail.specification.find(s => s._id.toString() === selectedSpecId);
+        if (!spec) {
+            return res.status(404).json({ success: false, message: "Specification not found" });
+        }
+
+        const availableStock = spec.quantity;
+       
+        let userCart = await Cart.findOne({ userId });
+
+        let existingCartItem = null;
+        if (userCart) {
+            existingCartItem = userCart.items.find(item => item.specId.toString() === selectedSpecId);
+        }
+
+       
+        const currentCartQuantity = existingCartItem ? existingCartItem.quantity : 0;
+        const totalQuantity = currentCartQuantity + quantity;
+
+       
+        if (totalQuantity > availableStock) {
+            return res.status(400).json({ success: false, message: "Not enough stock available!" });
+        }
 
         const totalPiceOfProduct = price*quantity
         console.log("totalPiceOfProduct",totalPiceOfProduct)
@@ -68,9 +99,7 @@ const productAddToCart = async(req,res)=>{
             totalPrice: totalPiceOfProduct,
             specId:selectedSpecId
         }
-        const userCart = await Cart.findOne({userId})
-
-      
+        
         if(userCart){
             userCart.items.push(cartDart)
             await userCart.save()
@@ -98,7 +127,6 @@ const deleteProductFromCart = async(req,res)=>{
         if(!cartId){
             return res.status(400).json({success:true, message:"There is no product please add any product to cart"})
         }
-        // console.log("1");
         
         const updateCart = await Cart.updateOne({ userId: userId },{$pull:{items:{_id:cartId}}})
 
@@ -167,6 +195,8 @@ const loadplaceOrder = async (req, res) => {
 const loadCheckOutPage = async(req,res)=>{
     try {
         const { cartId } = req.query;
+
+        // const user = req.session.user
         res.status(200).json({ success: true, redirectUrl: `/checkout?cartId=${cartId}`});
     } catch (error) {
         console.error("This error occured in loadCheckOutPage",error)

@@ -19,6 +19,7 @@ const productDetail = async (req,res)=>{
             return res.status(404).json({ error: 'Product not found' });
         }
         res.render("productdetail",{
+            user:user,
             productData,
             user,
             allProduct

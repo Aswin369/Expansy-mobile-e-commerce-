@@ -18,6 +18,7 @@ const getProfilePage = async (req,res)=>{
 
         console.log("dafhjk",oderDetails )
         res.render("profilePage",{
+            user:id,
             data:userData,
             address:userAddress,
             oderData: oderDetails

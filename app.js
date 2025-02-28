@@ -7,7 +7,7 @@ const passport = require("./config/passport")
 const userRouter = require("./routes/userRouter")
 const adminRouter = require("./routes/adminRouter")
 const nocache = require("nocache")
-
+const userAuth = require('./middlewares/user')
 const db = require("./config/db")
 db()
 const PORT = process.env.PORT 
@@ -34,6 +34,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.set("views",[path.join(__dirname, "views/user"),path.join(__dirname,"views/admin")])
 app.set("view engine", "ejs")
 app.use(express.static("public"))
+
+app.use(userAuth)
 
 app.use("/",userRouter)
 app.use("/admin",adminRouter)

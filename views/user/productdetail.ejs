@@ -332,7 +332,11 @@
                   <a href="/profilePage">Profile</a>
                 </li>
                 <li>
-                  <a href="/logout">Logout</a>
+                  <% if (user) { %>
+                    <a onclick="handleLogout()" href="/logout">Logout</a>
+                  <% } else { %>
+                    <a href="/login">Login</a>
+                  <% } %>
                 </li>
               </ul>
             </div>
@@ -715,9 +719,7 @@
                             >₹<%= spec.regularPrice.toLocaleString('en-IN')
                             %></span
                           >
-                          <!-- <span class="discount-badge">
-															-<%= Math.round((spec.regularPrice - spec.salePrice) / spec.regularPrice * 100) %>%
-														</span> -->
+                         
                           <% } %>
                         </div>
                       </button>
@@ -1476,212 +1478,276 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       // Get DOM elements
+const quantityInput = document.querySelector(".num-product");
+const decrementBtn = document.querySelector(".btn-num-product-down");
+const incrementBtn = document.querySelector(".btn-num-product-up");
+const addToCartBtn = document.querySelector(".js-addcart-detail");
+const variantBtns = document.querySelectorAll(".variant-btn");
+const displayPrice = document.querySelector(".mtext-106.cl2");
+const originalPriceDisplay = document.querySelector(".original-price");
+const productId = document.getElementById("pdId").value;
+if (
+  !quantityInput ||
+  !decrementBtn ||
+  !incrementBtn ||
+  !addToCartBtn ||
+  !displayPrice ||
+  !productId
+) {
+  console.error("One or more elements are missing in the HTML.");
+}
+let selectedSpecId = "";
+let selectedPrice = 0;
+let currentStock = 0;
 
-      const quantityInput = document.querySelector(".num-product");
-      const decrementBtn = document.querySelector(".btn-num-product-down");
-      const incrementBtn = document.querySelector(".btn-num-product-up");
-      const addToCartBtn = document.querySelector(".js-addcart-detail");
-      const variantBtns = document.querySelectorAll(".variant-btn");
-      const displayPrice = document.querySelector(".mtext-106.cl2");
-      const originalPriceDisplay = document.querySelector(".original-price");
-      const productId = document.getElementById("pdId").value;
-      if (
-        !quantityInput ||
-        !decrementBtn ||
-        !incrementBtn ||
-        !addToCartBtn ||
-        !displayPrice ||
-        !productId
-      ) {
-        console.error("One or more elements are missing in the HTML.");
+// Initialize with first variant's data
+if (variantBtns.length > 0) {
+  const firstBtn = variantBtns[0];
+  selectedSpecId = firstBtn.dataset.specId;
+  selectedPrice = parseInt(
+    firstBtn
+      .querySelector(".sale-price")
+      .textContent.replace("₹", "")
+      .replace(",", "")
+  );
+  currentStock = getStockQuantity(firstBtn);
+  firstBtn.classList.add("active");
+  updateQuantityLimits();
+}
+
+// Handle variant selection
+variantBtns.forEach((btn) => {
+  btn.addEventListener("click", function () {
+    // Remove active class from all buttons
+    variantBtns.forEach((b) => b.classList.remove("active"));
+    // Add active class to clicked button
+    this.classList.add("active");
+
+    // Update selected variant data
+    selectedSpecId = this.dataset.specId;
+
+    // Get the new price from the selected variant
+    const newSalePrice = this.querySelector(".sale-price").textContent;
+    const newRegularPrice =
+      this.querySelector(".regular-price")?.textContent;
+
+    // Update the displayed prices
+    displayPrice.innerHTML = newSalePrice;
+    if (newRegularPrice && originalPriceDisplay) {
+      originalPriceDisplay.innerHTML = newRegularPrice;
+    }
+
+    // Update selected price for cart
+    selectedPrice = parseInt(
+      newSalePrice.replace("₹", "").replace(/,/g, "")
+    );
+    currentStock = getStockQuantity(this);
+
+    // Reset quantity to 1 when changing variants
+    quantityInput.value = 1;
+    updateQuantityLimits();
+  });
+});
+
+// Helper function to get stock quantity from variant button
+function getStockQuantity(btn) {
+  const quantityText = btn.querySelector(
+    ".variant-quantity span"
+  ).textContent;
+  if (quantityText.includes("Out of Stock")) return 0;
+  if (quantityText.includes("Only")) {
+    return parseInt(quantityText.match(/\d+/)[0]);
+  }
+  return 999; // Large number for "In stock"
+}
+
+// Helper function to update increment/decrement button states
+function updateQuantityLimits() {
+  const currentVal = parseInt(quantityInput.value);
+  
+  // Update increment button state
+  if (currentStock === 0) {
+    incrementBtn.disabled = true;
+    addToCartBtn.disabled = true;
+  } else {
+    incrementBtn.disabled = currentVal >= Math.min(5, currentStock);
+    addToCartBtn.disabled = false;
+  }
+  
+  // Update decrement button state
+  decrementBtn.disabled = currentVal <= 1;
+}
+
+// Quantity input validation
+quantityInput.addEventListener("change", function () {
+  let value = parseInt(this.value);
+
+  // Handle invalid input
+  if (isNaN(value) || value < 1) {
+    value = 1;
+    Swal.fire({
+      icon: "error",
+      title: "Invalid Quantity",
+      text: "Quantity cannot be less than 1",
+    });
+  }
+
+  // Check stock availability
+  const maxAllowed = Math.min(5, currentStock);
+  
+  // Check maximum limits
+  if (value > maxAllowed) {
+    value = maxAllowed;
+    
+    if (currentStock < 5) {
+      Swal.fire({
+        icon: "warning",
+        text: `Only ${currentStock} items available in stock`,
+      });
+    } else {
+      Swal.fire({
+        icon: "warning",
+        text: "Maximum 5 products allowed per order",
+      });
+    }
+  }
+
+  this.value = value;
+  updateQuantityLimits();
+});
+
+// Increment button - FIXED INCREMENT ISSUE
+incrementBtn.addEventListener("click", function (e) {
+  // Prevent default button behavior to avoid any conflicts
+  e.preventDefault();
+  
+  let currentVal = parseInt(quantityInput.value);
+  const maxAllowed = Math.min(5, currentStock);
+  
+  if (currentVal < maxAllowed) {
+    // Set the specific value instead of incrementing which could lead to double increments
+    quantityInput.value = currentVal + 0;
+    updateQuantityLimits();
+  } else if (currentStock < 5) {
+    Swal.fire({
+      icon: "warning",
+      text: `Only ${currentStock} items available in stock`,
+    });
+  } else {
+    Swal.fire({
+      icon: "warning",
+      text: "Maximum 5 products allowed per order",
+    });
+  }
+});
+
+// Decrement button
+decrementBtn.addEventListener("click", function (e) {
+  // Prevent default button behavior
+  e.preventDefault();
+  
+  let currentVal = parseInt(quantityInput.value);
+  if (currentVal > 1) {
+    // Set specific value instead of decrementing
+    quantityInput.value = currentVal - 1;
+    updateQuantityLimits();
+  } else {
+    Swal.fire({
+      icon: "error",
+      text: "Quantity cannot be less than 1",
+    });
+  }
+});
+
+// Add to cart functionality
+addToCartBtn.addEventListener("click", async function () {
+  try {
+    // Check if a variant is selected
+    if (!selectedSpecId) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Please select a product variant",
+      });
+      return;
+    }
+
+    // Validate stock one more time before adding to cart
+    const quantity = parseInt(quantityInput.value);
+    
+    if (quantity > currentStock) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `Only ${currentStock} items available in stock`,
+      });
+      quantityInput.value = currentStock;
+      updateQuantityLimits();
+      return;
+    }
+
+    if (quantity > 5) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Maximum 5 products allowed per order",
+      });
+      quantityInput.value = 5;
+      updateQuantityLimits();
+      return;
+    }
+
+    if (quantity < 1) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Quantity cannot be less than 1",
+      });
+      quantityInput.value = 1;
+      updateQuantityLimits();
+      return;
+    }
+
+    const response = await fetch("/addToCart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        selectedSpecId: selectedSpecId,
+        quantity: quantity,
+        price: selectedPrice,
+        productId: productId,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Product added to cart successfully",
+      });
+    } else {
+      if (response.status == 401) {
+        window.location.href = '/login';
+        return;
       }
-      let selectedSpecId = "";
-      let selectedPrice = 0;
-      let currentStock = 0;
+      const data = await response.json();
+      throw new Error(data.message || "Failed to add product to cart");
+    }
+  } catch (error) {
+    console.error("Error adding to cart:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error.message || "Something went wrong. Please try again.",
+    });
+  }
+});
 
-      // Initialize with first variant's data
-      if (variantBtns.length > 0) {
-        const firstBtn = variantBtns[0];
-        selectedSpecId = firstBtn.dataset.specId;
-        selectedPrice = parseInt(
-          firstBtn
-            .querySelector(".sale-price")
-            .textContent.replace("₹", "")
-            .replace(",", "")
-        );
-        currentStock = getStockQuantity(firstBtn);
-      }
-
-      // Handle variant selection
-      variantBtns.forEach((btn) => {
-        btn.addEventListener("click", function () {
-          // Remove active class from all buttons
-          variantBtns.forEach((b) => b.classList.remove("active"));
-          // Add active class to clicked button
-          this.classList.add("active");
-
-          // Update selected variant data
-          selectedSpecId = this.dataset.specId;
-
-          // Get the new price from the selected variant
-          const newSalePrice = this.querySelector(".sale-price").textContent;
-          const newRegularPrice =
-            this.querySelector(".regular-price")?.textContent;
-
-          // Update the displayed prices
-          displayPrice.innerHTML = newSalePrice;
-          if (newRegularPrice && originalPriceDisplay) {
-            originalPriceDisplay.innerHTML = newRegularPrice;
-          }
-
-          // Update selected price for cart
-          selectedPrice = parseInt(
-            newSalePrice.replace("₹", "").replace(/,/g, "")
-          );
-          currentStock = getStockQuantity(this);
-
-          // Reset quantity to 1 when changing variants
-          quantityInput.value = 1;
-        });
-      });
-
-      // Helper function to get stock quantity from variant button
-      function getStockQuantity(btn) {
-        const quantityText = btn.querySelector(
-          ".variant-quantity span"
-        ).textContent;
-        if (quantityText.includes("Out of Stock")) return 0;
-        if (quantityText.includes("Only")) {
-          return parseInt(quantityText.match(/\d+/)[0]);
-        }
-        return 999; // Large number for "In stock"
-      }
-
-      // Quantity input validation
-      quantityInput.addEventListener("input", function () {
-        let value = parseInt(this.value);
-
-        // Handle invalid input
-        if (isNaN(value) || value < 1) {
-          value = 1;
-          Swal.fire({
-            icon: "error",
-            title: "Invalid Quantity",
-            text: "Quantity cannot be less than 1",
-          });
-        }
-
-        // Check maximum limits
-        if (value > 5) {
-          value = 5;
-          Swal.fire({
-            icon: "warning",
-            text: "Maximum 5 products allowed per order",
-          });
-        }
-
-        if (value > currentStock) {
-          value = currentStock;
-          Swal.fire({
-            icon: "warning",
-            text: `Only ${currentStock} items available in stock`,
-          });
-        }
-
-        this.value = value;
-      });
-
-      // Increment button
-      incrementBtn.addEventListener("click", function () {
-        let currentVal = parseInt(quantityInput.value);
-        if (currentVal < 5 && currentVal < currentStock) {
-          quantityInput.value = currentVal + 0;
-        } else if (currentVal >= 5) {
-          incrementBtn.disabled = true;
-          Swal.fire({
-            icon: "warning",
-            text: "Maximum 5 products allowed per order",
-          });
-        } else if (currentVal >= currentStock) {
-          Swal.fire({
-            icon: "warning",
-            text: `Only ${currentStock} items available in stock`,
-          });
-        }
-      });
-
-      // Decrement button
-      decrementBtn.addEventListener("click", function () {
-        let currentVal = parseInt(quantityInput.value);
-        if (currentVal > 1) {
-          quantityInput.value = currentVal - 1;
-        } else {
-          Swal.fire({
-            icon: "error",
-            text: "Quantity cannot be less than 1",
-          });
-        }
-      });
-
-      // Add to cart functionality
-      addToCartBtn.addEventListener("click", async function () {
-		try {
-        console.log("fasdfuhasduilfhasdf");
-        if (!selectedSpecId) {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Please select a product variant",
-          });
-          return;
-        }
-
-        const quantity = parseInt(quantityInput.value);
-
-        console.log("quantity", quantity);
-        console.log("selectedSpecId", selectedSpecId);
-
-        console.log("selectedPrice", selectedPrice);
-        console.log("productId", productId);
-       
-          const response = await fetch("/addToCart", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              selectedSpecId: selectedSpecId,
-              quantity: quantity,
-              price: selectedPrice,
-              productId: productId,
-            }),
-          });
-
-		 
-          console.log('asdfasdfsdf')
-		  console.log(response)
-          if (response.ok) {
-			const data = await response.json();
-            Swal.fire({
-              icon: "success",
-              title: "Success",
-              text: "Product added to cart successfully",
-            });
-          } else {
-			if(response.status == 401 ){
-				window.location.href = '/login'
-			}
-            throw new Error(data.message || "Failed to add product to cart");
-          }
-        } catch (error) {
-			console.error("jkghj",error)
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: error.message || "Something went wrong. Please try again.",
-          });
-        }
-      });
+// Initialize button states
+updateQuantityLimits();
     </script>
 
     <script>
@@ -1737,5 +1803,25 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!--===============================================================================================-->
     <script src="/js/main.js"></script>
+    <script>
+      async function handleLogout() {
+        try {
+          const response = await fetch("/logout",{
+            method: "GET",
+            credentials: "include"
+          })
+          if(response.ok){
+            console.log("Successfully logged out")
+            window.location.href = "/login"
+          }else{
+            const result = await response.json()
+            alert(result.message || "Failed to logout. Please try again")
+          }
+        } catch (error) {
+          alert("An unexpected error occurred")
+          console.log("Error in handleLogout",error)
+        }
+      }
+    </script>
   </body>
 </html>

@@ -531,15 +531,26 @@
                                                                       <% if (val.status === 'Pending') { %>
                                                                            <span class="badge border border-warning text-warning px-2 py-1 fs-13">Pending</span>
                                                                        <% } else if (val.status === 'Ordered') { %>
-                                                                           <span class="badge border border-success text-success px-2 py-1 fs-13">Ordered</span>
+                                                                           <span class="badge border border-primary text-primary px-2 py-1 fs-13">Ordered</span>
+                                                                       <% } else if (val.status === 'Shipped') { %>
+                                                                           <span class="badge border border-info text-info px-2 py-1 fs-13">Shipped</span>
+                                                                       <% } else if (val.status === 'Delivered') { %>
+                                                                           <span class="badge border border-success text-success px-2 py-1 fs-13">Delivered</span>
                                                                        <% } else if (val.status === 'Cancelled') { %>
                                                                            <span class="badge border border-danger text-danger px-2 py-1 fs-13">Cancelled</span>
+                                                                       <% } else if (val.status === 'Return Requested') { %>
+                                                                           <span class="badge border border-warning text-warning px-2 py-1 fs-13">Return Requested</span>
+                                                                       <% } else if (val.status === 'Return Approved') { %>
+                                                                           <span class="badge border border-success text-success px-2 py-1 fs-13">Return Approved</span>
+                                                                       <% } else if (val.status === 'Return Rejected') { %>
+                                                                           <span class="badge border border-danger text-danger px-2 py-1 fs-13">Return Rejected</span>
                                                                        <% } else { %>
                                                                            <span class="badge border border-secondary text-secondary px-2 py-1 fs-13">Unknown</span>
                                                                        <% } %>
+                                                                       
                                                                  </td>
                                                                  <td>
-                                                                      console.log(<%= val._id.toString()%>)
+                                                                      
                                                                       <div class="d-flex gap-2">
                                                                            <a href="/admin/orderDetail/<%= val._id.toString()%>" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
                                                                            

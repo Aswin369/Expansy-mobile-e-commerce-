@@ -5,6 +5,7 @@ const Category = require("../../models/categorySchema")
 
 const getShopPage = async (req, res) => {
     try {
+        const user = req.session.user
         const page = parseInt(req.query.page) || 1;
         const limit = 18;
         const skip = (page - 1) * limit;
@@ -52,6 +53,7 @@ const getShopPage = async (req, res) => {
 
         // Default EJS render for normal page loads
         res.render("shop-page", {
+            user:user,
             product: productData,
             currentPage: page,
             totalProducts: totalProducts,
