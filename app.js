@@ -9,6 +9,7 @@ const adminRouter = require("./routes/adminRouter")
 const nocache = require("nocache")
 const userAuth = require('./middlewares/user')
 const db = require("./config/db")
+const morgan = require("morgan")
 db()
 const PORT = process.env.PORT 
 
@@ -28,6 +29,8 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
+
+app.use(morgan("dev"))
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 

@@ -574,21 +574,28 @@
 
                     <!-- Forgot Password -->
                     <div class="tab-pane fade" id="forgot-password">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Change Password</h5>
-                            </div>
-                            <div class="card-body">
-                                <form method="post" action="/forgot-email-valid" id="emailForm" novalidate>
-                                    <div class="mb-3">
-                                        <label class="form-label">Email Address</label>
-                                        <input   name="email" id="email"  type="email" class="form-control" placeholder="Enter your email">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Send OTP</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+						<div class="card">
+							<div class="card-header">
+								<h5 class="card-title mb-0">Change Password</h5>
+							</div>
+							<div class="card-body">
+								<div class="mb-3">
+									<label class="form-label">Old Password</label>
+									<input type="password" class="form-control" placeholder="Enter your old password">
+								</div>
+								<div class="mb-3">
+									<label class="form-label">New Password</label>
+									<input type="password" class="form-control" placeholder="Enter your new password">
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Confirm Password</label>
+									<input type="password" class="form-control" placeholder="Confirm your new password">
+								</div>
+								<button class="btn btn-primary">Change Password</button>
+							</div>
+						</div>
+					</div>
+					
                 </div>
             </div>
         </div>
@@ -1209,65 +1216,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 	// Get the form element
-const form = document.getElementById('emailForm');
+// const form = document.getElementById('emailForm');
 
-// Add submit event listener
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+// // Add submit event listener
+// form.addEventListener('submit', async (e) => {
+//     e.preventDefault();
 
-    // Get the email value
-    const email = document.getElementById('email').value;
+//     // Get the email value
+//     const email = document.getElementById('email').value;
 
-    try {
-        // Show loading state
-        Swal.fire({
-            title: 'Processing...',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
+//     try {
+//         // Show loading state
+//         Swal.fire({
+//             title: 'Processing...',
+//             allowOutsideClick: false,
+//             didOpen: () => {
+//                 Swal.showLoading();
+//             }
+//         });
 
-        // Send POST request to backend
-        const response = await fetch('/forgot-email-valid', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email: email })
-        });
+//         // Send POST request to backend
+//         const response = await fetch('/forgot-email-valid', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({ email: email })
+//         });
 
-        // Check if the response is JSON
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
+//         // Check if the response is JSON
+//         const contentType = response.headers.get('content-type');
+//         if (contentType && contentType.includes('application/json')) {
+//             const data = await response.json();
             
-            if (!data.success) {
-                // Show error message from backend
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: data.message || 'Something went wrong. Please try again.',
-                });
-                return;
-            }
-        } else {
-            // If it's not JSON, it's likely a page render response
-            // Handle the redirect manually
-            window.location.href = response.url || '/forgot-email-valid';
-            return;
-        }
+//             if (!data.success) {
+//                 // Show error message from backend
+//                 Swal.fire({
+//                     icon: 'error',
+//                     title: 'Error',
+//                     text: data.message || 'Something went wrong. Please try again.',
+//                 });
+//                 return;
+//             }
+//         } else {
+//             // If it's not JSON, it's likely a page render response
+//             // Handle the redirect manually
+//             window.location.href = response.url || '/forgot-email-valid';
+//             return;
+//         }
 
-    } catch (error) {
-        console.error('Error:', error);
-        // Show error message
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Something went wrong. Please try again.',
-        });
-    }
-});
+//     } catch (error) {
+//         console.error('Error:', error);
+//         // Show error message
+//         Swal.fire({
+//             icon: 'error',
+//             title: 'Error',
+//             text: 'Something went wrong. Please try again.',
+//         });
+//     }
+// });
 </script>
 
 
@@ -1336,5 +1343,122 @@ form.addEventListener('submit', async (e) => {
 		}
 	</script>
 	
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+  // Get form elements
+  const oldPasswordInput = document.querySelector('#forgot-password input[placeholder="Enter your old password"]');
+  const newPasswordInput = document.querySelector('#forgot-password input[placeholder="Enter your new password"]');
+  const confirmPasswordInput = document.querySelector('#forgot-password input[placeholder="Confirm your new password"]');
+  const submitButton = document.querySelector('#forgot-password .btn-primary');
+
+  if (!oldPasswordInput || !newPasswordInput || !confirmPasswordInput || !submitButton) {
+    console.error('One or more form elements not found');
+    return;
+  }
+
+  submitButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    // Get input values
+    const oldPassword = oldPasswordInput.value.trim();
+    const newPassword = newPasswordInput.value.trim();
+    const confirmPassword = confirmPasswordInput.value.trim();
+    
+	console.log("oldPassword",oldPassword)
+	console.log("newPassword",newPassword)
+	console.log("confirmPassword",confirmPassword)
+    // Clear previous error messages
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+    
+    // Reset input styles
+    [oldPasswordInput, newPasswordInput, confirmPasswordInput].forEach(input => {
+      input.classList.remove('is-invalid');
+    });
+    
+    let isValid = true;
+    
+    // Validate old password - must not be empty
+    if (!oldPassword) {
+      displayError(oldPasswordInput, 'Old password is required');
+      isValid = false;
+    }
+    
+    // Validate new password
+    if (newPassword.length < 8) {
+      displayError(newPasswordInput, 'Password must be at least 8 characters long');
+      isValid = false;
+    }
+    if (!/[A-Z]/.test(newPassword)) {
+      displayError(newPasswordInput, 'Password must contain at least one capital letter');
+      isValid = false;
+    }
+    if (!/[0-9]/.test(newPassword)) {
+      displayError(newPasswordInput, 'Password must contain at least one number');
+      isValid = false;
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword)) {
+      displayError(newPasswordInput, 'Password must contain at least one special character');
+      isValid = false;
+    }
+    
+    // Confirm passwords match
+	console.log("newPassword",newPassword)
+	console.log("confirmPassword",confirmPassword)
+    if (newPassword !== confirmPassword) {
+      displayError(confirmPasswordInput, 'Passwords do not match');
+      isValid = false;
+    }
+    
+    if (isValid) {
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+      
+      fetch('/profile-page-change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldPassword, newPassword })
+      })
+      .then(response => response.json())
+      .then(data => {
+        Swal.fire({
+          title: data.success ? 'Success!' : 'Error',
+          text: data.message || 'Failed to change password. Please try again.',
+          icon: data.success ? 'success' : 'error',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          if (data.success) {
+            oldPasswordInput.value = '';
+            newPasswordInput.value = '';
+            confirmPasswordInput.value = '';
+          }
+        });
+      })
+      .catch(error => {
+        Swal.fire({
+          title: 'Error',
+          text: 'Network or server error: ' + error.message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      })
+      .finally(() => {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Change Password';
+      });
+    }
+  });
+
+  function displayError(inputElement, message) {
+    inputElement.classList.add('is-invalid');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'invalid-feedback error-message';
+    errorDiv.textContent = message;
+    inputElement.parentNode.appendChild(errorDiv);
+  }
+});
+
+</script>
+
 </body>
 </html>

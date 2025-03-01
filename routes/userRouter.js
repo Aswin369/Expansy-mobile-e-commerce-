@@ -31,9 +31,7 @@ router.get("/sorting", shopPageController.getProducts)
 router.get("/priceSorting", shopPageController.getFilteredProducts);
 router.get("/filterByCategory", shopPageController.getFilteredProductsByCategory)
 router.get("/search", shopPageController.searchProducts)
-// router.get('/search-products', shopPageController.searchProducts);
-// router.get('/filter-products', shopPageController.filterProducts);
-// router.get('/filter-products', shopPageController.filterAndSortProducts);
+
 
 // userForgot password
 router.get("/forgot-password",profileController.getForgotPassPage)
@@ -43,6 +41,7 @@ router.post("/verify-pass-forgot-otp",profileController.verifyForgotPassOtp)
 router.post("/verify-pass-resend-otp",profileController.verifyPasswordResendOTP)
 router.get("/change-password",profileController.getchangePasswordPage)
 router.post("/change-password",profileController.changePassword)
+router.post("/profile-page-change-password", profileController.profilePageChangePassword)
 // user profile management
 router.get("/profilePage",userAuth,profileController.getProfilePage)
 router.post("/editProfile",userAuth,profileController.editUserProfile)
@@ -66,4 +65,5 @@ router.get("/ordersuccess",userAuth, shoppingCartController.loadSuccessPage)
 router.get("/getWhishlist",userAuth,wishListController.getWhishList)
 // Place order
 router.get("/palceOder",userAuth,palceOderController.getPlaceOrderPage)
+router.post("/checkOutAddAddress",userAuth,palceOderController.checkOutAddAddress)
 module.exports = router 

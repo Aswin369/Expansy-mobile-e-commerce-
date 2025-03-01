@@ -14,7 +14,7 @@ const getShopPage = async (req, res) => {
         let query = { isBlocked: false };
 
         if (brandName && brandName !== "All") {
-            const brand = await Brand.findOne({ brandName: { $regex: new RegExp("^" + brandName + "$", "i") } });
+            const brand = await Brand.findOne({ brandName: { $regex: new RegExp("^" + brandName + "$", "i") } })
 
 
             if (!brand) {
@@ -37,8 +37,8 @@ const getShopPage = async (req, res) => {
             .limit(limit)
             .populate("brand");
 
-        const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / limit);
+        const totalProducts = await Product.countDocuments(query)
+        const totalPages = Math.ceil(totalProducts / limit)
 
         if (req.headers.accept && req.headers.accept.includes("application/json")) {
             return res.json({
@@ -60,8 +60,8 @@ const getShopPage = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error loading shop page:", error);
-        res.status(500).json({ message: "Server error" });
+        console.error("Error loading shop page:", error)
+        res.status(500).json({ message: "Server error" })
     }
 };
 
@@ -69,30 +69,30 @@ const getProducts = async (req, res) => {
     try {
         let { sort } = req.query;
 
-        // 🔹 Define sorting logic
+       
         let sortOption = {};
         if (sort === "az") {
-            sortOption = { productName: 1 }; // A-Z
+            sortOption = { productName: 1 }
         } else if (sort === "za") {
-            sortOption = { productName: -1 }; // Z-A
+            sortOption = { productName: -1 }
         } else if (sort === "new") {
-            sortOption = { createdAt: -1 }; // New arrivals first
+            sortOption = { createdAt: -1 }
         }
 
-        // 🔹 Fetch products with sorting
+     
         let products = await Product.find({ isBlocked: false })
             .populate("category specification.ram specification.storage specification.color")
             .sort(sortOption);
 
         res.status(200).json({ products });
     } catch (error) {
-        res.status(500).json({ message: "Server error", error });
+        res.status(500).json({ message: "Server error", error })
     }
 };
 
 const getFilteredProducts = async (req, res) => {
     try {
-        let filter = {}; // Default: No filter (All products)
+        let filter = {}
 
         if (req.query.minPrice && req.query.maxPrice) {
             filter["specification.salePrice"] = { 
@@ -100,45 +100,45 @@ const getFilteredProducts = async (req, res) => {
                 $lte: Number(req.query.maxPrice) 
             };
         } else if (req.query.minPrice) {
-            filter["specification.salePrice"] = { $gte: Number(req.query.minPrice) };
+            filter["specification.salePrice"] = { $gte: Number(req.query.minPrice) }
         }
 
-        // ✅ Corrected population of nested fields inside the `specification` array
+        
         const products = await Product.find(filter)
             .populate({
                 path: "specification.ram specification.storage specification.color",
                 model: "Variant"
             });
 
-        res.status(200).json({ success: true, products });
+        res.status(200).json({ success: true, products })
     } catch (error) {
-        console.error("Error fetching filtered products:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
+        console.error("Error fetching filtered products:", error)
+        res.status(500).json({ success: false, message: "Internal Server Error" })
     }
 };
 
 
 const getFilteredProductsByCategory = async (req, res) => {
     try {
-        const categoryName = req.query.category; // Get category from query string
+        const categoryName = req.query.category;
 
-        // Find category by name and get its ObjectId
-        const category = await Category.findOne({ name: categoryName });
+       
+        const category = await Category.findOne({ name: categoryName})
 
         if (!category) {
-            return res.status(404).json({ success: false, message: "Category not found" });
+            return res.status(404).json({ success: false, message: "Category not found" })
         }
 
-        // Filter products based on the category ObjectId
+        
         const products = await Product.find({ category: category._id })
             .populate("specification.ram")
             .populate("specification.storage")
             .populate("specification.color");;
 
-        res.status(200).json({ success: true, products });
+        res.status(200).json({ success: true, products })
     } catch (error) {
         console.error("Error fetching filtered products by category:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" })
     }
 };
 
@@ -147,22 +147,20 @@ const searchProducts = async (req, res) => {
     try {
        
 
-
-
         const productName = req.query.productName?.trim() || "";
 
-        // Ensure only active products are searched
+       
         const products = await Product.find({
             productName: { $regex: productName, $options: "i" },
             isBlocked: false
-        }).populate("brand category specification.ram specification.storage specification.color");
+        }).populate("brand category specification.ram specification.storage specification.color")
 
         
 
-        res.json({ success: true, products });
+        res.json({ success: true, products })
     } catch (error) {
-        console.error("Error searching products:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
+        console.error("Error searching products:", error)
+        res.status(500).json({ success: false, message: "Internal Server Error"})
     }
 };
 

@@ -893,6 +893,8 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     minusButtons.forEach((button, index) => {
         button.addEventListener('click', function (e) {
             e.preventDefault(); // Prevent any default behavior
+			console.log("inside lisnter")
+			console.log(e.target)
             updateQuantity(index, -1);
         });
     });
@@ -906,11 +908,11 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     });
 
     // Direct input change
-    quantityInputs.forEach((input, index) => {
-        input.addEventListener('change', function () {
-            validateAndUpdateQuantity(index);
-        });
-    });
+    // quantityInputs.forEach((input, index) => {
+    //     input.addEventListener('change', function () {
+    //         validateAndUpdateQuantity(index);
+    //     });
+    // });
 
     // Checkout process
     if (checkoutButton) {
@@ -922,41 +924,51 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 
     function updateQuantity(index, change) {
         const input = quantityInputs[index];
+		console.log(input.value)
         const row = input.closest('.table_row');
+		console.log(row)
         const currentVal = parseInt(input.value) || 1; // Default to 1 if NaN
+		console.log('current val' + currentVal , input.value)
         const stockInput = row.querySelector('#totalStockOfThisVariant');
+		console.log('stock Input' + stockInput)
         const maxStock = parseInt(stockInput.value);
-
+        console.log("maxStock"+maxStock)
+		console.log('crrentVal , change' + currentVal , change )
         let newVal = currentVal + change; // Simple increment/decrement (1, 2, 3, 4)
-
+        console.log('asdfasdf',newVal)
         // Validate new quantity
-        if (newVal < 1) {
-            newVal = 1;
+		
+        if (currentVal == 1 && change == -1) {
+            input.value = 1;
             showMessage('Quantity cannot be less than 1', 'warning');
+			return
         } else if (newVal > 5) {
-            newVal = 5;
+            input.value = 5;
             showMessage('Maximum quantity limit is 5 per item', 'warning');
+			return
         } else if (newVal > maxStock) {
-            newVal = maxStock;
+            input.value = maxStock;
             showMessage(`Only ${maxStock} items available in stock`, 'warning');
+			return
         }
 
         // Update only if the value changed
         if (newVal !== currentVal) {
-            input.value = newVal;
-            updateItemPrice(row, newVal); // Dynamically update price
-            updateItemOnServer(row, newVal, index); // Sync with backend
+           // input.value  ;
+            updateItemPrice(row, input.value); // Dynamically update price
+            updateItemOnServer(row, input.value, index); // Sync with backend
         }
     }
 
     function validateAndUpdateQuantity(index) {
         const input = quantityInputs[index];
+		console.log(input)
         const row = input.closest('.table_row');
         const stockInput = row.querySelector('#totalStockOfThisVariant');
         const maxStock = parseInt(stockInput.value);
 
         let newVal = parseInt(input.value) || 1; // Default to 1 if NaN
-
+             console.log(newVal)
         // Validate direct input
         if (newVal < 1) {
             newVal = 1;
