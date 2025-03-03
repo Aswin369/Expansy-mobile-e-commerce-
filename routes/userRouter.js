@@ -66,4 +66,6 @@ router.get("/getWhishlist",userAuth,wishListController.getWhishList)
 // Place order
 router.get("/palceOder",userAuth,palceOderController.getPlaceOrderPage)
 router.post("/checkOutAddAddress",userAuth,palceOderController.checkOutAddAddress)
+
+
 module.exports = router 

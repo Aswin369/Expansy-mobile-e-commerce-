@@ -1,3 +1,4 @@
+
 const getWhishList = async (req,res)=>{
     try {
         res.render("wishList")

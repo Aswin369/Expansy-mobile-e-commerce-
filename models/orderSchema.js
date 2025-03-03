@@ -12,8 +12,7 @@ const orderSchema = new mongoose.Schema({
         unique: true,
         default: () => `EXPSYORDID-${uuidv4().split("-")[0].toUpperCase()}`, 
       },
-    products: [
-      {
+    products: [{
         productId:{ 
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'Product', 
@@ -34,9 +33,13 @@ const orderSchema = new mongoose.Schema({
         totalPrice:{
             type: Number,
             required: true
-        }
+        },
+        offerId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Offer",
+            default: null
       },
-    ],
+    }],
     status: { 
         type: String, 
         default: 'Pending', 
@@ -57,7 +60,7 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: { 
         type: String, 
-        enum: ['cod', 'razorpay'], 
+        enum: ['cod','Wallet', 'razorpay'], 
         required: true 
     },
     paymentStatus: { 
@@ -65,12 +68,25 @@ const orderSchema = new mongoose.Schema({
         enum: ['pending', 'paid', 'failed'], 
         default: 'pending' 
     },
+    razorpayPaymentStatus: { 
+        type: String, 
+        enum: ['pending', 'paid', 'failed'], 
+        default: 'pending' 
+    },
+    razorpayOrderId: { 
+        type: String 
+    },
+    razorpayPaymentId: { 
+        type: String 
+    },
+    razorpaySignature: { 
+        type: String 
+    },
     returnReason: {
         type: String,
         default: null
     }
 }, { timestamps: true });
-
 
 
 const Order = mongoose.model("Order", orderSchema);

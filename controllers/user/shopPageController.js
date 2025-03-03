@@ -14,9 +14,7 @@ const getShopPage = async (req, res) => {
         let query = { isBlocked: false };
 
         if (brandName && brandName !== "All") {
-            const brand = await Brand.findOne({ brandName: { $regex: new RegExp("^" + brandName + "$", "i") } })
-
-
+            const brand = await Brand.findOne({ brandName: { $regex: new RegExp("^" + brandName + "$", "i")}})
             if (!brand) {
                 
                 return res.json({ 

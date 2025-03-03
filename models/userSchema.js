@@ -1,87 +1,60 @@
 const mongoose = require("mongoose")
 const {Schema} = mongoose;
 
-const userSchema = new mongoose.Schema({
-    name: {
+const userSchema = new mongoose.Schema(
+    {
+      name: {
         type: String,
-        required: false
-    },
-    email: {
+        required: false,
+      },
+      email: {
         type: String,
         required: false,
         unique: true,
-    },
-    phone: {
+      },
+      phone: {
         type: String,
         required: false,
         unique: false,
         sparse: true,
-        default:null,
-        unique:false
-    },
-    googleId:{
+        default: null,
+      },
+      googleId: {
         type: String,
-        unique: true
-    },
-    password: {
+        unique: true,
+      },
+      password: {
         type: String,
-        required: false
-    },
-    isBlocked:{
+        required: false,
+      },
+      isBlocked: {
         type: Boolean,
-        default: false
-    },
-    isAdmin:{
+        default: false,
+      },
+      isAdmin: {
         type: Boolean,
-        default: false
-    },
-    cart:[{
-        type: Schema.Types.ObjectId,
-        ref: "Cart",
-    }],
-    wallet:{
-        type:Number,
-        default:0,
-    },
-    wishlist:[{
-        type:Schema.Types.ObjectId,
-        ref: "Wishlist"
-    }],
-    orderHistory:[{
-        type:Schema.Types.ObjectId,
-        ref:"Oder"
-    }],
-    referalCode:{
-        type:String,
-        // required: true
-    },
-    createdOn:{
-        type: Date,
-        default: Date.now
-    },
-    redeemed:{
-        type:Boolean,
-        // default: false
-    },
-    redeemedUsers:[{
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        // required: true
-    }],
-    searchHistory:[{
-        category:{
-            type: Schema.Types.ObjectId,
-            ref:"Category"
+        default: false,
+      },
+      wallet: {
+        type: Number,
+        default: 0, // Can be used to store referral bonuses
+      },
+      referralCode: {
+        type: String,
+        unique: true, // Each user should have a unique referral code
+        required: true,
+        default: function () {
+          return Math.random().toString(36).substr(2, 8).toUpperCase(); // Auto-generate a code
         },
-        brand:{
-            type: String
-        },
-        searchOn:{
-            type:Date,
-            default: Date.now
-        }
-    }]
-},{timestamps:true})
+      },
+      referredBy: {
+        type: String,
+        ref: "User", // Stores the referral code of the person who referred this user
+        default: null,
+      },
+    },
+    { timestamps: true }
+  );
 
 const User = mongoose.model("User",userSchema)
 
