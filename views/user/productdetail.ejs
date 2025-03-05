@@ -632,7 +632,7 @@
               </div>
             </div>
           </div>
-
+         
           <div class="col-md-6 col-lg-5 p-b-30">
             <div class="p-r-50 p-t-5 p-lr-0-lg">
               <input type="hidden" id="pdId" value="<%= productData._id%>" />
@@ -656,13 +656,7 @@
                 >₹<%=
                 productData.specification[0].regularPrice.toLocaleString("en-IN")%></span
               >
-              <a
-                href="#"
-                class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100"
-                data-tooltip="Add to Wishlist"
-              >
-                <i class="zmdi zmdi-favorite"></i>
-              </a>
+              
               <div class="mb-3">
                 <span style="padding-left: 12px"
                   >Brand: <%= productData.brand.brandName%></span
@@ -727,13 +721,11 @@
                     </div>
                   </div>
                 </div>
-
+                
                 <div class="flex-w flex-r-m p-b-10">
-                  <div class="size-204 flex-w flex-m respon6-next">
-                    <div class="wrap-num-product flex-w m-r-20 m-tb-10">
-                      <div
-                        class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
-                      >
+                  <div class="size-204 flex-w flex-m respon6-next align-items-center">
+                    <div class="wrap-num-product flex-w m-r-20 m-tb-10 me-3">
+                      <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
                         <i class="fs-16 zmdi zmdi-minus"></i>
                       </div>
                       <input
@@ -742,19 +734,26 @@
                         name="num-product"
                         value="1"
                       />
-                      <div
-                        class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m"
-                      >
+                      <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
                         <i class="fs-16 zmdi zmdi-plus"></i>
                       </div>
                     </div>
-                    <button
-                      class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail"
-                    >
-                      Add to cart
-                    </button>
+                    <div class="d-flex align-items-center">
+                      <button
+                        class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail me-2"
+                      >
+                        Add to cart
+                      </button>
+                    </div>
+                    <button class="flex-c-m stext-101 cl0 size-101 bg3 bor1 hov-btn1 p-lr-15 trans-04 js-wishlist-detail" 
+        style="margin-top: 13px;" 
+        id="wishlist-btn" 
+        data-product-id="<%= productData._id%>">
+  <i class="fa fa-heart me-2"></i> Wishlist
+</button>
                   </div>
                 </div>
+                
               </div>
             </div>
           </div>
@@ -1822,6 +1821,56 @@ updateQuantityLimits();
           console.log("Error in handleLogout",error)
         }
       }
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+  const wishlistBtn = document.getElementById("wishlist-btn");
+
+  if (wishlistBtn) {
+    wishlistBtn.addEventListener("click", async function () {
+      const productId = this.getAttribute("data-product-id");
+      console.log("Product ID:", productId); 
+
+      try {
+        const response = await fetch("/addtowishlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productId: productId }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Product added to wishlist successfully",
+          });
+        } else {
+          if (response.status === 401) { 
+            // If user is not logged in, redirect to login page
+            window.location.href = "/login";
+            return;
+          }
+
+          const data = await response.json();
+          throw new Error(data.message || "Failed to add product to wishlist");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error.message || "Something went wrong! Please try again.",
+        });
+      }
+    });
+  } else {
+    console.error("Error: Wishlist button not found!");
+  }
+});
+
     </script>
   </body>
 </html>

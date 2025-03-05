@@ -120,8 +120,6 @@
 								
 									<a href="/logout">Logout</a>
 								
-									
-								
 							</li>
 							
                             
@@ -350,50 +348,57 @@
         <div class="row">
           <div class="col-12">
             <table class="table">
-              <thead>
-                <tr>
-                  <th scope="col">Image</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Stock Status</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <img src="images/item-cart-04.jpg" alt="Product Image" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
-                  </td>
-                  <td>Fresh Strawberries</td>
-                  <td>$36.00</td>
-                  <td><span class="badge bg-success">In Stock</span></td>
-                  <td>
-                    <button class="btn btn-primary btn-sm mb-1">
-                      <i class="bi bi-cart-plus"></i> Add to Cart
-                    </button>
-                    <button class="btn btn-danger btn-sm">
-                      <i class="bi bi-trash"></i> Delete
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <img src="images/item-cart-05.jpg" alt="Product Image" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
-                  </td>
-                  <td>Lightweight Jacket</td>
-                  <td>$16.00</td>
-                  <td><span class="badge bg-success">In Stock</span></td>
-                  <td>
-                    <button class="btn btn-primary btn-sm mb-1">
-                      <i class="bi bi-cart-plus"></i> Add to Cart
-                    </button>
-                    <button class="btn btn-danger btn-sm">
-                      <i class="bi bi-trash"></i> Delete
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+				<thead>
+				  <tr>
+					<th scope="col">Image</th>
+					<th scope="col">Name</th>
+					<th scope="col">Price</th>
+					<th scope="col">Stock Status</th>
+					<th scope="col">Action</th>
+				  </tr>
+				</thead>
+				<tbody>
+				  <% if (whishList.length > 0) { %>
+					<% whishList.forEach((data) => { %>
+					  <tr>
+						<td>
+						  <img src="<%= data?.productId?.productImage?.[0] %>" alt="Product Image" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+						</td>
+						<td><%= data?.productId?.productName %></td>
+						<td><%= data?.productId?.specification?.[0]?.salePrice %></td>
+						console.log(<%=data?.productId?.specification?.[0]?._id%>)
+						<td>
+						  <% if (data?.productId?.specification?.[0]?.quantity === 0) { %>
+							<span class="badge bg-danger">Out of Stock</span>
+						  <% } else { %>
+							<span class="badge bg-success">In Stock</span>
+						  <% } %>
+						</td>
+						<td>
+						  <button class="btn btn-primary btn-sm mb-1">
+							<i class="bi bi-cart-plus"></i> Add to Cart
+						  </button>
+						  <button class="btn btn-danger btn-sm">
+							
+							<a style="text-decoration: none; color: white;" href="/deleteWhishlist/<%= data._id%>">
+								 Delete
+							</a>
+							
+						  </button>
+						</td>
+					  </tr>
+					<% }) %>
+				  <% } else { %>
+					<tr>
+					  <td colspan="5" class="text-center">
+						<h5>Your wishlist is empty</h5>
+						<a href="/shopPage" class="btn btn-primary mt-3">Go to Shop</a>
+					  </td>
+					</tr>
+				  <% } %>
+				</tbody>
+			  </table>
+			  
           </div>
         </div>
       </div>

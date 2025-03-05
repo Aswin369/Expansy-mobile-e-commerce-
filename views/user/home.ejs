@@ -232,10 +232,13 @@
 							</div>
 
 							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
+								
+								<a href="#" class="btn-addwish-b2 dis-block pos-relative" data-product-id="<%= pro._id %>">
 									<img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
-								</a>
+									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON" style="display: none;">
+								  </a>
+								  
+							
 							</div>
 						</div>
 					</div>
@@ -354,6 +357,71 @@
 }
 
 		});
+	</script>
+
+	<script>
+		 document.addEventListener("DOMContentLoaded", function () {
+  const wishlistButtons = document.querySelectorAll(".btn-addwish-b2");
+
+  wishlistButtons.forEach((wishlistBtn) => {
+    wishlistBtn.addEventListener("click", async function (event) {
+      event.preventDefault(); // Prevent default anchor behavior
+
+      const productId = this.getAttribute("data-product-id");
+
+      if (!productId) {
+        console.error("Error: Product ID not found!");
+        return;
+      }
+
+      console.log("Product ID:", productId); // Debugging
+
+      try {
+        const response = await fetch("/addtowishlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productId }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+
+          // Show success message
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Product added to wishlist successfully",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+
+          // Change the heart icon to indicate it's in the wishlist
+          this.querySelector(".icon-heart1").style.display = "none";
+          this.querySelector(".icon-heart2").style.display = "block";
+        } else {
+          if (response.status === 401) {
+            // If user is not logged in, redirect to login page
+            window.location.href = "/login";
+            return;
+          }
+
+          const data = await response.json();
+          throw new Error(data.message || "Failed to add product to wishlist");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error.message || "Something went wrong! Please try again.",
+        });
+      }
+    });
+  });
+});
+
 	</script>
 	
 

@@ -63,6 +63,8 @@ router.post("/placeOrder",userAuth, shoppingCartController.addOrderDetails)
 router.get("/ordersuccess",userAuth, shoppingCartController.loadSuccessPage)
 // WhishList management
 router.get("/getWhishlist",userAuth,wishListController.getWhishList)
+router.post("/addtowishlist",wishListController.addTOWhishlistFromProductDetail)
+router.get("/deleteWhishlist/:id",userAuth,wishListController.deleteWhishlist)
 // Place order
 router.get("/palceOder",userAuth,palceOderController.getPlaceOrderPage)
 router.post("/checkOutAddAddress",userAuth,palceOderController.checkOutAddAddress)
