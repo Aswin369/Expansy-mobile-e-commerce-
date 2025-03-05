@@ -10,6 +10,7 @@ const brandController = require("../controllers/admin/BrandController")
 const variantController = require("../controllers/admin/variantController")
 const orderController = require("../controllers/admin/orderController")
 const couponController = require("../controllers/admin/counponController")
+const offerController = require("../controllers/admin/offerController")
 
 // router.get("/pageerror",adminController.pageerror)
 router.get("/login",adminController.loadLogin)
@@ -74,4 +75,8 @@ router.get("/banCoupon/:id",adminAuth,couponController.banCoupon)
 router.get("/unbanCoupon/:id",adminAuth,couponController.unBanCoupon)
 router.get("/editCoupon/:id",adminAuth,couponController.getEditCoupon)
 router.post("/updateCoupon",adminAuth,couponController.updateCoupon)
+// Offer management
+router.get("/getOfferList",adminAuth,offerController.getOfferList)
+router.get("/getCreateOffer",adminAuth,offerController.getCreateOffer)
+router.post("/createOffer",adminAuth,offerController.createOffer)
 module.exports = router

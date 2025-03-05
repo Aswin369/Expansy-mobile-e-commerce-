@@ -60,6 +60,10 @@
           </div>
           <div id="error5" class="error-message"></div>
 
+          <label for="confirm-password">REFERAL CODE* (optional)</label>
+          <div class="password-wrapper" style="position: relative;">
+            <input type="text" name="referalcode" id="referalcode"  style="padding-right: 30px;" />
+          </div>
           <button type="submit" class="submit-btn">SIGNUP</button>
         </form>
 
@@ -81,6 +85,7 @@ const phoneid = document.getElementById("phone");
 const passid = document.getElementById("password");
 const cpassid = document.getElementById("confirm-password");
 const signupform = document.getElementById("signupform");
+const referalcode = document.getElementById("referalcode")
 
 const togglePasswordButton = document.getElementById("toggle-password");
 const toggleConfirmPasswordButton = document.getElementById("toggle-confirm-password");

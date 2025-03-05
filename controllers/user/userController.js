@@ -116,8 +116,23 @@ async function sendVerificationEmail(email,otp,name){
 
 const signup = async (req,res)=>{
     try{
-        const {name, phone, email, password, cpassword} = req.body
+        const {name, phone, email, password, cpassword, referalcode} = req.body
         
+        console.log("thsisdf req.body",req.body)
+
+        let referredBy = null 
+
+        if(referalcode){
+            const referrer = await User.findOne({referralCode:referalcode})
+            if(referrer){
+                referredBy  = referalcode
+                referrer.wallet += 50
+                await referrer.save()
+            }else{
+                return res.status(400).json({ message: "Invalid referral code" })
+            }
+        }
+
         if(password !== cpassword){
             return res.render("signup",{message: "Password is not matching"})
         }
