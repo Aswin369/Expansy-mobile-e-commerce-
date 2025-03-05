@@ -166,6 +166,8 @@ const updateCart = async (req,res)=>{
     }
 }
 
+// checkout page controller
+
 const loadplaceOrder = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -175,7 +177,7 @@ const loadplaceOrder = async (req, res) => {
             return res.redirect("/login");
         }
         console.log("Cart ID received in loadplaceOrder:", cartId);
-
+        
         const cartDetails = await Cart.findById(cartId).populate("items.productId")
         const addressDetails = await Address.findOne({userId:userId})
         console.log("THis is cart details",cartDetails)

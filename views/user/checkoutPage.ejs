@@ -31,6 +31,7 @@
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 <!--===============================================================================================-->
+
 <style>
     .checkbox-round {
     width: 20px;
@@ -383,11 +384,35 @@
 						
     
                         <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
-                            <div class="flex-w flex-m m-r-20 m-tb-5">
-                                <input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code">
+                            <div class="container mt-5">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card mb-4">
+                                            <div class="card-header bg-primary text-white">
+                                                Apply Coupon
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="couponInput" placeholder="Enter coupon code">
+                                                    <button class="btn btn-outline-primary" type="button" id="applyCoupon">Apply</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     
-                                <div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
-                                    Apply coupon
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header bg-success text-white">
+                                                Available Coupons
+                                            </div>
+                                            <div class="card-body" id="couponList">
+                                                <!-- Coupon cards will be dynamically added here -->
+                                                <div class="alert alert-info text-center" id="noCouponsMessage">
+                                                    No coupons available
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -397,33 +422,34 @@
 							<h4 class="mtext-109 cl2 p-b-20">Select Address</h4>
 						
 							<div class="rs1-select2 rs2-select2 bor8 bg0 m-b-12 m-t-9">
-								<% addrressData.address.forEach((addr, index) => { %>
-								<div class="flex-w p-b-10">
-									<div class="size-204 flex-w flex-m m-r-20 m-tb-10">
-										<input class="checkbox-round" id="address<%= index %>" type="radio" name="address" value="<%= addr._id %>" <%= index === 0 ? 'checked' : '' %>>
-										<label for="address<%= index %>" class="stext-104 cl2 p-l-10">
-											<%= addr.addressType %>, <%= addr.city %>, <%= addr.state %> - <%= addr.pincode %>
-										</label>
-										<div class="address-details stext-104 cl2 p-l-30 m-t-5">
-											<p>Landmark: <%= addr.landMark %></p>
-											<p>City: <%= addr.city %></p>
-											<p>State: <%= addr.state %></p>
-											<p>Pincode: <%= addr.pincode %></p>
-											<p>Phone: <%= addr.phone %></p>
-											<p>Alt Phone: <%= addr.altPhone %></p>
-										</div>
-									</div>
-								</div>
-								<% }); %>
-						
-								<div class="flex-w">
-									<div class="size-204 flex-w flex-m m-r-20 m-tb-10">
-										<div class="flex-c-m stext-101 cl2 size-115 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer">
-											Add New Address
-										</div>
-									</div>
-								</div>
-							</div>
+                                <% addrressData?.address?.forEach((addr, index) => { %>
+                                <div class="flex-w p-b-10">
+                                    <div class="size-204 flex-w flex-m m-r-20 m-tb-10">
+                                        <input class="checkbox-round" id="address<%= index %>" type="radio" name="address" value="<%= addr?._id %>" <%= index === 0 ? 'checked' : '' %>>
+                                        <label for="address<%= index %>" class="stext-104 cl2 p-l-10">
+                                            <%= addr?.addressType %>, <%= addr?.city %>, <%= addr?.state %> - <%= addr?.pincode %>
+                                        </label>
+                                        <div class="address-details stext-104 cl2 p-l-30 m-t-5">
+                                            <p>Landmark: <%= addr?.landMark %></p>
+                                            <p>City: <%= addr?.city %></p>
+                                            <p>State: <%= addr?.state %></p>
+                                            <p>Pincode: <%= addr?.pincode %></p>
+                                            <p>Phone: <%= addr?.phone %></p>
+                                            <p>Alt Phone: <%= addr?.altPhone %></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            
+                                <div class="flex-w">
+                                    <div class="size-204 flex-w flex-m m-r-20 m-tb-10">
+                                        <div class="flex-c-m stext-101 cl2 size-115 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer">
+                                            Add New Address
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
 						</div>
 						
                     </div>
@@ -460,6 +486,19 @@
                             <div class="size-209">
                                 <span class="mtext-110 cl2">
                                     Free Shipping
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex-w flex-t bor12 p-t-15 p-b-15">
+                            <div class="size-208">
+                                <span class="stext-110 cl2">
+                                    Coupon Code: 
+                                </span>
+                            </div>
+    
+                            <div class="size-209">
+                                <span class="mtext-110 cl2">
+                                    HELLO
                                 </span>
                             </div>
                         </div>

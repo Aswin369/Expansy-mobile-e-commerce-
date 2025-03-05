@@ -79,4 +79,8 @@ router.post("/updateCoupon",adminAuth,couponController.updateCoupon)
 router.get("/getOfferList",adminAuth,offerController.getOfferList)
 router.get("/getCreateOffer",adminAuth,offerController.getCreateOffer)
 router.post("/createOffer",adminAuth,offerController.createOffer)
+router.get("/offerBan/:id",adminAuth,offerController.banOffer)
+router.get("/offerUnban/:id",adminAuth,offerController.unBanOffer)
+router.get("/editOffer/:id",adminAuth,offerController.getEditOffer)
+router.post("/editOffer",adminAuth, offerController.editOffer)
 module.exports = router

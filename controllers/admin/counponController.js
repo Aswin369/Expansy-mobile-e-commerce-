@@ -1,6 +1,6 @@
 const User = require("../../models/userSchema")
 const Coupon = require("../../models/couponSchema")
-
+const moment = require('moment')
 const getcouponList = async (req,res)=>{
     try {
         const page = parseInt(req.query.page) || 1
@@ -40,11 +40,13 @@ const getCouponData = async(req,res)=>{
     try {
         console.log("this is req.bosy",req.body)
         const {startDate, endDate, couponCode, couponLimits, minDiscountValue, maxDiscountValue, discountValue} = req.body
+        const convertexpirationDate = moment(endDate, "DD-MM-YYYY").toDate();
+        const ConvertstartDate = moment(startDate, "DD-MM-YYYY").toDate();
 
         const couponData = new Coupon({
             code:couponCode,
-            startDate:startDate,
-            expirationDate:endDate,
+            startDate:ConvertstartDate,
+            expirationDate:convertexpirationDate,
             maxUsage:couponLimits,
             minDiscountValue:minDiscountValue,
             maxDiscountValue:maxDiscountValue,
