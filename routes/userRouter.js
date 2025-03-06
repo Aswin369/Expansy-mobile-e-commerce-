@@ -61,10 +61,13 @@ router.get("/process-checkout",userAuth, shoppingCartController.loadCheckOutPage
 router.get("/checkout",userAuth, shoppingCartController.loadplaceOrder)
 router.post("/placeOrder",userAuth, shoppingCartController.addOrderDetails)
 router.get("/ordersuccess",userAuth, shoppingCartController.loadSuccessPage)
+router.post("/createRazorpayOrder",userAuth,shoppingCartController.razorpayOrder)
+router.post("/verifyPayment",userAuth,shoppingCartController.verifiyPayment)
 // WhishList management
 router.get("/getWhishlist",userAuth,wishListController.getWhishList)
 router.post("/addtowishlist",wishListController.addTOWhishlistFromProductDetail)
 router.get("/deleteWhishlist/:id",userAuth,wishListController.deleteWhishlist)
+router.post("/addToCartFormWhislist",userAuth,wishListController.addToCartFromWhishlist)
 // Place order
 router.get("/palceOder",userAuth,palceOderController.getPlaceOrderPage)
 router.post("/checkOutAddAddress",userAuth,palceOderController.checkOutAddAddress)

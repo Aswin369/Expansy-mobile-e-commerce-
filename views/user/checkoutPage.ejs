@@ -1,1085 +1,1304 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<title>Shoping Cart</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="images/icons/favicon.png"/>
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/linearicons-v1.0.0/icon-font.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
-<!--===============================================================================================-->	
-	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
-	<!-- Add in the head section of your HTML document -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="css/util.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
-<!--===============================================================================================-->
+  <head>
+    <title>Shoping Cart</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="images/icons/favicon.png" />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="vendor/bootstrap/css/bootstrap.min.css"
+    />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="fonts/font-awesome-4.7.0/css/font-awesome.min.css"
+    />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="fonts/iconic/css/material-design-iconic-font.min.css"
+    />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="fonts/linearicons-v1.0.0/icon-font.min.css"
+    />
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css" />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="vendor/css-hamburgers/hamburgers.min.css"
+    />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="vendor/animsition/css/animsition.min.css"
+    />
+    <!-- Add in the head section of your HTML document -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="vendor/select2/select2.min.css"
+    />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="vendor/perfect-scrollbar/perfect-scrollbar.css"
+    />
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="css/util.css" />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <!--===============================================================================================-->
 
-<style>
-    .checkbox-round {
-    width: 20px;
-    height: 20px;
-    background-color: white;
-    border-radius: 50%;
-    vertical-align: middle;
-    border: 1px solid #ddd;
-    appearance: none;
-    -webkit-appearance: none;
-    outline: none;
-    cursor: pointer;
-    position: relative;
-}
+    <style>
+      .checkbox-round {
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border-radius: 50%;
+        vertical-align: middle;
+        border: 1px solid #ddd;
+        appearance: none;
+        -webkit-appearance: none;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+      }
 
-.checkbox-round:checked {
-    border: 1px solid #e65540;
-}
+      .checkbox-round:checked {
+        border: 1px solid #e65540;
+      }
 
-.checkbox-round:checked:after {
-    content: '';
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #e65540;
-}
-</style>
-</head>
-<body class="animsition">
-	
-	<!-- Header -->
-	<header class="header-v4">
-		<!-- Header desktop -->
-		<div class="container-menu-desktop">
-			<!-- Topbar -->
-			<div class="wrap-menu-desktop">
-				<nav class="limiter-menu-desktop container">
-					
-					<!-- Logo desktop -->		
-					<a href="#" class="logo">
-						<img src="/images/BrandName.png" alt="IMG-LOGO">
-					</a>
-		
-					<!-- Menu desktop -->
-					<div class="menu-desktop">
-						<ul class="main-menu">
-							<li class="active-menu">
-								<a href="index.html">Home</a>
-								<ul class="sub-menu">
-									<li><a href="index.html">Homepage 1</a></li>
-									<li><a href="home-02.html">Homepage 2</a></li>
-									<li><a href="home-03.html">Homepage 3</a></li>
-								</ul>
-							</li>
-		
-							<li>
-								<a href="/shopPage">Shop</a>
-							</li>
-		
-							<li class="label1">
-								<a href="/">About Us</a>
-							</li>
-		
-							<li>
-								<a href="/">Contact</a>
-							</li>
-							<li>
-								<a href="/profilePage">Profile</a>
-							</li>
-                             <li>
-								<% if (user) { %>
-									<a onclick="handleLogout()" href="/logout">Logout</a>
-								<% } else { %>
-									<a href="/login">Login</a>
-								<% } %>
-							</li>
-							
-                            
-						</ul>
-					</div>	
-		
-					<!-- Icon header -->
-					<div class="wrap-icon-header flex-w flex-r-m">
-						<div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-modal-search">
-							<i class="zmdi zmdi-search"></i>
-						</div>
-		
-						<div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11  js-show-cart">
-							<i class="zmdi zmdi-shopping-cart"></i>
-						</div>
-		
-						<a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 ">
-							<i class="zmdi zmdi-favorite-outline"></i>
-						</a>
-					</div>
-				</nav>
-			</div>
-		</div>
+      .checkbox-round:checked:after {
+        content: "";
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #e65540;
+      }
+    </style>
+  </head>
+  <body class="animsition">
+    <!-- Header -->
+    <header class="header-v4">
+      <!-- Header desktop -->
+      <div class="container-menu-desktop">
+        <!-- Topbar -->
+        <div class="wrap-menu-desktop">
+          <nav class="limiter-menu-desktop container">
+            <!-- Logo desktop -->
+            <a href="#" class="logo">
+              <img src="/images/BrandName.png" alt="IMG-LOGO" />
+            </a>
 
-		<!-- Header Mobile -->
-		<div class="wrap-header-mobile">
-			<!-- Logo moblie -->		
-			<div class="logo-mobile">
-				<a href="index.html"><img src="images/icons/logo-01.png" alt="IMG-LOGO"></a>
-			</div>
+            <!-- Menu desktop -->
+            <div class="menu-desktop">
+              <ul class="main-menu">
+                <li class="active-menu">
+                  <a href="index.html">Home</a>
+                  <ul class="sub-menu">
+                    <li><a href="index.html">Homepage 1</a></li>
+                    <li><a href="home-02.html">Homepage 2</a></li>
+                    <li><a href="home-03.html">Homepage 3</a></li>
+                  </ul>
+                </li>
 
-			<!-- Icon header -->
-			<div class="wrap-icon-header flex-w flex-r-m m-r-15">
-				<div class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 js-show-modal-search">
-					<i class="zmdi zmdi-search"></i>
-				</div>
+                <li>
+                  <a href="/shopPage">Shop</a>
+                </li>
 
-				<div class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti js-show-cart" data-notify="2">
-					<i class="zmdi zmdi-shopping-cart"></i>
-				</div>
+                <li class="label1">
+                  <a href="/">About Us</a>
+                </li>
 
-				<a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti" data-notify="0">
-					<i class="zmdi zmdi-favorite-outline"></i>
-				</a>
-			</div>
-
-			<!-- Button show menu -->
-			<div class="btn-show-menu-mobile hamburger hamburger--squeeze">
-				<span class="hamburger-box">
-					<span class="hamburger-inner"></span>
-				</span>
-			</div>
-		</div>
-
-
-		<!-- Menu Mobile -->
-		<div class="menu-mobile">
-			<ul class="topbar-mobile">
-				<li>
-					<div class="left-top-bar">
-						Free shipping for standard order over $100
-					</div>
-				</li>
-
-				<li>
-					<div class="right-top-bar flex-w h-full">
-						<a href="#" class="flex-c-m p-lr-10 trans-04">
-							Help & FAQs
-						</a>
-
-						<a href="#" class="flex-c-m p-lr-10 trans-04">
-							My Account
-						</a>
-
-						<a href="#" class="flex-c-m p-lr-10 trans-04">
-							EN
-						</a>
-
-						<a href="#" class="flex-c-m p-lr-10 trans-04">
-							USD
-						</a>
-					</div>
-				</li>
-			</ul>
-
-			<ul class="main-menu-m">
-				<li>
-					<a href="index.html">Home</a>
-					<ul class="sub-menu-m">
-						<li><a href="index.html">Homepage 1</a></li>
-						<li><a href="home-02.html">Homepage 2</a></li>
-						<li><a href="home-03.html">Homepage 3</a></li>
-					</ul>
-					<span class="arrow-main-menu-m">
-						<i class="fa fa-angle-right" aria-hidden="true"></i>
-					</span>
-				</li>
-
-				<li>
-					<a href="product.html">Shop</a>
-				</li>
-
-				<li>
-					<a href="shoping-cart.html" class="label1 rs1" data-label1="hot">Features</a>
-				</li>
-
-				<li>
-					<a href="blog.html">Blog</a>
-				</li>
-
-				<li>
-					<a href="about.html">About</a>
-				</li>
-
-				<li>
-					<a href="contact.html">Contact</a>
-				</li>
-			</ul>
-		</div>
-
-		<!-- Modal Search -->
-		<div class="modal-search-header flex-c-m trans-04 js-hide-modal-search">
-			<div class="container-search-header">
-				<button class="flex-c-m btn-hide-modal-search trans-04 js-hide-modal-search">
-					<img src="images/icons/icon-close2.png" alt="CLOSE">
-				</button>
-
-				<form class="wrap-search-header flex-w p-l-15">
-					<button class="flex-c-m trans-04">
-						<i class="zmdi zmdi-search"></i>
-					</button>
-					<input class="plh3" type="text" name="search" placeholder="Search...">
-				</form>
-			</div>
-		</div>
-	</header>
-
-	<!-- Cart -->
-	<div class="wrap-header-cart js-panel-cart">
-		<div class="s-full js-hide-cart"></div>
-
-		<div class="header-cart flex-col-l p-l-65 p-r-25">
-			<div class="header-cart-title flex-w flex-sb-m p-b-8">
-				<span class="mtext-103 cl2">
-					Your Cart
-				</span>
-
-				<div class="fs-35 lh-10 cl2 p-lr-5 pointer hov-cl1 trans-04 js-hide-cart">
-					<i class="zmdi zmdi-close"></i>
-				</div>
-			</div>
-			
-			<div class="header-cart-content flex-w js-pscroll">
-				<ul class="header-cart-wrapitem w-full">
-					<li class="header-cart-item flex-w flex-t m-b-12">
-						<div class="header-cart-item-img">
-							<img src="images/item-cart-01.jpg" alt="IMG">
-						</div>
-
-						<div class="header-cart-item-txt p-t-8">
-							<a href="#" class="header-cart-item-name m-b-18 hov-cl1 trans-04">
-								White Shirt Pleat
-							</a>
-
-							<span class="header-cart-item-info">
-								1 x $19.00
-							</span>
-						</div>
-					</li>
-
-					<li class="header-cart-item flex-w flex-t m-b-12">
-						<div class="header-cart-item-img">
-							<img src="images/item-cart-02.jpg" alt="IMG">
-						</div>
-
-						<div class="header-cart-item-txt p-t-8">
-							<a href="#" class="header-cart-item-name m-b-18 hov-cl1 trans-04">
-								Converse All Star
-							</a>
-
-							<span class="header-cart-item-info">
-								1 x $39.00
-							</span>
-						</div>
-					</li>
-
-					<li class="header-cart-item flex-w flex-t m-b-12">
-						<div class="header-cart-item-img">
-							<img src="images/item-cart-03.jpg" alt="IMG">
-						</div>
-
-						<div class="header-cart-item-txt p-t-8">
-							<a href="#" class="header-cart-item-name m-b-18 hov-cl1 trans-04">
-								Nixon Porter Leather
-							</a>
-
-							<span class="header-cart-item-info">
-								1 x $17.00
-							</span>
-						</div>
-					</li>
-				</ul>
-				
-				<div class="w-full">
-					<div class="header-cart-total w-full p-tb-40">
-						Total: $75.00
-					</div>
-
-					<div class="header-cart-buttons flex-w w-full">
-						<a href="shoping-cart.html" class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-r-8 m-b-10">
-							View Cart
-						</a>
-
-						<a href="shoping-cart.html" class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-b-10">
-							Check Out
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
-	<!-- breadcrumb -->
-	<div class="container">
-		<div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
-			<a href="index.html" class="stext-109 cl8 hov-cl1 trans-04">
-				Home
-				<i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
-			</a>
-
-			<span class="stext-109 cl4">
-				Shoping Cart
-			</span>
-		</div>
-	</div>
-		
-
-	<!-- Shoping Cart -->
-	<form class="bg0 p-t-75 p-b-85">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
-                    <div class="m-l-25 m-r--38 m-lr-0-xl">
-                        <div class="wrap-table-shopping-cart">
-							<table class="table-shopping-cart">
-								<tr class="table_head">
-									<th class="column-1">Image</th>
-									<th class="column-2">Product</th>
-									<th class="column-3">Quantity</th>
-									<th class="column-4">Unit Price</th>
-									<th class="column-5">Total</th>
-								</tr>
-								<% cartData.items.forEach(item => { %>
-								<tr class="table_row">
-									<td class="column-1">
-										<div class="how-itemcart1">
-											<img src="<%= item.productId.productImage[0] %>" alt="<%= item.productId.name %>">
-										</div>
-									</td>
-									<td class="column-2"><%= item.productId.productName %></td>
-									<input type="hidden" value="<%= item.productId._id%>">
-									
-									<td class="column-3"><%= item.quantity %></td>
-									<td class="column-4">$ <%= item.price %></td>
-									<td class="column-5">$ <%= item.totalPrice %></td>
-								</tr>
-								<% }); %>
-							</table>
-						</div>
-						
-    
-                        <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
-                            <div class="container mt-5">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="card mb-4">
-                                            <div class="card-header bg-primary text-white">
-                                                Apply Coupon
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" id="couponInput" placeholder="Enter coupon code">
-                                                    <button class="btn btn-outline-primary" type="button" id="applyCoupon">Apply</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="card">
-                                            <div class="card-header bg-success text-white">
-                                                Available Coupons
-                                            </div>
-                                            <div class="card-body" id="couponList">
-                                                <!-- Coupon cards will be dynamically added here -->
-                                                <div class="alert alert-info text-center" id="noCouponsMessage">
-                                                    No coupons available
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Address Selection Box -->
-                        <div class="bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm m-t-20">
-							<h4 class="mtext-109 cl2 p-b-20">Select Address</h4>
-						
-							<div class="rs1-select2 rs2-select2 bor8 bg0 m-b-12 m-t-9">
-                                <% addrressData?.address?.forEach((addr, index) => { %>
-                                <div class="flex-w p-b-10">
-                                    <div class="size-204 flex-w flex-m m-r-20 m-tb-10">
-                                        <input class="checkbox-round" id="address<%= index %>" type="radio" name="address" value="<%= addr?._id %>" <%= index === 0 ? 'checked' : '' %>>
-                                        <label for="address<%= index %>" class="stext-104 cl2 p-l-10">
-                                            <%= addr?.addressType %>, <%= addr?.city %>, <%= addr?.state %> - <%= addr?.pincode %>
-                                        </label>
-                                        <div class="address-details stext-104 cl2 p-l-30 m-t-5">
-                                            <p>Landmark: <%= addr?.landMark %></p>
-                                            <p>City: <%= addr?.city %></p>
-                                            <p>State: <%= addr?.state %></p>
-                                            <p>Pincode: <%= addr?.pincode %></p>
-                                            <p>Phone: <%= addr?.phone %></p>
-                                            <p>Alt Phone: <%= addr?.altPhone %></p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <% }); %>
-                            
-                                <div class="flex-w">
-                                    <div class="size-204 flex-w flex-m m-r-20 m-tb-10">
-                                        <div class="flex-c-m stext-101 cl2 size-115 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer">
-                                            Add New Address
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-						</div>
-						
-                    </div>
-                </div>
-    
-                <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
-                    <div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
-                        <h4 class="mtext-109 cl2 p-b-30">
-                            Cart Totals
-                        </h4>
-    
-                        <div class="flex-w flex-t bor12 p-b-13">
-                            <div class="size-208">
-                                <span class="stext-110 cl2">
-                                    Subtotal:
-                                </span>
-                            </div>
-    
-                            <div class="size-209">
-                                <span class="mtext-110 cl2">
-                                    $79.65
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <!-- Shipping Cost Section -->
-                        <div class="flex-w flex-t bor12 p-t-15 p-b-15">
-                            <div class="size-208">
-                                <span class="stext-110 cl2">
-                                    Shipping:
-                                </span>
-                            </div>
-    
-                            <div class="size-209">
-                                <span class="mtext-110 cl2">
-                                    Free Shipping
-                                </span>
-                            </div>
-                        </div>
-                        <div class="flex-w flex-t bor12 p-t-15 p-b-15">
-                            <div class="size-208">
-                                <span class="stext-110 cl2">
-                                    Coupon Code: 
-                                </span>
-                            </div>
-    
-                            <div class="size-209">
-                                <span class="mtext-110 cl2">
-                                    HELLO
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <!-- Discount Section -->
-                        <div class="flex-w flex-t bor12 p-t-15 p-b-15">
-                            <div class="size-208">
-                                <span class="stext-110 cl2">
-                                    Discount:
-                                </span>
-                            </div>
-    
-                            <div class="size-209">
-                                <span class="mtext-110 cl2">
-                                    - $10.00
-                                </span>
-                            </div>
-                        </div>
-    
-                        <div class="flex-w flex-t bor12 p-t-15 p-b-30">
-                            <div class="size-208 w-full-ssm">
-                                <span class="stext-110 cl2">
-                                    Shipping Method:
-                                </span>
-                            </div>
-    
-                            <!-- Payment Method Options -->
-                            <div class="size-209 p-r-18 p-r-0-sm w-full-ssm p-t-15">
-                                <div class="p-b-10">
-                                    <div class="size-204 flex-w flex-m">
-                                        <input class="checkbox-round" id="payment1" type="radio" name="payment" checked>
-                                        <label for="payment1" class="stext-104 cl2 p-l-10">
-                                            Cash on Delivery
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <div class="p-b-10">
-                                    <div class="size-204 flex-w flex-m">
-                                        <input class="checkbox-round" id="payment2" type="radio" name="payment">
-                                        <label for="payment2" class="stext-104 cl2 p-l-10">
-                                            Online Payment
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div class="flex-w flex-t p-t-27 p-b-33">
-                            <div class="size-208">
-                                <span class="mtext-101 cl2">
-                                    Total:
-                                </span>
-                            </div>
-    
-                            <div class="size-209 p-t-1">
-                                <span class="mtext-110 cl2">
-                                    $69.65
-                                </span>
-                            </div>
-                        </div>
-    
-                        <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
-                            Place Order
-                        </button>
-                    </div>
-                </div>
+                <li>
+                  <a href="/">Contact</a>
+                </li>
+                <li>
+                  <a href="/profilePage">Profile</a>
+                </li>
+                <li>
+                  <% if (user) { %>
+                  <a onclick="handleLogout()" href="/logout">Logout</a>
+                  <% } else { %>
+                  <a href="/login">Login</a>
+                  <% } %>
+                </li>
+              </ul>
             </div>
+
+            <!-- Icon header -->
+            <div class="wrap-icon-header flex-w flex-r-m">
+              <div
+                class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-modal-search"
+              >
+                <i class="zmdi zmdi-search"></i>
+              </div>
+
+              <div
+                class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-cart"
+              >
+                <i class="zmdi zmdi-shopping-cart"></i>
+              </div>
+
+              <a
+                href="#"
+                class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11"
+              >
+                <i class="zmdi zmdi-favorite-outline"></i>
+              </a>
+            </div>
+          </nav>
         </div>
+      </div>
+
+      <!-- Header Mobile -->
+      <div class="wrap-header-mobile">
+        <!-- Logo moblie -->
+        <div class="logo-mobile">
+          <a href="index.html"
+            ><img src="images/icons/logo-01.png" alt="IMG-LOGO"
+          /></a>
+        </div>
+
+        <!-- Icon header -->
+        <div class="wrap-icon-header flex-w flex-r-m m-r-15">
+          <div
+            class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 js-show-modal-search"
+          >
+            <i class="zmdi zmdi-search"></i>
+          </div>
+
+          <div
+            class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti js-show-cart"
+            data-notify="2"
+          >
+            <i class="zmdi zmdi-shopping-cart"></i>
+          </div>
+
+          <a
+            href="#"
+            class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti"
+            data-notify="0"
+          >
+            <i class="zmdi zmdi-favorite-outline"></i>
+          </a>
+        </div>
+
+        <!-- Button show menu -->
+        <div class="btn-show-menu-mobile hamburger hamburger--squeeze">
+          <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Menu Mobile -->
+      <div class="menu-mobile">
+        <ul class="topbar-mobile">
+          <li>
+            <div class="left-top-bar">
+              Free shipping for standard order over $100
+            </div>
+          </li>
+
+          <li>
+            <div class="right-top-bar flex-w h-full">
+              <a href="#" class="flex-c-m p-lr-10 trans-04"> Help & FAQs </a>
+
+              <a href="#" class="flex-c-m p-lr-10 trans-04"> My Account </a>
+
+              <a href="#" class="flex-c-m p-lr-10 trans-04"> EN </a>
+
+              <a href="#" class="flex-c-m p-lr-10 trans-04"> USD </a>
+            </div>
+          </li>
+        </ul>
+
+        <ul class="main-menu-m">
+          <li>
+            <a href="index.html">Home</a>
+            <ul class="sub-menu-m">
+              <li><a href="index.html">Homepage 1</a></li>
+              <li><a href="home-02.html">Homepage 2</a></li>
+              <li><a href="home-03.html">Homepage 3</a></li>
+            </ul>
+            <span class="arrow-main-menu-m">
+              <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </span>
+          </li>
+
+          <li>
+            <a href="product.html">Shop</a>
+          </li>
+
+          <li>
+            <a href="shoping-cart.html" class="label1 rs1" data-label1="hot"
+              >Features</a
+            >
+          </li>
+
+          <li>
+            <a href="blog.html">Blog</a>
+          </li>
+
+          <li>
+            <a href="about.html">About</a>
+          </li>
+
+          <li>
+            <a href="contact.html">Contact</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Modal Search -->
+      <div class="modal-search-header flex-c-m trans-04 js-hide-modal-search">
+        <div class="container-search-header">
+          <button
+            class="flex-c-m btn-hide-modal-search trans-04 js-hide-modal-search"
+          >
+            <img src="images/icons/icon-close2.png" alt="CLOSE" />
+          </button>
+
+          <form class="wrap-search-header flex-w p-l-15">
+            <button class="flex-c-m trans-04">
+              <i class="zmdi zmdi-search"></i>
+            </button>
+            <input
+              class="plh3"
+              type="text"
+              name="search"
+              placeholder="Search..."
+            />
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <!-- Cart -->
+    <div class="wrap-header-cart js-panel-cart">
+      <div class="s-full js-hide-cart"></div>
+
+      <div class="header-cart flex-col-l p-l-65 p-r-25">
+        <div class="header-cart-title flex-w flex-sb-m p-b-8">
+          <span class="mtext-103 cl2"> Your Cart </span>
+
+          <div
+            class="fs-35 lh-10 cl2 p-lr-5 pointer hov-cl1 trans-04 js-hide-cart"
+          >
+            <i class="zmdi zmdi-close"></i>
+          </div>
+        </div>
+
+        <div class="header-cart-content flex-w js-pscroll">
+          <ul class="header-cart-wrapitem w-full">
+            <li class="header-cart-item flex-w flex-t m-b-12">
+              <div class="header-cart-item-img">
+                <img src="images/item-cart-01.jpg" alt="IMG" />
+              </div>
+
+              <div class="header-cart-item-txt p-t-8">
+                <a
+                  href="#"
+                  class="header-cart-item-name m-b-18 hov-cl1 trans-04"
+                >
+                  White Shirt Pleat
+                </a>
+
+                <span class="header-cart-item-info"> 1 x $19.00 </span>
+              </div>
+            </li>
+
+            <li class="header-cart-item flex-w flex-t m-b-12">
+              <div class="header-cart-item-img">
+                <img src="images/item-cart-02.jpg" alt="IMG" />
+              </div>
+
+              <div class="header-cart-item-txt p-t-8">
+                <a
+                  href="#"
+                  class="header-cart-item-name m-b-18 hov-cl1 trans-04"
+                >
+                  Converse All Star
+                </a>
+
+                <span class="header-cart-item-info"> 1 x $39.00 </span>
+              </div>
+            </li>
+
+            <li class="header-cart-item flex-w flex-t m-b-12">
+              <div class="header-cart-item-img">
+                <img src="images/item-cart-03.jpg" alt="IMG" />
+              </div>
+
+              <div class="header-cart-item-txt p-t-8">
+                <a
+                  href="#"
+                  class="header-cart-item-name m-b-18 hov-cl1 trans-04"
+                >
+                  Nixon Porter Leather
+                </a>
+
+                <span class="header-cart-item-info"> 1 x $17.00 </span>
+              </div>
+            </li>
+          </ul>
+
+          <div class="w-full">
+            <div class="header-cart-total w-full p-tb-40">Total: $75.00</div>
+
+            <div class="header-cart-buttons flex-w w-full">
+              <a
+                href="shoping-cart.html"
+                class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-r-8 m-b-10"
+              >
+                View Cart
+              </a>
+
+              <a
+                href="shoping-cart.html"
+                class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-b-10"
+              >
+                Check Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- breadcrumb -->
+    <div class="container">
+      <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+        <a href="index.html" class="stext-109 cl8 hov-cl1 trans-04">
+          Home
+          <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+
+        <span class="stext-109 cl4"> Shoping Cart </span>
+      </div>
+    </div>
+
+    <!-- Shoping Cart -->
+    <form class="bg0 p-t-75 p-b-85">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+            <div class="m-l-25 m-r--38 m-lr-0-xl">
+              <div class="wrap-table-shopping-cart">
+                <table class="table-shopping-cart">
+                  <tr class="table_head">
+                    <th class="column-1">Image</th>
+                    <th class="column-2">Product</th>
+                    <th class="column-3">Quantity</th>
+                    <th class="column-4">Unit Price</th>
+                    <th class="column-5">Total</th>
+                  </tr>
+                  <% cartData.items.forEach(item => { %>
+                  <tr class="table_row">
+                    <td class="column-1">
+                      <div class="how-itemcart1">
+                        <img
+                          src="<%= item.productId.productImage[0] %>"
+                          alt="<%= item.productId.name %>"
+                        />
+                      </div>
+                    </td>
+                    <td class="column-2"><%= item.productId.productName %></td>
+                    <input type="hidden" value="<%= item.productId._id%>" />
+
+                    <td class="column-3"><%= item.quantity %></td>
+                    <td class="column-4">$ <%= item.price %></td>
+                    <td class="column-5">$ <%= item.totalPrice %></td>
+                  </tr>
+                  <% }); %>
+                </table>
+              </div>
+
+              <div
+                class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm"
+              >
+                <div class="container mt-5">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                          Apply Coupon
+                        </div>
+                        <div class="card-body">
+                          <div class="input-group">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="couponInput"
+                              placeholder="Enter coupon code"
+                            />
+                            <button
+                              class="btn btn-outline-primary"
+                              type="button"
+                              id="applyCoupon"
+                            >
+                              Apply
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div class="card">
+                        <div class="card-header bg-success text-white">
+                          Available Coupons
+                        </div>
+                        <div class="card-body" id="couponList">
+                          <!-- Coupon cards will be dynamically added here -->
+                          <div
+                            class="alert alert-info text-center"
+                            id="noCouponsMessage"
+                          >
+                            No coupons available
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Address Selection Box -->
+              <div class="bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm m-t-20">
+                <h4 class="mtext-109 cl2 p-b-20">Select Address</h4>
+
+                <div class="rs1-select2 rs2-select2 bor8 bg0 m-b-12 m-t-9">
+                  <% addrressData?.address?.forEach((addr, index) => { %>
+                  <div class="flex-w p-b-10">
+                    <div class="size-204 flex-w flex-m m-r-20 m-tb-10">
+                      <input class="checkbox-round" id="address<%= index %>"
+                      type="radio" name="address" value="<%= addr?._id %>" <%=
+                      index === 0 ? 'checked' : '' %>>
+                      <label
+                        for="address<%= index %>"
+                        class="stext-104 cl2 p-l-10"
+                      >
+                        <%= addr?.addressType %>, <%= addr?.city %>, <%=
+                        addr?.state %> - <%= addr?.pincode %>
+                      </label>
+                      <div class="address-details stext-104 cl2 p-l-30 m-t-5">
+                        <p>Landmark: <%= addr?.landMark %></p>
+                        <p>City: <%= addr?.city %></p>
+                        <p>State: <%= addr?.state %></p>
+                        <p>Pincode: <%= addr?.pincode %></p>
+                        <p>Phone: <%= addr?.phone %></p>
+                        <p>Alt Phone: <%= addr?.altPhone %></p>
+                      </div>
+                    </div>
+                  </div>
+                  <% }); %>
+
+                  <div class="flex-w">
+                    <div class="size-204 flex-w flex-m m-r-20 m-tb-10">
+                      <div
+                        class="flex-c-m stext-101 cl2 size-115 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer"
+                      >
+                        Add New Address
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
+            <div
+              class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm"
+            >
+              <h4 class="mtext-109 cl2 p-b-30">Cart Totals</h4>
+
+              <div class="flex-w flex-t bor12 p-b-13">
+                <div class="size-208">
+                  <span class="stext-110 cl2"> Subtotal: </span>
+                </div>
+
+                <div class="size-209">
+                  <span class="mtext-110 cl2"> $79.65 </span>
+                </div>
+              </div>
+
+              <!-- Shipping Cost Section -->
+              <div class="flex-w flex-t bor12 p-t-15 p-b-15">
+                <div class="size-208">
+                  <span class="stext-110 cl2"> Shipping: </span>
+                </div>
+
+                <div class="size-209">
+                  <span class="mtext-110 cl2"> Free Shipping </span>
+                </div>
+              </div>
+              <div class="flex-w flex-t bor12 p-t-15 p-b-15">
+                <div class="size-208">
+                  <span class="stext-110 cl2"> Coupon Code: </span>
+                </div>
+
+                <div class="size-209">
+                  <span class="mtext-110 cl2"> HELLO </span>
+                </div>
+              </div>
+
+              <!-- Discount Section -->
+              <div class="flex-w flex-t bor12 p-t-15 p-b-15">
+                <div class="size-208">
+                  <span class="stext-110 cl2"> Discount: </span>
+                </div>
+
+                <div class="size-209">
+                  <span class="mtext-110 cl2"> - $10.00 </span>
+                </div>
+              </div>
+
+              <div class="flex-w flex-t bor12 p-t-15 p-b-30">
+                <div class="size-208 w-full-ssm">
+                  <span class="stext-110 cl2"> Shipping Method: </span>
+                </div>
+
+                <!-- Payment Method Options -->
+                <div class="size-209 p-r-18 p-r-0-sm w-full-ssm p-t-15">
+                  <div class="p-b-10">
+                    <div class="size-204 flex-w flex-m">
+                      <input
+                        class="checkbox-round"
+                        id="payment1"
+                        type="radio"
+                        name="payment"
+                        checked
+                      />
+                      <label for="payment1" class="stext-104 cl2 p-l-10">
+                        Cash on Delivery
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="p-b-10">
+                    <div class="size-204 flex-w flex-m">
+                      <input
+                        class="checkbox-round"
+                        id="payment2"
+                        type="radio"
+                        name="payment"
+                      />
+                      <label for="payment2" class="stext-104 cl2 p-l-10">
+                        Online Payment
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex-w flex-t p-t-27 p-b-33">
+                <div class="size-208">
+                  <span class="mtext-101 cl2"> Total: </span>
+                </div>
+
+                <div class="size-209 p-t-1">
+                  <span class="mtext-110 cl2"> $69.65 </span>
+                </div>
+              </div>
+
+              <button
+                class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"
+              >
+                Place Order
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </form>
-		
-	
-		
 
-	<!-- Footer -->
-	<footer class="bg3 p-t-75 p-b-32">
-		<div class="container">
-			<div class="row">
-				<div class="col-sm-6 col-lg-3 p-b-50">
-					<h4 class="stext-301 cl0 p-b-30">
-						Categories
-					</h4>
+    <!-- Footer -->
+    <footer class="bg3 p-t-75 p-b-32">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6 col-lg-3 p-b-50">
+            <h4 class="stext-301 cl0 p-b-30">Categories</h4>
 
-					<ul>
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Women
-							</a>
-						</li>
+            <ul>
+              <li class="p-b-10">
+                <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> Women </a>
+              </li>
 
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Men
-							</a>
-						</li>
+              <li class="p-b-10">
+                <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> Men </a>
+              </li>
 
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Shoes
-							</a>
-						</li>
+              <li class="p-b-10">
+                <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> Shoes </a>
+              </li>
 
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Watches
-							</a>
-						</li>
-					</ul>
-				</div>
+              <li class="p-b-10">
+                <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> Watches </a>
+              </li>
+            </ul>
+          </div>
 
-				<div class="col-sm-6 col-lg-3 p-b-50">
-					<h4 class="stext-301 cl0 p-b-30">
-						Help
-					</h4>
+          <div class="col-sm-6 col-lg-3 p-b-50">
+            <h4 class="stext-301 cl0 p-b-30">Help</h4>
 
-					<ul>
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Track Order
-							</a>
-						</li>
+            <ul>
+              <li class="p-b-10">
+                <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                  Track Order
+                </a>
+              </li>
 
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Returns 
-							</a>
-						</li>
+              <li class="p-b-10">
+                <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> Returns </a>
+              </li>
 
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Shipping
-							</a>
-						</li>
+              <li class="p-b-10">
+                <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                  Shipping
+                </a>
+              </li>
 
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								FAQs
-							</a>
-						</li>
-					</ul>
-				</div>
+              <li class="p-b-10">
+                <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> FAQs </a>
+              </li>
+            </ul>
+          </div>
 
-				<div class="col-sm-6 col-lg-3 p-b-50">
-					<h4 class="stext-301 cl0 p-b-30">
-						GET IN TOUCH
-					</h4>
+          <div class="col-sm-6 col-lg-3 p-b-50">
+            <h4 class="stext-301 cl0 p-b-30">GET IN TOUCH</h4>
 
-					<p class="stext-107 cl7 size-201">
-						Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on (+1) 96 716 6879
-					</p>
+            <p class="stext-107 cl7 size-201">
+              Any questions? Let us know in store at 8th floor, 379 Hudson St,
+              New York, NY 10018 or call us on (+1) 96 716 6879
+            </p>
 
-					<div class="p-t-27">
-						<a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
-							<i class="fa fa-facebook"></i>
-						</a>
+            <div class="p-t-27">
+              <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+                <i class="fa fa-facebook"></i>
+              </a>
 
-						<a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
-							<i class="fa fa-instagram"></i>
-						</a>
+              <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+                <i class="fa fa-instagram"></i>
+              </a>
 
-						<a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
-							<i class="fa fa-pinterest-p"></i>
-						</a>
-					</div>
-				</div>
+              <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+                <i class="fa fa-pinterest-p"></i>
+              </a>
+            </div>
+          </div>
 
-				<div class="col-sm-6 col-lg-3 p-b-50">
-					<h4 class="stext-301 cl0 p-b-30">
-						Newsletter
-					</h4>
+          <div class="col-sm-6 col-lg-3 p-b-50">
+            <h4 class="stext-301 cl0 p-b-30">Newsletter</h4>
 
-					<form>
-						<div class="wrap-input1 w-full p-b-4">
-							<input class="input1 bg-none plh1 stext-107 cl7" type="text" name="email" placeholder="email@example.com">
-							<div class="focus-input1 trans-04"></div>
-						</div>
+            <form>
+              <div class="wrap-input1 w-full p-b-4">
+                <input
+                  class="input1 bg-none plh1 stext-107 cl7"
+                  type="text"
+                  name="email"
+                  placeholder="email@example.com"
+                />
+                <div class="focus-input1 trans-04"></div>
+              </div>
 
-						<div class="p-t-18">
-							<button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
-								Subscribe
-							</button>
-						</div>
-					</form>
-				</div>
-			</div>
+              <div class="p-t-18">
+                <button
+                  class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04"
+                >
+                  Subscribe
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
 
-			<div class="p-t-40">
-				<div class="flex-c-m flex-w p-b-18">
-					<a href="#" class="m-all-1">
-						<img src="images/icons/icon-pay-01.png" alt="ICON-PAY">
-					</a>
+        <div class="p-t-40">
+          <div class="flex-c-m flex-w p-b-18">
+            <a href="#" class="m-all-1">
+              <img src="images/icons/icon-pay-01.png" alt="ICON-PAY" />
+            </a>
 
-					<a href="#" class="m-all-1">
-						<img src="images/icons/icon-pay-02.png" alt="ICON-PAY">
-					</a>
+            <a href="#" class="m-all-1">
+              <img src="images/icons/icon-pay-02.png" alt="ICON-PAY" />
+            </a>
 
-					<a href="#" class="m-all-1">
-						<img src="images/icons/icon-pay-03.png" alt="ICON-PAY">
-					</a>
+            <a href="#" class="m-all-1">
+              <img src="images/icons/icon-pay-03.png" alt="ICON-PAY" />
+            </a>
 
-					<a href="#" class="m-all-1">
-						<img src="images/icons/icon-pay-04.png" alt="ICON-PAY">
-					</a>
+            <a href="#" class="m-all-1">
+              <img src="images/icons/icon-pay-04.png" alt="ICON-PAY" />
+            </a>
 
-					<a href="#" class="m-all-1">
-						<img src="images/icons/icon-pay-05.png" alt="ICON-PAY">
-					</a>
-				</div>
+            <a href="#" class="m-all-1">
+              <img src="images/icons/icon-pay-05.png" alt="ICON-PAY" />
+            </a>
+          </div>
 
-				<p class="stext-107 cl6 txt-center">
-					<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a> &amp; distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+          <p class="stext-107 cl6 txt-center">
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            Copyright &copy;
+            <script>
+              document.write(new Date().getFullYear());
+            </script>
+            All rights reserved | Made with
+            <i class="fa fa-heart-o" aria-hidden="true"></i> by
+            <a href="https://colorlib.com" target="_blank">Colorlib</a> &amp;
+            distributed by
+            <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+          </p>
+        </div>
+      </div>
+    </footer>
 
-				</p>
-			</div>
-		</div>
-	</footer>
+    <!-- Back to top -->
+    <div class="btn-back-to-top" id="myBtn">
+      <span class="symbol-btn-back-to-top">
+        <i class="zmdi zmdi-chevron-up"></i>
+      </span>
+    </div>
 
+    <!--===============================================================================================-->
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/bootstrap/js/popper.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/select2/select2.min.js"></script>
+    <!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+    <!-- For SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-	<!-- Back to top -->
-	<div class="btn-back-to-top" id="myBtn">
-		<span class="symbol-btn-back-to-top">
-			<i class="zmdi zmdi-chevron-up"></i>
-		</span>
-	</div>
+    <!-- Or for SweetAlert1 -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize variables
+        let cartItems = [];
+        let subtotal = 0;
+        let discount = 0.0; // Fixed discount amount from your HTML
+        let totalAmount = 0;
 
-<!--===============================================================================================-->	
-	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/animsition/js/animsition.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/bootstrap/js/popper.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/select2/select2.min.js"></script>
-	<!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
-	<!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
-	<!-- For SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        // Get DOM elements
+        const subtotalElement = document.querySelector(
+          ".flex-w.flex-t.bor12.p-b-13 .size-209 .mtext-110"
+        );
+        const totalElement = document.querySelector(
+          ".flex-w.flex-t.p-t-27.p-b-33 .size-209 .mtext-110"
+        );
+        const placeOrderButton = document.querySelector(
+          "button.flex-c-m.stext-101.cl0.size-116"
+        );
 
-<!-- Or for SweetAlert1 -->
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-    // Initialize variables
-    let cartItems = [];
-    let subtotal = 0;
-    let discount = 0.00; // Fixed discount amount from your HTML
-    let totalAmount = 0;
-    
-    // Get DOM elements
-    const subtotalElement = document.querySelector('.flex-w.flex-t.bor12.p-b-13 .size-209 .mtext-110');
-    const totalElement = document.querySelector('.flex-w.flex-t.p-t-27.p-b-33 .size-209 .mtext-110');
-    const placeOrderButton = document.querySelector('button.flex-c-m.stext-101.cl0.size-116');
-    
-    // Function to calculate totals
-    function calculateTotals() {
-        // Get all cart items
-        const itemRows = document.querySelectorAll('.table_row');
-        subtotal = 0;
-        cartItems = [];
-        
-        itemRows.forEach(row => {
+        // Function to calculate totals
+        function calculateTotals() {
+          // Get all cart items
+          const itemRows = document.querySelectorAll(".table_row");
+          subtotal = 0;
+          cartItems = [];
+
+          itemRows.forEach((row) => {
             // Get the hidden product ID field
             const productIdInput = row.querySelector('input[type="hidden"]');
             if (!productIdInput) {
-                console.error('Product ID input not found for a cart item');
-                return; // Skip this item
+              console.error("Product ID input not found for a cart item");
+              return; // Skip this item
             }
             const productId = productIdInput.value;
-            
-            const quantityElement = row.querySelector('.column-3');
-            const priceElement = row.querySelector('.column-4');
-            const totalPriceElement = row.querySelector('.column-5');
-            
+
+            const quantityElement = row.querySelector(".column-3");
+            const priceElement = row.querySelector(".column-4");
+            const totalPriceElement = row.querySelector(".column-5");
+
             if (!quantityElement || !priceElement || !totalPriceElement) {
-                console.error('Required element missing for cart item');
-                return; // Skip this item
+              console.error("Required element missing for cart item");
+              return; // Skip this item
             }
-            
+
             const quantity = parseInt(quantityElement.textContent);
-            const unitPrice = parseFloat(priceElement.textContent.replace('$', '').trim());
-            const totalPrice = parseFloat(totalPriceElement.textContent.replace('$', '').trim());
-            
+            const unitPrice = parseFloat(
+              priceElement.textContent.replace("$", "").trim()
+            );
+            const totalPrice = parseFloat(
+              totalPriceElement.textContent.replace("$", "").trim()
+            );
+
             subtotal += totalPrice;
-            
+
             // Store item data for submission
-            const productNameElement = row.querySelector('.column-2');
-            const productName = productNameElement ? productNameElement.textContent.trim() : 'Unknown Product';
-            
+            const productNameElement = row.querySelector(".column-2");
+            const productName = productNameElement
+              ? productNameElement.textContent.trim()
+              : "Unknown Product";
+
             cartItems.push({
-                productId,
-                productName,
-                quantity,
-                price: unitPrice,
-                totalPrice
+              productId,
+              productName,
+              quantity,
+              price: unitPrice,
+              totalPrice,
             });
-        });
-        
-        // Calculate total after discount
-        totalAmount = subtotal - discount;
-        
-        // Update DOM elements
-        if (subtotalElement) {
+          });
+
+          // Calculate total after discount
+          totalAmount = subtotal - discount;
+
+          // Update DOM elements
+          if (subtotalElement) {
             subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-        }
-        if (totalElement) {
+          }
+          if (totalElement) {
             totalElement.textContent = `$${totalAmount.toFixed(2)}`;
+          }
+
+          // Update payment options based on total amount
+          updatePaymentOptions();
         }
-    }
-    
-    // Initialize totals on page load
-    calculateTotals();
-    
-    // Utility function for showing alert
-    function showAlert(title, text, icon, buttonText) {
-        return Swal.fire({
+
+        // Function to update payment options based on total amount
+        function updatePaymentOptions() {
+          const codOption = document.getElementById("payment1");
+          const paymentRestriction = document.getElementById(
+            "payment-restriction"
+          );
+
+          if (codOption && paymentRestriction) {
+            if (totalAmount > 5000) {
+              paymentRestriction.style.display = "block";
+              codOption.disabled = true;
+              document.getElementById("payment2").checked = true;
+            } else {
+              paymentRestriction.style.display = "none";
+              codOption.disabled = false;
+            }
+          }
+        }
+
+        // Initialize totals on page load
+        calculateTotals();
+
+        // Utility function for showing alert
+        function showAlert(title, text, icon, buttonText) {
+          return Swal.fire({
             title: title,
             text: text,
             icon: icon,
-            confirmButtonText: buttonText || 'OK'
-        });
-    }
-    
-    // Handle coupon application
-    const couponInput = document.querySelector('input[name="coupon"]');
-    const applyCouponButton = document.querySelector('.flex-c-m.stext-101.cl2.size-118');
-    
-    if (applyCouponButton && couponInput) {
-        applyCouponButton.addEventListener('click', function() {
-            const couponCode = couponInput.value.trim();
-            if (couponCode) {
-                // You could implement coupon validation logic here
-                // For now, we'll just show an alert
-                fetch('/applyCoupon', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
+            confirmButtonText: buttonText || "OK",
+          });
+        }
+
+        // Function to submit the order
+        function submitOrder(orderData) {
+          fetch("/placeOrder", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderData),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                return response.json().then((data) => {
+                  throw new Error(
+                    data.message || "Network response was not ok"
+                  );
+                });
+              }
+              return response.json();
+            })
+            .then((data) => {
+              console.log(data);
+              Swal.fire({
+                title: "Order Placed Successfully!",
+                text: `Your order ID is ${data.orderId}. Thank you for shopping with us!`,
+                icon: "success",
+                confirmButtonText: "Continue",
+              })
+
+              let orderId = data.orderId
+              let paymentMethod = orderData.paymentMethod
+            if (paymentMethod === "ONLINE") {
+              fetch("/createRazorpayOrder", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ amount: totalAmount }),
+              })
+                .then((response) => {
+                  if (!response.ok) {
+                    return response.json().then((data) => {
+                      throw new Error(
+                        data.message || "Failed to create payment order"
+                      );
+                    });
+                  }
+                  return response.json();
+                })
+                .then((data) => {
+                  console.log(data);
+                  // Initialize Razorpay checkout
+                  const options = {
+                    key: "rzp_test_Ar7OJGh05M40uW",
+                    amount: data.amount * 100,
+                    currency: data.currency || "INR",
+                    name: "Your Store Name",
+                    description: "Purchase Payment",
+                    order_id: data.id,
+                    handler: function (response) {
+                      // Add payment details to orderData
+                      console.log(response);
+                      orderData.razorpayPaymentId =
+                        response.razorpay_payment_id;
+                      orderData.razorpayOrderId = response.razorpay_order_id;
+                      orderData.razorpaySignature = response.razorpay_signature;
+
+                      // Verify payment signature before submitting order
+                      fetch("/verifyPayment", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          razorpayOrderId: response.razorpay_order_id,
+                          razorpayPaymentId: response.razorpay_payment_id,
+                          razorpaySignature: response.razorpay_signature,
+                          orderId: orderId,
+                        }),
+                      })
+                        .then((response) => response.json())
+                        .then((data) => {
+                          if (data) {
+                            window.location.href = "/ordersuccess";
+                            // Submit the order with payment details
+                            //  submitOrder(orderData);
+                          } else {
+                            showAlert(
+                              "Payment Verification Failed",
+                              "Your payment could not be verified. Please contact support.",
+                              "error"
+                            );
+                          }
+                        })
+                        .catch((error) => {
+                          console.error("Payment verification error:", error);
+                          showAlert(
+                            "Error",
+                            "There was an error verifying your payment. Please contact support.",
+                            "error"
+                          );
+                        });
                     },
-                    body: JSON.stringify({ couponCode })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        discount = data.discountAmount || 0;
+                    prefill: {
+                      name: data.customerName || "",
+                      email: data.customerEmail || "",
+                      contact: data.customerPhone || "",
+                    },
+                    theme: {
+                      color: "#3399cc",
+                    },
+                    modal: {
+                      ondismiss: function () {
                         showAlert(
-                            "Coupon Applied!",
-                            `Coupon "${couponCode}" has been applied.`,
-                            "success",
-                            "Continue"
+                          "Payment Cancelled",
+                          "Your payment process was cancelled. Please try again.",
+                          "info"
                         );
-                        calculateTotals();
-                    } else {
-                        showAlert(
-                            "Invalid Coupon",
-                            data.message || "The coupon code is invalid or expired.",
-                            "warning"
-                        );
-                    }
-                })
-                .catch(error => {
-                    console.error('Error applying coupon:', error);
+                      },
+                    },
+                  };
+
+                  // Make sure Razorpay is properly loaded
+                  if (typeof Razorpay === "undefined") {
                     showAlert(
-                        "Error",
-                        "There was an error applying the coupon. Please try again.",
-                        "error"
+                      "Payment Error",
+                      "Payment gateway is not loaded properly. Please refresh the page and try again.",
+                      "error"
                     );
+                    return;
+                  }
+
+                  try {
+                    const razorpayCheckout = new Razorpay(options);
+                    razorpayCheckout.open();
+                  } catch (err) {
+                    console.error("Razorpay initialization error:", err);
+                    showAlert(
+                      "Payment Error",
+                      "Failed to initialize payment gateway. Please try again later.",
+                      "error"
+                    );
+                  }
+                })
+                .catch((error) => {
+                  showAlert(
+                    "Error",
+                    error.message ||
+                      "There was an error creating your payment. Please try again.",
+                    "error"
+                  );
+                  console.error("Error:", error);
                 });
             } else {
-                showAlert(
-                    "Empty Coupon",
-                    "Please enter a coupon code.",
-                    "warning"
-                );
+              window.location.href = "/ordersuccess";
             }
-        });
-    }
-    
-    // Add new address functionality
-    // const addAddressButton = document.querySelector('.flex-c-m.stext-101.cl2.size-115');
-    // if (addAddressButton) {
-    //     addAddressButton.addEventListener('click', function() {
-    //         // Redirect to address page or show modal
-    //         Swal.fire({
-    //             title: "Add New Address",
-    //             text: "You'll be redirected to add a new address.",
-    //             icon: "info",
-    //             showCancelButton: true,
-    //             confirmButtonText: "Continue",
-    //             cancelButtonText: "Cancel"
-    //         }).then((result) => {
-    //             if (result.isConfirmed) {
-    //                 window.location.href = "/profilePage?showAddAddress=true";
-    //             }
-    //         });
-    //     });
-    // }
-    
-    // Form submission
-    if (placeOrderButton) {
-        placeOrderButton.addEventListener('click', function(e) {
+
+            })
+            .catch((error) => {
+              showAlert(
+                "Error",
+                error.message ||
+                  "There was an error placing your order. Please try again.",
+                "error"
+              );
+              console.error("Error:", error);
+            });
+        }
+
+        // Handle coupon application
+        const couponInput = document.querySelector('input[name="coupon"]');
+        const applyCouponButton = document.querySelector(
+          ".flex-c-m.stext-101.cl2.size-118"
+        );
+
+        if (applyCouponButton && couponInput) {
+          applyCouponButton.addEventListener("click", function () {
+            const couponCode = couponInput.value.trim();
+            if (couponCode) {
+              // You could implement coupon validation logic here
+              // For now, we'll just show an alert
+              fetch("/applyCoupon", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ couponCode }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.success) {
+                    discount = data.discountAmount || 0;
+                    showAlert(
+                      "Coupon Applied!",
+                      `Coupon "${couponCode}" has been applied.`,
+                      "success",
+                      "Continue"
+                    );
+                    calculateTotals();
+                  } else {
+                    showAlert(
+                      "Invalid Coupon",
+                      data.message || "The coupon code is invalid or expired.",
+                      "warning"
+                    );
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error applying coupon:", error);
+                  showAlert(
+                    "Error",
+                    "There was an error applying the coupon. Please try again.",
+                    "error"
+                  );
+                });
+            } else {
+              showAlert(
+                "Empty Coupon",
+                "Please enter a coupon code.",
+                "warning"
+              );
+            }
+          });
+        }
+
+        // Form submission
+        if (placeOrderButton) {
+          placeOrderButton.addEventListener("click", async function (e) {
             e.preventDefault();
-            
+
             // Check if cart is empty
             if (cartItems.length === 0) {
-                showAlert(
-                    "Empty Cart",
-                    "Your cart is empty. Please add items to your cart before placing an order.",
-                    "warning"
-                );
-                return;
+              showAlert(
+                "Empty Cart",
+                "Your cart is empty. Please add items to your cart before placing an order.",
+                "warning"
+              );
+              return;
             }
-            
+
             // Get selected address
-            const selectedAddress = document.querySelector('input[name="address"]:checked');
+            const selectedAddress = document.querySelector(
+              'input[name="address"]:checked'
+            );
             if (!selectedAddress) {
-                showAlert(
-                    "Address Required",
-                    "Please select a delivery address.",
-                    "error"
-                );
-                return;
+              showAlert(
+                "Address Required",
+                "Please select a delivery address.",
+                "error"
+              );
+              return;
             }
-            
+
             // Get selected payment method
-            const paymentMethodRadio = document.querySelector('input[name="payment"]:checked');
+            const paymentMethodRadio = document.querySelector(
+              'input[name="payment"]:checked'
+            );
             if (!paymentMethodRadio) {
-                showAlert(
-                    "Payment Required",
-                    "Please select a payment method.",
-                    "error"
-                );
-                return;
+              showAlert(
+                "Payment Required",
+                "Please select a payment method.",
+                "error"
+              );
+              return;
             }
-            
-            const paymentMethod = paymentMethodRadio.id === 'payment1' ? 'cod' : 'ONLINE';
-            
-            // Validate payment method
-            if (paymentMethod !== 'cod') {
-                showAlert(
-                    "Payment Method",
-                    "Currently only Cash on Delivery is available.",
-                    "warning"
-                );
-                return;
+
+            const paymentMethod =
+              paymentMethodRadio.id === "payment1" ? "cod" : "ONLINE";
+
+            // Force online payment for orders over ₹5,000
+            if (totalAmount > 5000 && paymentMethod === "cod") {
+              showAlert(
+                "Payment Method",
+                "Orders above ₹5,000 require online payment. Please select Razorpay payment option.",
+                "warning"
+              );
+              return;
             }
-            
+
             // Prepare data for submission
             const orderData = {
-                deliveryAddressId: selectedAddress.value,
-                totalAmount: subtotal,
-                payableAmount: totalAmount,
-                paymentMethod: paymentMethod,
-                items: cartItems
+              deliveryAddressId: selectedAddress.value,
+              totalAmount: subtotal,
+              payableAmount: totalAmount,
+              paymentMethod: paymentMethod,
+              items: cartItems,
             };
-            
-            // Submit order
-            fetch('/placeOrder', {
-                method: 'POST',
+            let orderId = await submitOrder(orderData,paymentMethod);
+
+          });
+        }
+
+        // Quantity change event listeners
+        const updateQuantityButtons =
+          document.querySelectorAll(".update-qty-btn");
+        if (updateQuantityButtons.length > 0) {
+          updateQuantityButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+              const row = this.closest(".table_row");
+              const productId = row.querySelector('input[type="hidden"]').value;
+              const quantityElement = row.querySelector(".column-3");
+              const quantity = parseInt(quantityElement.textContent);
+
+              // Update quantity on server
+              fetch("/updateCart", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                  "Content-Type": "application/json",
                 },
-                body: JSON.stringify(orderData)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.message || 'Network response was not ok');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                Swal.fire({
-                    title: "Order Placed Successfully!",
-                    text: `Your order ID is ${data.orderId}. Thank you for shopping with us!`,
-                    icon: "success",
-                    confirmButtonText: "Continue"
-                }).then(() => {
-                    window.location.href = "/ordersuccess";
-                });
-            })
-            .catch(error => {
-                showAlert(
+                body: JSON.stringify({ productId, quantity }),
+              })
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error("Failed to update quantity");
+                  }
+                  return response.json();
+                })
+                .then((data) => {
+                  // Update UI with new values
+                  const priceElement = row.querySelector(".column-4");
+                  const totalPriceElement = row.querySelector(".column-5");
+                  const unitPrice = parseFloat(
+                    priceElement.textContent.replace("$", "").trim()
+                  );
+
+                  totalPriceElement.textContent = `$${(
+                    unitPrice * quantity
+                  ).toFixed(2)}`;
+
+                  // Recalculate cart totals
+                  calculateTotals();
+                })
+                .catch((error) => {
+                  console.error("Error updating quantity:", error);
+                  showAlert(
                     "Error",
-                    error.message || "There was an error placing your order. Please try again.",
+                    "Failed to update quantity. Please try again.",
                     "error"
-                );
-                console.error('Error:', error);
-            });
-        });
-    }
-    
-    // Quantity change event listeners
-    const updateQuantityButtons = document.querySelectorAll('.update-qty-btn');
-    if (updateQuantityButtons.length > 0) {
-        updateQuantityButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const row = this.closest('.table_row');
-                const productId = row.querySelector('input[type="hidden"]').value;
-                const quantityElement = row.querySelector('.column-3');
-                const quantity = parseInt(quantityElement.textContent);
-                
-                // Update quantity on server
-                fetch('/updateCart', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ productId, quantity })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to update quantity');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Update UI with new values
-                    const priceElement = row.querySelector('.column-4');
-                    const totalPriceElement = row.querySelector('.column-5');
-                    const unitPrice = parseFloat(priceElement.textContent.replace('$', '').trim());
-                    
-                    totalPriceElement.textContent = `$${(unitPrice * quantity).toFixed(2)}`;
-                    
-                    // Recalculate cart totals
-                    calculateTotals();
-                })
-                .catch(error => {
-                    console.error('Error updating quantity:', error);
-                    showAlert(
-                        "Error",
-                        "Failed to update quantity. Please try again.",
-                        "error"
-                    );
+                  );
                 });
             });
+          });
+        }
+      });
+    </script>
+    <script>
+      $(".js-select2").each(function () {
+        $(this).select2({
+          minimumResultsForSearch: 20,
+          dropdownParent: $(this).next(".dropDownSelect2"),
         });
-    }
-});
-	</script>
-	<script>
-		$(".js-select2").each(function(){
-			$(this).select2({
-				minimumResultsForSearch: 20,
-				dropdownParent: $(this).next('.dropDownSelect2')
-			});
-		})
-	</script>
-<!--===============================================================================================-->
-	<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-	<script>
-		$('.js-pscroll').each(function(){
-			$(this).css('position','relative');
-			$(this).css('overflow','hidden');
-			var ps = new PerfectScrollbar(this, {
-				wheelSpeed: 1,
-				scrollingThreshold: 1000,
-				wheelPropagation: false,
-			});
+      });
+    </script>
+    <!--===============================================================================================-->
+    <script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script>
+      $(".js-pscroll").each(function () {
+        $(this).css("position", "relative");
+        $(this).css("overflow", "hidden");
+        var ps = new PerfectScrollbar(this, {
+          wheelSpeed: 1,
+          scrollingThreshold: 1000,
+          wheelPropagation: false,
+        });
 
-			$(window).on('resize', function(){
-				ps.update();
-			})
-		});
-	</script>
-<!--===============================================================================================-->
+        $(window).on("resize", function () {
+          ps.update();
+        });
+      });
+    </script>
+    <!--===============================================================================================-->
 
+    <script>
+      // Add this to your existing JavaScript file
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get the "Add New Address" button
+        const addAddressButton = document.querySelector(".size-115.bg8.bor13");
 
-<script>
-	// Add this to your existing JavaScript file
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the "Add New Address" button
-    const addAddressButton = document.querySelector('.size-115.bg8.bor13');
-    
-    if (addAddressButton) {
-        // Create modal HTML and append to body
-        const modalHTML = `
+        if (addAddressButton) {
+          // Create modal HTML and append to body
+          const modalHTML = `
         <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -1148,89 +1367,94 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
         `;
-        
-        // Append modal to body if it doesn't exist yet
-        if (!document.getElementById('addressModal')) {
-            const modalContainer = document.createElement('div');
+
+          // Append modal to body if it doesn't exist yet
+          if (!document.getElementById("addressModal")) {
+            const modalContainer = document.createElement("div");
             modalContainer.innerHTML = modalHTML;
             document.body.appendChild(modalContainer);
-        }
-        
-        // Initialize the modal
-        const addressModal = new bootstrap.Modal(document.getElementById('addressModal'));
-        
-        // Add click event listener to the "Add New Address" button
-        addAddressButton.addEventListener('click', function() {
-            addressModal.show();
-        });
-        
-        // Handle form submission
-        const saveAddressBtn = document.getElementById('saveAddressBtn');
-        if (saveAddressBtn) {
-            saveAddressBtn.addEventListener('click', function() {
-                const addressForm = document.getElementById('addressForm');
-                
-                if (addressForm.checkValidity()) {
-                    // Get form values
-                    const addressData = {
-                        addressType: document.getElementById('addressType').value,
-                        city: document.getElementById('city').value,
-                        landMark: document.getElementById('landMark').value,
-                        state: document.getElementById('state').value,
-                        pincode: document.getElementById('pincode').value,
-                        phone: document.getElementById('phone').value,
-                        altPhone: document.getElementById('altPhone').value || document.getElementById('phone').value
-                    };
-                    
-                    // Send data to backend
-                    fetch('/checkOutAddAddress', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(addressData)
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Failed to add address');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            // Show success message and close modal
-                            Swal.fire({
-                                title: 'Success!',
-                                text: 'Address added successfully.',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then(() => {
-                                addressModal.hide();
-                                // Reload the page or update address list
-                                window.location.reload();
-                            });
-                        } else {
-                            throw new Error(data.message || 'Failed to add address');
-                        }
-                    })
-                    .catch(error => {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: error.message || 'There was an error adding the address. Please try again.',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    });
-                } else {
-                    // Trigger bootstrap validation
-                    addressForm.classList.add('was-validated');
-                }
-            });
-        }
-    }
-});
-</script>
-	<script src="js/main.js"></script>
+          }
 
-</body>
+          // Initialize the modal
+          const addressModal = new bootstrap.Modal(
+            document.getElementById("addressModal")
+          );
+
+          // Add click event listener to the "Add New Address" button
+          addAddressButton.addEventListener("click", function () {
+            addressModal.show();
+          });
+
+          // Handle form submission
+          const saveAddressBtn = document.getElementById("saveAddressBtn");
+          if (saveAddressBtn) {
+            saveAddressBtn.addEventListener("click", function () {
+              const addressForm = document.getElementById("addressForm");
+
+              if (addressForm.checkValidity()) {
+                // Get form values
+                const addressData = {
+                  addressType: document.getElementById("addressType").value,
+                  city: document.getElementById("city").value,
+                  landMark: document.getElementById("landMark").value,
+                  state: document.getElementById("state").value,
+                  pincode: document.getElementById("pincode").value,
+                  phone: document.getElementById("phone").value,
+                  altPhone:
+                    document.getElementById("altPhone").value ||
+                    document.getElementById("phone").value,
+                };
+
+                // Send data to backend
+                fetch("/checkOutAddAddress", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(addressData),
+                })
+                  .then((response) => {
+                    if (!response.ok) {
+                      throw new Error("Failed to add address");
+                    }
+                    return response.json();
+                  })
+                  .then((data) => {
+                    if (data.success) {
+                      // Show success message and close modal
+                      Swal.fire({
+                        title: "Success!",
+                        text: "Address added successfully.",
+                        icon: "success",
+                        confirmButtonText: "OK",
+                      }).then(() => {
+                        addressModal.hide();
+                        // Reload the page or update address list
+                        window.location.reload();
+                      });
+                    } else {
+                      throw new Error(data.message || "Failed to add address");
+                    }
+                  })
+                  .catch((error) => {
+                    Swal.fire({
+                      title: "Error!",
+                      text:
+                        error.message ||
+                        "There was an error adding the address. Please try again.",
+                      icon: "error",
+                      confirmButtonText: "OK",
+                    });
+                  });
+              } else {
+                // Trigger bootstrap validation
+                addressForm.classList.add("was-validated");
+              }
+            });
+          }
+        }
+      });
+    </script>
+    <script src="js/main.js"></script>
+  </body>
 </html>

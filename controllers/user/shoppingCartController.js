@@ -4,6 +4,8 @@ const Cart = require("../../models/cartSchema")
 const Address = require("../../models/addressSchema")
 const Order = require("../../models/orderSchema")
 const mongoose = require("mongoose")
+const razorpay = require("../../config/razorpay")
+const crypto = require("crypto")
 
 const getShoppingCart = async(req,res)=>{
     try {
@@ -241,16 +243,17 @@ const addOrderDetails = async(req,res)=>{
             deliveryAddress: deliveryAddress,
             totalAmount,
             payableAmount,
-            paymentMethod
+            paymentMethod : paymentMethod == 'ONLINE' ? 'razorpay': paymentMethod
         });
 
         await newOrder.save();
-        await Cart.deleteOne({_id:cartId})
+        // await Cart.deleteOne({_id:cartId})
 
-        console.log("1")
+        console.log("1",newOrder._id)
         res.status(200).json({
             success: true,
-            message: "Order placed successfully"
+            message: "Order placed successfully",
+            orderId:newOrder._id
         });
 
         for (const item of orderProducts) {
@@ -294,6 +297,47 @@ const loadSuccessPage = async(req,res)=>{
     }
 }
 
+const razorpayOrder = async (req,res)=>{
+    try {
+        const options = {
+            amount: req.body.amount,
+            currency: 'INR',
+            receipt: 'receipt_' + Math.random().toString(36).substring(7),
+        };
+
+        const order = await razorpay.orders.create(options);
+        console.log(order)
+        res.status(200).json(order);
+    } catch (err) {
+        console.log(err)
+     }
+
+}
+
+const verifiyPayment = async (req,res) =>{
+    try {
+        const { razorpayOrderId ,razorpayPaymentId,razorpaySignature,orderId} = req.body;
+        console.log(razorpayOrderId ,razorpayPaymentId,razorpaySignature,orderId)
+        const sign = razorpayOrderId + '|' + razorpayPaymentId;
+        const expectedSign = crypto.createHmac('sha256', "7FaXYkyBxYgWdzIHBWr7ntSa")
+            .update(sign.toString())
+            .digest('hex');
+
+        if (razorpaySignature === expectedSign) {
+            const orderData = await Order.findById(orderId)
+            orderData.paymentStatus = "success"
+            await orderData.save()
+            res.status(200).json({ message: 'Payment verified successfully' });
+        } else {
+            res.status(400).json({ error: 'Invalid payment signature' });
+        }
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: err.message });
+    } 
+
+} 
+
 module.exports = {
     getShoppingCart,
     productAddToCart,
@@ -302,5 +346,7 @@ module.exports = {
     loadCheckOutPage,
     loadplaceOrder,
     addOrderDetails,
-    loadSuccessPage
+    loadSuccessPage,
+    razorpayOrder,
+    verifiyPayment
 }
