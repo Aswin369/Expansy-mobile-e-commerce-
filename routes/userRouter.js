@@ -63,6 +63,7 @@ router.post("/placeOrder",userAuth, shoppingCartController.addOrderDetails)
 router.get("/ordersuccess",userAuth, shoppingCartController.loadSuccessPage)
 router.post("/createRazorpayOrder",userAuth,shoppingCartController.razorpayOrder)
 router.post("/verifyPayment",userAuth,shoppingCartController.verifiyPayment)
+router.post("/applyCoupon",userAuth,shoppingCartController.applyCoupon)
 // WhishList management
 router.get("/getWhishlist",userAuth,wishListController.getWhishList)
 router.post("/addtowishlist",wishListController.addTOWhishlistFromProductDetail)

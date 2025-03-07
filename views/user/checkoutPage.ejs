@@ -438,15 +438,16 @@
                 </table>
               </div>
 
-              <div
-                class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm"
-              >
+              <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
                 <div class="container mt-5">
                   <div class="row">
                     <div class="col-md-6">
                       <div class="card mb-4">
                         <div class="card-header bg-primary text-white">
                           Apply Coupon
+                          <input type="hidden" id="cartIdForApplyCoupon" value="<%= cartData._id%>">
+                          
+                          
                         </div>
                         <div class="card-body">
                           <div class="input-group">
@@ -463,24 +464,37 @@
                             >
                               Apply
                             </button>
+                            <button
+                              class="btn btn-outline-danger ms-2"
+                              type="button"
+                              id="cancelCoupon"
+                            >
+                              Cancel
+                            </button>
                           </div>
                         </div>
                       </div>
                     </div>
-
+              
                     <div class="col-md-6">
                       <div class="card">
                         <div class="card-header bg-success text-white">
                           Available Coupons
                         </div>
                         <div class="card-body" id="couponList">
-                          <!-- Coupon cards will be dynamically added here -->
-                          <div
-                            class="alert alert-info text-center"
-                            id="noCouponsMessage"
-                          >
-                            No coupons available
-                          </div>
+                          <% if (validCouponData?.length > 0) { %>
+                            <% validCouponData.forEach((coupon, index) => { %>
+                              <div class="alert alert-info text-center" id="coupon-<%= index %>">
+                                Coupon Code: <%= coupon?.code || "Unknown Coupon" %>
+                                <input type="hidden", id="couponId" value="<%= coupon._id%>">
+                                
+                              </div>
+                            <% }); %>
+                          <% } else { %>
+                            <div class="alert alert-danger text-center" id="noCouponsMessage">
+                              No Coupons Available
+                            </div>
+                          <% } %>
                         </div>
                       </div>
                     </div>
@@ -558,24 +572,17 @@
                   <span class="mtext-110 cl2"> Free Shipping </span>
                 </div>
               </div>
-              <div class="flex-w flex-t bor12 p-t-15 p-b-15">
-                <div class="size-208">
-                  <span class="stext-110 cl2"> Coupon Code: </span>
-                </div>
-
-                <div class="size-209">
-                  <span class="mtext-110 cl2"> HELLO </span>
-                </div>
-              </div>
+              
 
               <!-- Discount Section -->
               <div class="flex-w flex-t bor12 p-t-15 p-b-15">
                 <div class="size-208">
-                  <span class="stext-110 cl2"> Discount: </span>
+                  <span class="stext-110 cl2" > Discount: </span>
+                  
                 </div>
 
                 <div class="size-209">
-                  <span class="mtext-110 cl2"> - $10.00 </span>
+                  <span class="mtext-110 cl2" id="dicountVal"> </span>
                 </div>
               </div>
 
@@ -820,6 +827,7 @@
           "button.flex-c-m.stext-101.cl0.size-116"
         );
 
+        const dicountVal = document.getElementById("dicountVal")
         // Function to calculate totals
         function calculateTotals() {
           // Get all cart items
@@ -875,10 +883,13 @@
 
           // Update DOM elements
           if (subtotalElement) {
-            subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+            subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
           }
           if (totalElement) {
-            totalElement.textContent = `$${totalAmount.toFixed(2)}`;
+            totalElement.textContent = `₹${totalAmount.toFixed(2)}`;
+          }
+          if(discount>0){
+            dicountVal.textContent = `₹${discount.toFixed(2)}`
           }
 
           // Update payment options based on total amount
@@ -1086,11 +1097,10 @@
         }
 
         // Handle coupon application
-        const couponInput = document.querySelector('input[name="coupon"]');
-        const applyCouponButton = document.querySelector(
-          ".flex-c-m.stext-101.cl2.size-118"
-        );
-
+        const couponInput = document.getElementById("couponInput")
+        const applyCouponButton = document.getElementById("applyCoupon")
+        const cartId = document.getElementById("cartIdForApplyCoupon").value
+        const cancelCouponButton = document.getElementById("cancelCoupon");
         if (applyCouponButton && couponInput) {
           applyCouponButton.addEventListener("click", function () {
             const couponCode = couponInput.value.trim();
@@ -1102,12 +1112,13 @@
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ couponCode }),
+                body: JSON.stringify({ couponCode, cartId }),
               })
                 .then((response) => response.json())
                 .then((data) => {
                   if (data.success) {
-                    discount = data.discountAmount || 0;
+                    discount = data.disCountAmount || 0;
+                    
                     showAlert(
                       "Coupon Applied!",
                       `Coupon "${couponCode}" has been applied.`,
@@ -1140,6 +1151,16 @@
             }
           });
         }
+        if (cancelCouponButton) {
+  cancelCouponButton.addEventListener("click", function () {
+    couponInput.value = ""; // Clear input field
+    discount = 0; // Reset discount
+    dicountVal.textContent = `₹${discount.toFixed(2)}`
+    calculateTotals(); // Recalculate total price
+
+    showAlert("Coupon Removed", "The applied coupon has been canceled.", "info");
+  });
+}
 
         // Form submission
         if (placeOrderButton) {

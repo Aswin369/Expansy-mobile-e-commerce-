@@ -6,6 +6,7 @@ const Order = require("../../models/orderSchema")
 const mongoose = require("mongoose")
 const razorpay = require("../../config/razorpay")
 const crypto = require("crypto")
+const Coupon = require("../../models/couponSchema")
 
 const getShoppingCart = async(req,res)=>{
     try {
@@ -178,15 +179,31 @@ const loadplaceOrder = async (req, res) => {
         if (!userId) {
             return res.redirect("/login");
         }
-        console.log("Cart ID received in loadplaceOrder:", cartId);
         
         const cartDetails = await Cart.findById(cartId).populate("items.productId")
+        
+        let cartTotal = 0
+        
+        cartDetails.items.forEach((val)=>{
+            cartTotal+=val.quantity * val.price
+        })
+        
+        console.log("cartTotal", cartTotal)
+        
+        const validCoupons = await Coupon.find({isActive: true});
+        
+
+
         const addressDetails = await Address.findOne({userId:userId})
         console.log("THis is cart details",cartDetails)
         console.log("THis is address details",addressDetails)
         res.render("checkoutPage", { 
             cartData: cartDetails,  
-            addrressData: addressDetails}); 
+            addrressData: addressDetails,
+            validCouponData: validCoupons
+        })
+
+        console.log("coupoins", validCoupons)
     } catch (error) {
         console.error("Error in loadplaceOrder:", error);
         res.redirect("/pageerror");
@@ -198,8 +215,6 @@ const loadplaceOrder = async (req, res) => {
 const loadCheckOutPage = async(req,res)=>{
     try {
         const { cartId } = req.query;
-
-        // const user = req.session.user
         res.status(200).json({ success: true, redirectUrl: `/checkout?cartId=${cartId}`});
     } catch (error) {
         console.error("This error occured in loadCheckOutPage",error)
@@ -247,7 +262,7 @@ const addOrderDetails = async(req,res)=>{
         });
 
         await newOrder.save();
-        // await Cart.deleteOne({_id:cartId})
+        await Cart.deleteOne({_id:cartId})
 
         console.log("1",newOrder._id)
         res.status(200).json({
@@ -293,7 +308,8 @@ const loadSuccessPage = async(req,res)=>{
         }
         res.render("orderSuccess")
     } catch (error) {
-        
+        console.error("This error occured in loadSuccess page", error)
+        res.redirect("/pageerror")
     }
 }
 
@@ -309,7 +325,8 @@ const razorpayOrder = async (req,res)=>{
         console.log(order)
         res.status(200).json(order);
     } catch (err) {
-        console.log(err)
+        console.log("This error occured in razorpayOrder",err)
+        res.redirect("/pageerror")
      }
 
 }
@@ -338,6 +355,64 @@ const verifiyPayment = async (req,res) =>{
 
 } 
 
+const applyCoupon = async (req,res)=>{
+    try {
+        console.log("coupon data", req.body)
+        const {couponCode, cartId} = req.body
+        if(!cartId){
+            return res.status(400).json({success:true, message:"CartId is not defined, Please try again"})
+        }
+
+        let totalCartPrice = 0
+        const cartData = await Cart.findOne({_id:cartId})
+        cartData.items.forEach((val)=>{
+           totalCartPrice += val.price * val.quantity
+        })
+        console.log("first time totalCartPrice", totalCartPrice)
+
+        const couponData = await Coupon.findOne({code:couponCode,isActive:true})
+
+        if(!couponData){
+            return res.status(400).json({success:false, message: "Invalid please try another coupon"})
+        }
+
+        // const currentDate = new Date()
+
+        // if(currentDate < new Date(couponData.startDate) || currentDate > new Date(couponData.expirationDate)){
+        //     return res.status(400).json({success:false, message: "coupon is not valid at this time"})
+        // }
+
+        if(totalCartPrice < couponCode.minDiscountValue){
+            return res.status(400).json({success:false, message: `Coupon is only valid for above ${couponData.minDiscountValue}`})
+        }
+
+        let discountValue = couponData.discountValue
+
+        console.log("discountValue", discountValue)
+
+        let disCountAmount = (totalCartPrice * parseInt(couponData.discountValue)) / 100
+
+        console.log("forst disCountAmount", disCountAmount)
+
+        if(totalCartPrice > couponData.maxDiscountValue){
+            disCountAmount = totalCartPrice / couponData.discountValue
+        }
+
+        const finalPrice = totalCartPrice - disCountAmount
+
+        console.log("totalCartPrice",totalCartPrice)
+        console.log("disCountAmount",disCountAmount)
+        console.log("finalPrice",finalPrice)
+
+        return res.status(200).json({success:true, message: "Coupon applied successfully", totalCartPrice, disCountAmount, finalPrice})
+
+    } catch (error) {
+        console.error("THis error occured in applycoupon", error)
+        res.redirect("/pageerror")
+    }
+}
+ 
+
 module.exports = {
     getShoppingCart,
     productAddToCart,
@@ -348,5 +423,6 @@ module.exports = {
     addOrderDetails,
     loadSuccessPage,
     razorpayOrder,
-    verifiyPayment
+    verifiyPayment,
+    applyCoupon
 }

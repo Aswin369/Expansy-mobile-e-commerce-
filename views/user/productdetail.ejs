@@ -678,42 +678,33 @@
                         <div class="variant-specs">
                           <div class="variant-main-specs">
                             <span class="ram-badge"><%= spec.ram.value %></span>
-                            <span class="storage-badge"
-                              ><%= spec.storage.value %></span
-                            >
+                            <span class="storage-badge"><%= spec.storage.value %></span>
                           </div>
                           <div class="variant-color">
-                            <span class="color-name"
-                              >Color: <%= spec.color.value %></span
-                            >
+                            <span class="color-name">Color: <%= spec.color.value %></span>
                           </div>
                           <div class="variant-quantity">
                             <% if (spec.quantity === 0) { %>
-                            <span class="color-name text-danger fw-bold"
-                              >Out of Stock</span
-                            >
+                            <span class="color-name text-danger fw-bold">Out of Stock</span>
                             <% } else if (spec.quantity <= 5) { %>
-                            <span class="color-name text-danger fw-bold"
-                              >(Only <%= spec.quantity %> more left!)</span
-                            >
+                            <span class="color-name text-danger fw-bold">(Only <%= spec.quantity %> more left!)</span>
                             <% } else { %>
-                            <span class="color-name text-success fw-bold"
-                              >Instock</span
-                            >
+                            <span class="color-name text-success fw-bold">In Stock</span>
                             <% } %>
                           </div>
                         </div>
                         <div class="variant-prices">
-                          <span class="sale-price"
-                            >₹<%= spec.salePrice.toLocaleString('en-IN')
-                            %></span
-                          >
-                          <% if (spec.regularPrice > spec.salePrice) { %>
-                          <span class="regular-price"
-                            >₹<%= spec.regularPrice.toLocaleString('en-IN')
-                            %></span
-                          >
-                         
+                          <% let finalPrice = appliedOffer ? spec.salePrice - appliedOffer : spec.salePrice; %>
+                          <span class="sale-price">₹<%= finalPrice.toLocaleString('en-IN') %></span>
+                
+                          <% if (spec.regularPrice > finalPrice) { %>
+                          <span class="regular-price">₹<%= spec.regularPrice.toLocaleString('en-IN') %></span>
+                          <% if (appliedOffer) { %>
+                          <!-- Show discount amount -->
+                          <span class="discount-amount text-success fw-bold">
+                            (You Save ₹<%= appliedOffer.toLocaleString('en-IN') %>)
+                          </span>
+                          <% } %>
                           <% } %>
                         </div>
                       </button>
@@ -721,6 +712,8 @@
                     </div>
                   </div>
                 </div>
+                
+                
                 
                 <div class="flex-w flex-r-m p-b-10">
                   <div class="size-204 flex-w flex-m respon6-next align-items-center">
