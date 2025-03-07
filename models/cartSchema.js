@@ -13,6 +13,10 @@ const cartSchema = new mongoose.Schema({
             ref: "Product", 
             required: true
         },
+        offerApplied:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Offer", 
+        },
         specId: {  
             type: mongoose.Schema.Types.ObjectId,
             required: true
@@ -21,11 +25,14 @@ const cartSchema = new mongoose.Schema({
             type: Number,
             default: 1
         },
-        price: {
+        unitPrice: {
             type: Number,
             required: true
         },
         totalPrice: {
+            type: Number
+        },
+        discountPriceforThisProduct:{
             type: Number
         }
     }]

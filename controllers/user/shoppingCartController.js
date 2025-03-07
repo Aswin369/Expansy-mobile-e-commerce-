@@ -8,119 +8,141 @@ const razorpay = require("../../config/razorpay")
 const crypto = require("crypto")
 const Coupon = require("../../models/couponSchema")
 
-const getShoppingCart = async(req,res)=>{
+const getShoppingCart = async (req, res) => {
     try {
-        const userId = req.session.user
-        console.log("This is userid", userId)
-        if(!userId){
-            res.redirect("/login")
+        const userId = req.session.user;
+        if (!userId) {
+            return res.redirect("/login");
         }
-        
-        const cartUser = await Cart.findOne({userId: new mongoose.Types.ObjectId(userId)})
-        .populate("items.productId")
-        console.log("hhsdaifjk",cartUser)
+
+        const cartUser = await Cart.findOne({ userId: new mongoose.Types.ObjectId(userId) })
+            .populate("items.productId");
+
         if (!cartUser || cartUser.items.length === 0) {
-            return res.render("shoppingCart",{cartData:{items:[]}, user:userId});
+            return res.render("shoppingCart", { cartData: { items: [] }, user: userId });
         }
+
         const populatedCartItems = await Promise.all(
             cartUser.items.map(async (item) => {
                 const product = item.productId;
                 if (!product) return item;
                 const specification = product.specification.find(spec => spec._id.equals(item.specId));
+
                 return {
                     ...item.toObject(),
+                    unitPrice: item.unitPrice,   // ✅ Ensure unitPrice is passed
+                    totalPrice: item.totalPrice, // ✅ Ensure totalPrice is passed
                     specification
-                }
+                };
             })
-        )
+        );
+
         res.render("shoppingCart", {
-            cartData: { ...cartUser.toObject(), items: populatedCartItems },user: userId
-        })
+            cartData: { ...cartUser.toObject(), items: populatedCartItems },
+            user: userId
+        });
     } catch (error) {
-        console.error("Error found in shopping cart", error)
+        console.error("Error found in shopping cart", error);
+        res.status(500).send("Something went wrong!");
     }
-}
+};
 
-const productAddToCart = async(req,res)=>{
+
+const productAddToCart = async (req, res) => {
     try {
-        if(!req.session.user){
-          return  res.status(401).json({success:false ,message : "Login first"})
-        }
-        const userId = req.session.user
-        const {productId, quantity, price, selectedSpecId} = req.body
-        
-        const cartDetail = await Cart.find({userId:userId},{"items.productId":productId},{"items.$":1})
-        
-
-        console.log("This is cartDetail",cartDetail)
-
-        if(quantity<=0){
-            return res.status(400).json({success:false, message:"quantity cannot be zero"})
-        }
-        if(!userId){
-             return res.status(400).json({success:false, message:"User not found"})
+        if (!req.session.user) {
+            return res.status(401).json({ success: false, message: "Login first" });
         }
 
-        if(!productId){
-            return res.status(400).json({success:false, message: "Please try again"})
+        const userId = req.session.user;
+        const { productId, quantity, salePrice, discountPrice, selectedSpecId, appliedOfferId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User not found" });
         }
+
+        if (!productId || !selectedSpecId || quantity <= 0) {
+            return res.status(400).json({ success: false, message: "Invalid product details" });
+        }
+
+        // Check if the product exists
         const productDetail = await Product.findOne({ _id: productId });
         if (!productDetail) {
             return res.status(404).json({ success: false, message: "Product not found" });
         }
 
+        // Check if the selected specification exists
         const spec = productDetail.specification.find(s => s._id.toString() === selectedSpecId);
         if (!spec) {
             return res.status(404).json({ success: false, message: "Specification not found" });
         }
 
+        const offerApplied = mongoose.Types.ObjectId.isValid(appliedOfferId) ? appliedOfferId : null;
+
+
         const availableStock = spec.quantity;
-       
+
+        // Check if the user has a cart
         let userCart = await Cart.findOne({ userId });
 
-        let existingCartItem = null;
-        if (userCart) {
-            existingCartItem = userCart.items.find(item => item.specId.toString() === selectedSpecId);
-        }
+        console.log("THis is user cart", userCart)
 
-       
+        let existingCartItem = userCart ? userCart.items.find(item => item.specId.toString() === selectedSpecId) : null;
+
+        // Calculate new total quantity
         const currentCartQuantity = existingCartItem ? existingCartItem.quantity : 0;
         const totalQuantity = currentCartQuantity + quantity;
 
-       
         if (totalQuantity > availableStock) {
             return res.status(400).json({ success: false, message: "Not enough stock available!" });
         }
 
-        const totalPiceOfProduct = price*quantity
-        console.log("totalPiceOfProduct",totalPiceOfProduct)
-        const cartDart = {
-            productId: productId,
-            quantity: quantity,
-            price: price,
-            totalPrice: totalPiceOfProduct,
-            specId:selectedSpecId
-        }
-        
-        if(userCart){
-            userCart.items.push(cartDart)
-            await userCart.save()
-            return res.status(201).json({success:true, message:"Product saved to cart"})
-        }else{
+        const totalPrice = salePrice * quantity;
+
+        if (userCart) {
+            if (existingCartItem) {
+                // Update existing cart item quantity and price
+                existingCartItem.quantity += quantity;
+                existingCartItem.totalPrice += totalPrice;
+            } else {
+                // Add new product to cart
+                userCart.items.push({
+                    productId,
+                    specId: selectedSpecId,
+                    quantity,
+                    unitPrice: salePrice,  
+                    totalPrice,
+                    discountPriceforThisProduct: discountPrice,
+                    offerApplied
+                });
+            }
+            await userCart.save();
+        } else {
+            // Create a new cart
             const newCart = new Cart({
-                userId: userId,
-                items: [cartDart]
-            })
-            await newCart.save()
-           
-            return res.status(201).json({success:true, message:"Product saved to cart"})
+                userId,
+                items: [{
+                    productId,
+                    specId: selectedSpecId,
+                    quantity,
+                    unitPrice: salePrice,  
+                    totalPrice,
+                    discountPriceforThisProduct: discountPrice,
+                    offerApplied
+                }]
+            });
+            await newCart.save();
         }
 
+        return res.status(201).json({ success: true, message: "Product added to cart successfully" });
+
     } catch (error) {
-        console.error("This error occured in productAddToCart", error)
-        res.redirect("/pageerror")
+        console.error("Error in productAddToCart:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-}
+};
+
+
 
 const deleteProductFromCart = async(req,res)=>{
     try {
@@ -222,83 +244,104 @@ const loadCheckOutPage = async(req,res)=>{
     }
 }
 
-const addOrderDetails = async(req,res)=>{
+const addOrderDetails = async (req, res) => {
     try {
-        const userId = req.session.user
-        const {deliveryAddressId, totalAmount, payableAmount, paymentMethod} = req.body
+        const userId = req.session.user;
+        const { deliveryAddressId, totalAmount, payableAmount, paymentMethod } = req.body;
 
-        console.log("this is req.bosdy",req.body)
+        console.log("This is req.body", req.body);
 
-        const addressData = await Address.findOne({userId: new mongoose.Types.ObjectId(userId),"address._id": new mongoose.Types.ObjectId(deliveryAddressId)},{"address.$":1})
+        // Fetch delivery address
+        const addressData = await Address.findOne(
+            { userId: new mongoose.Types.ObjectId(userId), "address._id": new mongoose.Types.ObjectId(deliveryAddressId) },
+            { "address.$": 1 }
+        );
+
+        if (!addressData) {
+            return res.status(400).json({ success: false, message: "Invalid delivery address" });
+        }
+
+        const deliveryAddress = { ...addressData.address[0] };
+        console.log("User ID:", userId);
+        console.log("User address ID:", deliveryAddressId);
+
         
-        const deliveryAddress = { ...addressData.address[0]}
-        console.log("lkdfa",addressData)
-        console.log("user id ",userId)
-        console.log("user address id ",deliveryAddressId)
-        
+        const cartDetails = await Cart.findOne({ userId: userId }).populate("items.productId");
 
-        const cartDetails = await Cart.findOne({userId:userId})
+        console.log("sdfgsdfgsdfgsdfgsdg",cartDetails)
 
-        const cartId = cartDetails._id
+        if (!cartDetails) {
+            return res.status(400).json({ success: false, message: "Cart not found" });
+        }
 
-        console.log("Thisis sdkjfa acart id ", cartId)
+        const cartId = cartDetails._id;
+        console.log("Cart ID:", cartId);
 
         const orderProducts = cartDetails.items.map(item => ({
-            productId: item.productId,
-            specId: item.specId,
+            productId: new mongoose.Types.ObjectId(item.productId._id),
+            specId: new mongoose.Types.ObjectId(item.specId),
             quantity: item.quantity,
             price: item.price,
-            totalPrice: item.totalPrice
-        }))
+            totalPrice: item.totalPrice,
+            offerId: item.offerApplied ? new mongoose.Types.ObjectId(item.offerApplied) : null, 
+        }));
+        
+        
+        console.log("Final Order Products:", orderProducts);
+        
 
-        console.log("T",orderProducts)
+        console.log("Order Products:", orderProducts);
+
+        // Create new order
         const newOrder = new Order({
             userId,
             products: orderProducts,
-            deliveryAddress: deliveryAddress,
+            deliveryAddress,
             totalAmount,
             payableAmount,
-            paymentMethod : paymentMethod == 'ONLINE' ? 'razorpay': paymentMethod
+            paymentMethod: paymentMethod === "ONLINE" ? "razorpay" : paymentMethod,
         });
 
-        await newOrder.save();
-        await Cart.deleteOne({_id:cartId})
+        console.log("newOrder: ", newOrder)
 
-        console.log("1",newOrder._id)
+        await newOrder.save();
+        await Cart.deleteOne({ _id: cartId });
+
+        console.log("New Order ID:", newOrder._id);
         res.status(200).json({
             success: true,
             message: "Order placed successfully",
-            orderId:newOrder._id
+            orderId: newOrder._id,
         });
 
+        
         for (const item of orderProducts) {
             const { productId, specId, quantity } = item;
             const product = await Product.findOneAndUpdate(
-              {
-                _id: productId,
-                'specification._id': specId
-              },
-              {
-                $inc: { 'specification.$.quantity': -quantity } 
-              },
-              {
-                new: true, 
-                runValidators: true 
-              }
+                {
+                    _id: productId,
+                    "specification._id": specId,
+                },
+                {
+                    $inc: { "specification.$.quantity": -quantity },
+                },
+                {
+                    new: true,
+                    runValidators: true,
+                }
             );
-      
-            if (!product) {
-              throw new Error(`Product with ID ${productId} or specification ${specId} not found`);
-            }
 
-            // console.log(`Stock updated for product ${productId}, spec ${specId}. New quantity: ${updatedSpec.quantity}`);
-          }
+            if (!product) {
+                throw new Error(`Product with ID ${productId} or specification ${specId} not found`);
+            }
+        }
 
     } catch (error) {
-        console.error("This error occured in addOrderDetails",error)
-        res.redirect("/pageerror")
+        console.error("This error occurred in addOrderDetails", error);
+        res.redirect("/pageerror");
     }
-}
+};
+
 
 const loadSuccessPage = async(req,res)=>{
     try {

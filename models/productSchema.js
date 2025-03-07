@@ -30,8 +30,9 @@ const productSchema = new mongoose.Schema({
         required:true
     },
     productOffer:{
-        type:Number,
-        default:0, 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Offer",
+        
     },
     productImage:{
         type:[String],

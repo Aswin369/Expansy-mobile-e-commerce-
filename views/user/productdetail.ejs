@@ -668,53 +668,60 @@
               <div class="p-t-33">
                 <div class="p-t-33">
                   <div class="spec-buttons mb-4">
-                    <h6 class="mb-3">Select Variant</h6>
-                    <div class="variant-grid">
-                      <% productData.specification.forEach((spec, index) => { %>
-                      <button
-                        class="variant-btn <%= index === 0 ? 'active' : '' %>"
-                        data-spec-id="<%= spec._id %>"
-                      >
-                        <div class="variant-specs">
-                          <div class="variant-main-specs">
-                            <span class="ram-badge"><%= spec.ram.value %></span>
-                            <span class="storage-badge"><%= spec.storage.value %></span>
-                          </div>
-                          <div class="variant-color">
-                            <span class="color-name">Color: <%= spec.color.value %></span>
-                          </div>
-                          <div class="variant-quantity">
-                            <% if (spec.quantity === 0) { %>
-                            <span class="color-name text-danger fw-bold">Out of Stock</span>
-                            <% } else if (spec.quantity <= 5) { %>
-                            <span class="color-name text-danger fw-bold">(Only <%= spec.quantity %> more left!)</span>
-                            <% } else { %>
-                            <span class="color-name text-success fw-bold">In Stock</span>
-                            <% } %>
-                          </div>
-                        </div>
-                        <div class="variant-prices">
-                          <% let finalPrice = appliedOffer ? spec.salePrice - appliedOffer : spec.salePrice; %>
-                          <span class="sale-price">₹<%= finalPrice.toLocaleString('en-IN') %></span>
-                
-                          <% if (spec.regularPrice > finalPrice) { %>
-                          <span class="regular-price">₹<%= spec.regularPrice.toLocaleString('en-IN') %></span>
-                          <% if (appliedOffer) { %>
-                          <!-- Show discount amount -->
-                          <span class="discount-amount text-success fw-bold">
-                            (You Save ₹<%= appliedOffer.toLocaleString('en-IN') %>)
-                          </span>
-                          <% } %>
-                          <% } %>
-                        </div>
-                      </button>
-                      <% }); %>
-                    </div>
+                      <h6 class="mb-3">Select Variant</h6>
+                      <div class="variant-grid">
+                          <% productData.specification.forEach((spec, index) => { %>
+                          <button class="variant-btn <%= index === 0 ? 'active' : '' %>" data-spec-id="<%= spec._id %>">
+                              <div class="variant-specs">
+                                  <div class="variant-main-specs">
+                                      <span class="ram-badge"><%= spec.ram.value %></span>
+                                      <span class="storage-badge"><%= spec.storage.value %></span>
+                                  </div>
+                                  <div class="variant-color">
+                                      <span class="color-name">Color: <%= spec.color.value %></span>
+                                  </div>
+                                  <div class="variant-quantity">
+                                      <% if (spec.quantity === 0) { %>
+                                          <span class="color-name text-danger fw-bold">Out of Stock</span>
+                                      <% } else if (spec.quantity <= 5) { %>
+                                          <span class="color-name text-danger fw-bold">(Only <%= spec.quantity %> more left!)</span>
+                                      <% } else { %>
+                                          <span class="color-name text-success fw-bold">In Stock</span>
+                                      <% } %>
+                                  </div>
+                              </div>
+                              
+                              <!-- Pricing Section -->
+                              <div class="variant-prices">
+                                  <!-- Regular Price (Strikethrough if discount is applied) -->
+                                  <% if (spec.regularPrice) { %>
+                                      <span class="regular-price text-muted text-decoration-line-through">
+                                          ₹<%= spec.regularPrice.toLocaleString('en-IN') %>
+                                      </span>
+                                  <% } %>
+              
+                                  <!-- Discounted Price -->
+                                  <span class="sale-price fw-bold text-success">
+                                      ₹<%= spec.salePrice.toLocaleString('en-IN') %>
+                                  </span>
+                                  <input type="hidden" id="appliedOfferId" value="<%= appliedOfferId%>">
+                                  
+                                  <!-- Show Discount Amount (if applicable) -->
+                                  <% if (spec.discountPrice > 0) { %>
+                                      <span class="discount-amount text-success fw-bold">
+                                          (You Save ₹<%= spec.discountPrice.toLocaleString('en-IN') %>!)
+                                      </span>
+                                  <% } %>
+                              </div>
+                          </button>
+                          <% }); %>
+                      </div>
                   </div>
-                </div>
+              </div>
+              
                 
                 
-                
+
                 <div class="flex-w flex-r-m p-b-10">
                   <div class="size-204 flex-w flex-m respon6-next align-items-center">
                     <div class="wrap-num-product flex-w m-r-20 m-tb-10 me-3">
@@ -1469,8 +1476,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-      // Get DOM elements
-const quantityInput = document.querySelector(".num-product");
+      const quantityInput = document.querySelector(".num-product");
 const decrementBtn = document.querySelector(".btn-num-product-down");
 const incrementBtn = document.querySelector(".btn-num-product-up");
 const addToCartBtn = document.querySelector(".js-addcart-detail");
@@ -1478,6 +1484,8 @@ const variantBtns = document.querySelectorAll(".variant-btn");
 const displayPrice = document.querySelector(".mtext-106.cl2");
 const originalPriceDisplay = document.querySelector(".original-price");
 const productId = document.getElementById("pdId").value;
+const appliedOfferId = document.getElementById("appliedOfferId")?.value || "";
+
 if (
   !quantityInput ||
   !decrementBtn ||
@@ -1488,23 +1496,64 @@ if (
 ) {
   console.error("One or more elements are missing in the HTML.");
 }
+
 let selectedSpecId = "";
-let selectedPrice = 0;
+let selectedSalePrice = 0;
+let selectedRegularPrice = 0;
+let selectedDiscountPrice = 0;
 let currentStock = 0;
+
+// Prevent manual typing in quantity input
+quantityInput.addEventListener('keydown', function(e) {
+  e.preventDefault();
+  return false;
+});
 
 // Initialize with first variant's data
 if (variantBtns.length > 0) {
   const firstBtn = variantBtns[0];
-  selectedSpecId = firstBtn.dataset.specId;
-  selectedPrice = parseInt(
-    firstBtn
-      .querySelector(".sale-price")
-      .textContent.replace("₹", "")
-      .replace(",", "")
-  );
-  currentStock = getStockQuantity(firstBtn);
+  initializeVariantData(firstBtn);
   firstBtn.classList.add("active");
   updateQuantityLimits();
+}
+
+// Function to extract and initialize variant data
+function initializeVariantData(btn) {
+  selectedSpecId = btn.dataset.specId;
+  
+  // Extract price information
+  const salePriceText = btn.querySelector(".sale-price").textContent;
+  selectedSalePrice = parseInt(salePriceText.replace("₹", "").replace(/,/g, ""));
+  
+  const regularPriceElement = btn.querySelector(".regular-price");
+  if (regularPriceElement) {
+    const regularPriceText = regularPriceElement.textContent;
+    selectedRegularPrice = parseInt(regularPriceText.replace("₹", "").replace(/,/g, ""));
+  } else {
+    selectedRegularPrice = selectedSalePrice; // If no regular price, use sale price
+  }
+  
+  const discountElement = btn.querySelector(".discount-amount");
+  if (discountElement) {
+    const discountText = discountElement.textContent;
+    const discountMatch = discountText.match(/₹([\d,]+)/);
+    if (discountMatch) {
+      selectedDiscountPrice = parseInt(discountMatch[1].replace(/,/g, ""));
+    }
+  } else {
+    selectedDiscountPrice = 0;
+  }
+  
+  // Update displayed prices
+  displayPrice.innerHTML = salePriceText;
+  if (regularPriceElement && originalPriceDisplay) {
+    originalPriceDisplay.innerHTML = regularPriceElement.textContent;
+    originalPriceDisplay.style.display = '';
+  } else if (originalPriceDisplay) {
+    originalPriceDisplay.style.display = 'none';
+  }
+  
+  currentStock = getStockQuantity(btn);
 }
 
 // Handle variant selection
@@ -1516,24 +1565,7 @@ variantBtns.forEach((btn) => {
     this.classList.add("active");
 
     // Update selected variant data
-    selectedSpecId = this.dataset.specId;
-
-    // Get the new price from the selected variant
-    const newSalePrice = this.querySelector(".sale-price").textContent;
-    const newRegularPrice =
-      this.querySelector(".regular-price")?.textContent;
-
-    // Update the displayed prices
-    displayPrice.innerHTML = newSalePrice;
-    if (newRegularPrice && originalPriceDisplay) {
-      originalPriceDisplay.innerHTML = newRegularPrice;
-    }
-
-    // Update selected price for cart
-    selectedPrice = parseInt(
-      newSalePrice.replace("₹", "").replace(/,/g, "")
-    );
-    currentStock = getStockQuantity(this);
+    initializeVariantData(this);
 
     // Reset quantity to 1 when changing variants
     quantityInput.value = 1;
@@ -1548,7 +1580,8 @@ function getStockQuantity(btn) {
   ).textContent;
   if (quantityText.includes("Out of Stock")) return 0;
   if (quantityText.includes("Only")) {
-    return parseInt(quantityText.match(/\d+/)[0]);
+    const match = quantityText.match(/\d+/);
+    return match ? parseInt(match[0]) : 0;
   }
   return 999; // Large number for "In stock"
 }
@@ -1561,17 +1594,22 @@ function updateQuantityLimits() {
   if (currentStock === 0) {
     incrementBtn.disabled = true;
     addToCartBtn.disabled = true;
+    addToCartBtn.classList.add('disabled');
   } else {
     incrementBtn.disabled = currentVal >= Math.min(5, currentStock);
     addToCartBtn.disabled = false;
+    addToCartBtn.classList.remove('disabled');
   }
   
   // Update decrement button state
   decrementBtn.disabled = currentVal <= 1;
 }
 
-// Quantity input validation
-quantityInput.addEventListener("change", function () {
+// Quantity input validation - this handler is likely running twice, causing double increments
+// Remove the change event to prevent duplicate handling
+quantityInput.removeEventListener("change", quantityChangeHandler);
+
+function quantityChangeHandler() {
   let value = parseInt(this.value);
 
   // Handle invalid input
@@ -1606,18 +1644,27 @@ quantityInput.addEventListener("change", function () {
 
   this.value = value;
   updateQuantityLimits();
-});
+}
 
-// Increment button - FIXED INCREMENT ISSUE
-incrementBtn.addEventListener("click", function (e) {
-  // Prevent default button behavior to avoid any conflicts
+// Add the change event listener once
+quantityInput.addEventListener("change", quantityChangeHandler);
+
+// Remove any existing click listeners to prevent duplicates
+const oldIncrementBtn = incrementBtn.cloneNode(true);
+incrementBtn.parentNode.replaceChild(oldIncrementBtn, incrementBtn);
+const newIncrementBtn = oldIncrementBtn;
+
+// Increment button - Fixed to prevent double increments
+newIncrementBtn.addEventListener("click", function (e) {
+  // Prevent default button behavior
   e.preventDefault();
+  e.stopPropagation();
   
   let currentVal = parseInt(quantityInput.value);
   const maxAllowed = Math.min(5, currentStock);
   
   if (currentVal < maxAllowed) {
-    // Set the specific value instead of incrementing which could lead to double increments
+    // Set a specific value instead of incrementing to avoid possible double increments
     quantityInput.value = currentVal + 0;
     updateQuantityLimits();
   } else if (currentStock < 5) {
@@ -1633,14 +1680,19 @@ incrementBtn.addEventListener("click", function (e) {
   }
 });
 
+// Remove any existing click listeners to prevent duplicates
+const oldDecrementBtn = decrementBtn.cloneNode(true);
+decrementBtn.parentNode.replaceChild(oldDecrementBtn, decrementBtn);
+const newDecrementBtn = oldDecrementBtn;
+
 // Decrement button
-decrementBtn.addEventListener("click", function (e) {
+newDecrementBtn.addEventListener("click", function (e) {
   // Prevent default button behavior
   e.preventDefault();
+  e.stopPropagation();
   
   let currentVal = parseInt(quantityInput.value);
   if (currentVal > 1) {
-    // Set specific value instead of decrementing
     quantityInput.value = currentVal - 1;
     updateQuantityLimits();
   } else {
@@ -1651,8 +1703,16 @@ decrementBtn.addEventListener("click", function (e) {
   }
 });
 
+// Remove any existing click listeners to prevent duplicates
+const oldAddToCartBtn = addToCartBtn.cloneNode(true);
+addToCartBtn.parentNode.replaceChild(oldAddToCartBtn, addToCartBtn);
+const newAddToCartBtn = oldAddToCartBtn;
+
 // Add to cart functionality
-addToCartBtn.addEventListener("click", async function () {
+newAddToCartBtn.addEventListener("click", async function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
   try {
     // Check if a variant is selected
     if (!selectedSpecId) {
@@ -1700,6 +1760,16 @@ addToCartBtn.addEventListener("click", async function () {
       return;
     }
 
+    console.log("Sending cart request with data:", {
+      selectedSpecId,
+      quantity,
+      salePrice: selectedSalePrice,
+      regularPrice: selectedRegularPrice,
+      discountPrice: selectedDiscountPrice,
+      productId,
+      appliedOfferId
+    });
+
     const response = await fetch("/addToCart", {
       method: "POST",
       headers: {
@@ -1708,13 +1778,19 @@ addToCartBtn.addEventListener("click", async function () {
       body: JSON.stringify({
         selectedSpecId: selectedSpecId,
         quantity: quantity,
-        price: selectedPrice,
+        salePrice: selectedSalePrice,
+        regularPrice: selectedRegularPrice,
+        discountPrice: selectedDiscountPrice,
         productId: productId,
+        appliedOfferId: appliedOfferId
       }),
     });
 
+    console.log("Response status:", response.status);
+
     if (response.ok) {
       const data = await response.json();
+      console.log("Success response:", data);
       Swal.fire({
         icon: "success",
         title: "Success",

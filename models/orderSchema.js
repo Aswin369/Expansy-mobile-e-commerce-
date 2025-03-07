@@ -36,8 +36,7 @@ const orderSchema = new mongoose.Schema({
         },
         offerId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Offer",
-            default: null
+            ref: "Offer"
       },
     }],
     status: { 
@@ -68,14 +67,9 @@ const orderSchema = new mongoose.Schema({
         enum: ['pending', 'paid', 'failed','success'], 
         default: 'pending' 
     },
-    razorpayOrderId: { 
-        type: String 
-    },
-    razorpayPaymentId: { 
-        type: String 
-    },
-    razorpaySignature: { 
-        type: String 
+    offerAndCouponAmount:{
+        type:Number,
+        default:0
     },
     returnReason: {
         type: String,

@@ -530,7 +530,7 @@
 								</td>
 								
 								<td class="column-2"><%= item.productId?.productName || 'N/A' %></td>
-								<td class="column-3">₹<%= item.price?.toLocaleString() %></td>
+								<td class="column-3">₹<%= item.unitPrice?.toLocaleString() %></td>
 								<input type="hidden" id="totalStockOfThisVariant" value="<%= item.specification.quantity %>">
 								<input type="hidden" id="userSelectedQuatity" value="<%= item.quantity%>">
 								<input type="hidden" id="cartId" value="<%= cartData._id%>">
@@ -547,6 +547,7 @@
 									</div>
 								</td>
 								<td class="column-5">₹<%= item.totalPrice?.toLocaleString() %></td>
+
 								<td class="column-6">
 									<button class="btn-delete-item" data-product-id="<%= item._id %>">
 										<i class="zmdi zmdi-delete"></i>

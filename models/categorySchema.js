@@ -16,8 +16,9 @@ const categorySchema = new mongoose.Schema({
         default: true
     },
     categoryOffer: {
-        type: Number,
-        default: 0
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Offer",
+        required:false
     },
     image: {
         type:String
