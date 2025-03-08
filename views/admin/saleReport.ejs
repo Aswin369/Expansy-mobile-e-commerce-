@@ -478,7 +478,7 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
                                                 <h4 class="card-title mb-2">Total Order</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0"><%= countOfOrder%></p>
+                                                <p class="text-muted fw-medium fs-22 mb-0"><%= totalOrders%></p>
                                             </div>
                                             <div>
                                                 <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -495,7 +495,7 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
                                                 <h4 class="card-title mb-2">Order Cancel</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0">241</p>
+                                                <p class="text-muted fw-medium fs-22 mb-0"><%= totalCancelled%></p>
                                             </div>
                                             <div>
                                                 <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -512,7 +512,7 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
                                                 <h4 class="card-title mb-2">Order Pending</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0">608</p>
+                                                <p class="text-muted fw-medium fs-22 mb-0"><%= totalPending%></p>
                                             </div>
                                             <div>
                                                 <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -529,7 +529,7 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
                                                 <h4 class="card-title mb-2">Order Success</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0">200</p>
+                                                <p class="text-muted fw-medium fs-22 mb-0"><%= totalSuccess%></p>
                                             </div>
                                             <div>
                                                 <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -546,7 +546,7 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
                                                 <h4 class="card-title mb-2">Total Sales</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0">200</p>
+                                                <p class="text-muted fw-medium fs-22 mb-0"><%= totalSale%></p>
                                             </div>
                                             <div>
                                                 <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -563,7 +563,7 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
                                                 <h4 class="card-title mb-2">Total Discounts</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0">200</p>
+                                                <p class="text-muted fw-medium fs-22 mb-0"><%= %></p>
                                             </div>
                                             <div>
                                                 <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -639,18 +639,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            #583488/80
-                                                        </td>
-                                                        <td>
-                                                            <a href="#!" class="link-primary fw-medium">Gail C. Anderson</a>
-                                                        </td>
-                                                        <td>Apr 23, 2024</td>
-                                                        <td>$1,230.00</td>
-                                                        <td><span class="badge bg-light text-dark px-2 py-1 fs-13">Unpaid</span></td>
-                                                        <td><span class="badge border border-secondary text-secondary px-2 py-1 fs-13">Draft</span></td>
-                                                    </tr>
+                                                   
                                                 </tbody>
                                             </table>
                                         </div>
@@ -691,6 +680,248 @@
 
      <!-- App Javascript (Require in all Page) -->
      <script src="/assets/js/app.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Get references to the DOM elements
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    const filterBtn = document.getElementById('filterBtn');
+    const downloadExcelBtn = document.getElementById('downloadExcel');
+    
+    // Add event listener to the filter button
+    filterBtn.addEventListener('click', function() {
+        // Get the selected date values
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+        
+        // Validate dates
+        if (!startDate || !endDate) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Please select both start and end dates',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        // Check if start date is before end date
+        if (new Date(startDate) > new Date(endDate)) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Start date cannot be after end date',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        // Prepare data to send to backend
+        const filterData = {
+            startDate: startDate,
+            endDate: endDate
+        };
+        
+        // Send data to backend using fetch API
+        sendFilterToBackend(filterData);
+    });
+    
+    // Function to send filter data to backend
+    function sendFilterToBackend(filterData) {
+        console.log('Sending filter data to backend:', filterData);
+        
+        // Show loading message
+        Swal.fire({
+            title: 'Filtering...',
+            text: 'Please wait while we process your request',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Use the correct endpoint
+        fetch('/admin/saleReportFilter', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(filterData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            
+            // Check if the response was successful
+            if (data.success) {
+                // Close loading message and show success
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Filter applied successfully',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+                
+                // Update the UI with filtered data - pass orders array from response
+                updateDataTable(data.orders);
+            } else {
+                throw new Error(data.message || 'Failed to get order data');
+            }
+        })
+        .catch(error => {
+            console.error('Error sending filter data:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Error applying filter. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
+    
+    // Function to update the data table with filtered results
+    function updateDataTable(orders) {
+        const tableBody = document.querySelector('.table tbody');
+        
+        // Clear existing table rows
+        tableBody.innerHTML = '';
+        
+        // Check if we have data to display
+        if (!orders || orders.length === 0) {
+            // Add a "no data" row
+            const noDataRow = document.createElement('tr');
+            noDataRow.innerHTML = `
+                <td colspan="6" class="text-center">No orders found for the selected date range</td>
+            `;
+            tableBody.appendChild(noDataRow);
+            return;
+        }
+        
+        // Format date function
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        
+        // Get payment status badge
+        function getPaymentStatusBadge(status) {
+            let badgeClass = '';
+            switch(status.toLowerCase()) {
+                case 'paid':
+                    badgeClass = 'bg-success';
+                    break;
+                case 'pending':
+                    badgeClass = 'bg-light text-dark';
+                    break;
+                case 'failed':
+                    badgeClass = 'bg-danger';
+                    break;
+                default:
+                    badgeClass = 'bg-light text-dark';
+            }
+            return `<span class="badge ${badgeClass} px-2 py-1 fs-13">${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
+        }
+        
+        // Get order status badge
+        function getOrderStatusBadge(status) {
+            let badgeClass = '';
+            switch(status.toLowerCase()) {
+                case 'delivered':
+                    badgeClass = 'border-success text-success';
+                    break;
+                case 'shipped':
+                    badgeClass = 'border-info text-info';
+                    break;
+                case 'pending':
+                    badgeClass = 'border-warning text-warning';
+                    break;
+                case 'cancelled':
+                    badgeClass = 'border-danger text-danger';
+                    break;
+                case 'draft':
+                    badgeClass = 'border-secondary text-secondary';
+                    break;
+                default:
+                    badgeClass = 'border-secondary text-secondary';
+            }
+            return `<span class="badge border ${badgeClass} px-2 py-1 fs-13">${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
+        }
+        
+        // Loop through orders and add them to the table
+        orders.forEach(order => {
+            const row = document.createElement('tr');
+            
+            // Format the currency
+            const formattedAmount = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(order.payableAmount);
+            
+            row.innerHTML = `
+                <td>${order.orderId}</td>
+                <td><a href="#!" class="link-primary fw-medium">${order.userId ? order.userId.name : 'Unknown'}</a></td>
+                <td>${formatDate(order.createdAt)}</td>
+                <td>${formattedAmount}</td>
+                <td>${getPaymentStatusBadge(order.paymentStatus)}</td>
+                <td>${getOrderStatusBadge(order.status)}</td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+    }
+    
+    // Event listener for Excel download button
+    downloadExcelBtn.addEventListener('click', function() {
+        downloadExcel();
+    });
+    
+    // Function to handle Excel download with current filter params
+    function downloadExcel() {
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+        
+        // Validate dates for download
+        if (!startDate || !endDate) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Please select both start and end dates before exporting',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        // Build query parameters
+        let queryParams = `?startDate=${startDate}&endDate=${endDate}`;
+        
+        // Show loading message
+        Swal.fire({
+            title: 'Generating Excel...',
+            text: 'Please wait while we prepare your download',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Redirect to download endpoint
+        window.location.href = `/saleReportExcel${queryParams}`;
+        
+        // Close the loading dialog after a short delay
+        setTimeout(() => {
+            Swal.close();
+        }, 2000);
+    }
+});
+     </script>
 
 </body>
 

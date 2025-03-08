@@ -86,4 +86,5 @@ router.get("/editOffer/:id",adminAuth,offerController.getEditOffer)
 router.post("/editOffer",adminAuth, offerController.editOffer)
 // Sale report management
 router.get("/getSaleReportPage",adminAuth,saleReportController.getSaleReport)
+router.post("/saleReportFilter",adminAuth,saleReportController.saleReportFilter)
 module.exports = router

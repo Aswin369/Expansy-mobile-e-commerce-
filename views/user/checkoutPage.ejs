@@ -429,9 +429,12 @@
                     </td>
                     <td class="column-2"><%= item.productId.productName %></td>
                     <input type="hidden" value="<%= item.productId._id%>" />
-
+                    
+                    <input type="hidden" id="discountPriceforThisProduct" value="<%= item.discountPriceforThisProduct%>">
+                    console.log("<%= item.discountPriceforThisProduct%>")
+                    <input type="hidden" id="discountId" value="<%= item.offerApplied%>">
                     <td class="column-3"><%= item.quantity %></td>
-                    <td class="column-4">$ <%= item.price %></td>
+                    <td class="column-4">$ <%= item.unitPrice %></td>
                     <td class="column-5">$ <%= item.totalPrice %></td>
                   </tr>
                   <% }); %>
@@ -621,6 +624,8 @@
                       </label>
                     </div>
                   </div>
+
+                  
                 </div>
               </div>
 
@@ -810,485 +815,531 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // Initialize variables
-        let cartItems = [];
-        let subtotal = 0;
-        let discount = 0.0; // Fixed discount amount from your HTML
-        let totalAmount = 0;
+  // ========== INITIALIZE VARIABLES ==========
+  let cartItems = [];
+  let subtotal = 0;
+  let discount = 0.0;
+  let originalDiscount = 0.0;
+  let couponDiscount = 0.0;
+  let totalAmount = 0;
+  let appliedCouponId = null;
+  let appliedCouponCode = null;
 
-        // Get DOM elements
-        const subtotalElement = document.querySelector(
-          ".flex-w.flex-t.bor12.p-b-13 .size-209 .mtext-110"
-        );
-        const totalElement = document.querySelector(
-          ".flex-w.flex-t.p-t-27.p-b-33 .size-209 .mtext-110"
-        );
-        const placeOrderButton = document.querySelector(
-          "button.flex-c-m.stext-101.cl0.size-116"
-        );
+  // ========== CACHE DOM ELEMENTS ==========
+  const subtotalElement = document.querySelector(".flex-w.flex-t.bor12.p-b-13 .size-209 .mtext-110");
+  const totalElement = document.querySelector(".flex-w.flex-t.p-t-27.p-b-33 .size-209 .mtext-110");
+  const discountValueElement = document.getElementById("dicountVal");
+  const couponInput = document.getElementById("couponInput");
+  const applyCouponBtn = document.getElementById("applyCoupon");
+  const cancelCouponBtn = document.getElementById("cancelCoupon");
+  const placeOrderButton = document.querySelector("button.flex-c-m.stext-101.cl0.size-116");
+  const cartIdForApplyCoupon = document.getElementById("cartIdForApplyCoupon").value;
 
-        const dicountVal = document.getElementById("dicountVal")
-        // Function to calculate totals
-        function calculateTotals() {
-          // Get all cart items
-          const itemRows = document.querySelectorAll(".table_row");
-          subtotal = 0;
-          cartItems = [];
-
-          itemRows.forEach((row) => {
-            // Get the hidden product ID field
-            const productIdInput = row.querySelector('input[type="hidden"]');
-            if (!productIdInput) {
-              console.error("Product ID input not found for a cart item");
-              return; // Skip this item
-            }
-            const productId = productIdInput.value;
-
-            const quantityElement = row.querySelector(".column-3");
-            const priceElement = row.querySelector(".column-4");
-            const totalPriceElement = row.querySelector(".column-5");
-
-            if (!quantityElement || !priceElement || !totalPriceElement) {
-              console.error("Required element missing for cart item");
-              return; // Skip this item
-            }
-
-            const quantity = parseInt(quantityElement.textContent);
-            const unitPrice = parseFloat(
-              priceElement.textContent.replace("$", "").trim()
-            );
-            const totalPrice = parseFloat(
-              totalPriceElement.textContent.replace("$", "").trim()
-            );
-
-            subtotal += totalPrice;
-
-            // Store item data for submission
-            const productNameElement = row.querySelector(".column-2");
-            const productName = productNameElement
-              ? productNameElement.textContent.trim()
-              : "Unknown Product";
-
-            cartItems.push({
-              productId,
-              productName,
-              quantity,
-              price: unitPrice,
-              totalPrice,
-            });
-          });
-
-          // Calculate total after discount
-          totalAmount = subtotal - discount;
-
-          // Update DOM elements
-          if (subtotalElement) {
-            subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
-          }
-          if (totalElement) {
-            totalElement.textContent = `₹${totalAmount.toFixed(2)}`;
-          }
-          if(discount>0){
-            dicountVal.textContent = `₹${discount.toFixed(2)}`
-          }
-
-          // Update payment options based on total amount
-          updatePaymentOptions();
-        }
-
-        // Function to update payment options based on total amount
-        function updatePaymentOptions() {
-          const codOption = document.getElementById("payment1");
-          const paymentRestriction = document.getElementById(
-            "payment-restriction"
-          );
-
-          if (codOption && paymentRestriction) {
-            if (totalAmount > 5000) {
-              paymentRestriction.style.display = "block";
-              codOption.disabled = true;
-              document.getElementById("payment2").checked = true;
-            } else {
-              paymentRestriction.style.display = "none";
-              codOption.disabled = false;
-            }
-          }
-        }
-
-        // Initialize totals on page load
-        calculateTotals();
-
-        // Utility function for showing alert
-        function showAlert(title, text, icon, buttonText) {
-          return Swal.fire({
-            title: title,
-            text: text,
-            icon: icon,
-            confirmButtonText: buttonText || "OK",
-          });
-        }
-
-        // Function to submit the order
-        function submitOrder(orderData) {
-          fetch("/placeOrder", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(orderData),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                return response.json().then((data) => {
-                  throw new Error(
-                    data.message || "Network response was not ok"
-                  );
-                });
-              }
-              return response.json();
-            })
-            .then((data) => {
-              console.log(data);
-              Swal.fire({
-                title: "Order Placed Successfully!",
-                text: `Your order ID is ${data.orderId}. Thank you for shopping with us!`,
-                icon: "success",
-                confirmButtonText: "Continue",
-              })
-
-              let orderId = data.orderId
-              let paymentMethod = orderData.paymentMethod
-            if (paymentMethod === "ONLINE") {
-              fetch("/createRazorpayOrder", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ amount: totalAmount }),
-              })
-                .then((response) => {
-                  if (!response.ok) {
-                    return response.json().then((data) => {
-                      throw new Error(
-                        data.message || "Failed to create payment order"
-                      );
-                    });
-                  }
-                  return response.json();
-                })
-                .then((data) => {
-                  console.log(data);
-                  // Initialize Razorpay checkout
-                  const options = {
-                    key: "rzp_test_Ar7OJGh05M40uW",
-                    amount: data.amount * 100,
-                    currency: data.currency || "INR",
-                    name: "Your Store Name",
-                    description: "Purchase Payment",
-                    order_id: data.id,
-                    handler: function (response) {
-                      // Add payment details to orderData
-                      console.log(response);
-                      orderData.razorpayPaymentId =
-                        response.razorpay_payment_id;
-                      orderData.razorpayOrderId = response.razorpay_order_id;
-                      orderData.razorpaySignature = response.razorpay_signature;
-
-                      // Verify payment signature before submitting order
-                      fetch("/verifyPayment", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          razorpayOrderId: response.razorpay_order_id,
-                          razorpayPaymentId: response.razorpay_payment_id,
-                          razorpaySignature: response.razorpay_signature,
-                          orderId: orderId,
-                        }),
-                      })
-                        .then((response) => response.json())
-                        .then((data) => {
-                          if (data) {
-                            window.location.href = "/ordersuccess";
-                            // Submit the order with payment details
-                            //  submitOrder(orderData);
-                          } else {
-                            showAlert(
-                              "Payment Verification Failed",
-                              "Your payment could not be verified. Please contact support.",
-                              "error"
-                            );
-                          }
-                        })
-                        .catch((error) => {
-                          console.error("Payment verification error:", error);
-                          showAlert(
-                            "Error",
-                            "There was an error verifying your payment. Please contact support.",
-                            "error"
-                          );
-                        });
-                    },
-                    prefill: {
-                      name: data.customerName || "",
-                      email: data.customerEmail || "",
-                      contact: data.customerPhone || "",
-                    },
-                    theme: {
-                      color: "#3399cc",
-                    },
-                    modal: {
-                      ondismiss: function () {
-                        showAlert(
-                          "Payment Cancelled",
-                          "Your payment process was cancelled. Please try again.",
-                          "info"
-                        );
-                      },
-                    },
-                  };
-
-                  // Make sure Razorpay is properly loaded
-                  if (typeof Razorpay === "undefined") {
-                    showAlert(
-                      "Payment Error",
-                      "Payment gateway is not loaded properly. Please refresh the page and try again.",
-                      "error"
-                    );
-                    return;
-                  }
-
-                  try {
-                    const razorpayCheckout = new Razorpay(options);
-                    razorpayCheckout.open();
-                  } catch (err) {
-                    console.error("Razorpay initialization error:", err);
-                    showAlert(
-                      "Payment Error",
-                      "Failed to initialize payment gateway. Please try again later.",
-                      "error"
-                    );
-                  }
-                })
-                .catch((error) => {
-                  showAlert(
-                    "Error",
-                    error.message ||
-                      "There was an error creating your payment. Please try again.",
-                    "error"
-                  );
-                  console.error("Error:", error);
-                });
-            } else {
-              window.location.href = "/ordersuccess";
-            }
-
-            })
-            .catch((error) => {
-              showAlert(
-                "Error",
-                error.message ||
-                  "There was an error placing your order. Please try again.",
-                "error"
-              );
-              console.error("Error:", error);
-            });
-        }
-
-        // Handle coupon application
-        const couponInput = document.getElementById("couponInput")
-        const applyCouponButton = document.getElementById("applyCoupon")
-        const cartId = document.getElementById("cartIdForApplyCoupon").value
-        const cancelCouponButton = document.getElementById("cancelCoupon");
-        if (applyCouponButton && couponInput) {
-          applyCouponButton.addEventListener("click", function () {
-            const couponCode = couponInput.value.trim();
-            if (couponCode) {
-              // You could implement coupon validation logic here
-              // For now, we'll just show an alert
-              fetch("/applyCoupon", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ couponCode, cartId }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  if (data.success) {
-                    discount = data.disCountAmount || 0;
-                    
-                    showAlert(
-                      "Coupon Applied!",
-                      `Coupon "${couponCode}" has been applied.`,
-                      "success",
-                      "Continue"
-                    );
-                    calculateTotals();
-                  } else {
-                    showAlert(
-                      "Invalid Coupon",
-                      data.message || "The coupon code is invalid or expired.",
-                      "warning"
-                    );
-                  }
-                })
-                .catch((error) => {
-                  console.error("Error applying coupon:", error);
-                  showAlert(
-                    "Error",
-                    "There was an error applying the coupon. Please try again.",
-                    "error"
-                  );
-                });
-            } else {
-              showAlert(
-                "Empty Coupon",
-                "Please enter a coupon code.",
-                "warning"
-              );
-            }
-          });
-        }
-        if (cancelCouponButton) {
-  cancelCouponButton.addEventListener("click", function () {
-    couponInput.value = ""; // Clear input field
-    discount = 0; // Reset discount
-    dicountVal.textContent = `₹${discount.toFixed(2)}`
-    calculateTotals(); // Recalculate total price
-
-    showAlert("Coupon Removed", "The applied coupon has been canceled.", "info");
+  // Get all available coupon elements
+  const couponElements = document.querySelectorAll('[id^="coupon-"]');
+  
+  // Check if any product has a discount already applied
+  const discountPriceElements = document.querySelectorAll('#discountPriceforThisProduct');
+  const discountIdElements = document.querySelectorAll('#discountId');
+  
+  // ========== CALCULATE INITIAL PRODUCT DISCOUNTS ==========
+  discountPriceElements.forEach(element => {
+    if (element.value && !isNaN(parseFloat(element.value))) {
+      originalDiscount += parseFloat(element.value);
+    }
   });
-}
+  
+  // Set initial discount value
+  discount = originalDiscount;
+  if (originalDiscount > 0) {
+    discountValueElement.textContent = `₹${originalDiscount.toFixed(2)}`;
+  } else {
+    discountValueElement.textContent = `₹0.00`;
+  }
 
-        // Form submission
-        if (placeOrderButton) {
-          placeOrderButton.addEventListener("click", async function (e) {
-            e.preventDefault();
+  // ========== UTILITY FUNCTIONS ==========
+  // Show SweetAlert
+  function showAlert(title, text, icon, buttonText) {
+    return Swal.fire({
+      title: title,
+      text: text,
+      icon: icon,
+      confirmButtonText: buttonText || "OK",
+    });
+  }
 
-            // Check if cart is empty
-            if (cartItems.length === 0) {
-              showAlert(
-                "Empty Cart",
-                "Your cart is empty. Please add items to your cart before placing an order.",
-                "warning"
-              );
-              return;
-            }
+  // ========== CALCULATE TOTALS FUNCTION ==========
+  function calculateTotals() {
+    // Get all cart items
+    const itemRows = document.querySelectorAll(".table_row");
+    subtotal = 0;
+    cartItems = [];
 
-            // Get selected address
-            const selectedAddress = document.querySelector(
-              'input[name="address"]:checked'
-            );
-            if (!selectedAddress) {
-              showAlert(
-                "Address Required",
-                "Please select a delivery address.",
-                "error"
-              );
-              return;
-            }
+    itemRows.forEach((row) => {
+      // Get the hidden product ID field
+      const productIdInput = row.querySelector('input[type="hidden"]');
+      if (!productIdInput) {
+        console.error("Product ID input not found for a cart item");
+        return; // Skip this item
+      }
+      const productId = productIdInput.value;
 
-            // Get selected payment method
-            const paymentMethodRadio = document.querySelector(
-              'input[name="payment"]:checked'
-            );
-            if (!paymentMethodRadio) {
-              showAlert(
-                "Payment Required",
-                "Please select a payment method.",
-                "error"
-              );
-              return;
-            }
+      const quantityElement = row.querySelector(".column-3");
+      const priceElement = row.querySelector(".column-4");
+      const totalPriceElement = row.querySelector(".column-5");
 
-            const paymentMethod =
-              paymentMethodRadio.id === "payment1" ? "cod" : "ONLINE";
+      console.log("priceElement", priceElement)
+      console.log("totalPriceElement", totalPriceElement)
 
-            // Force online payment for orders over ₹5,000
-            if (totalAmount > 5000 && paymentMethod === "cod") {
-              showAlert(
-                "Payment Method",
-                "Orders above ₹5,000 require online payment. Please select Razorpay payment option.",
-                "warning"
-              );
-              return;
-            }
+      if (!quantityElement || !priceElement || !totalPriceElement) {
+        console.error("Required element missing for cart item");
+        return; // Skip this item
+      }
 
-            // Prepare data for submission
-            const orderData = {
-              deliveryAddressId: selectedAddress.value,
-              totalAmount: subtotal,
-              payableAmount: totalAmount,
-              paymentMethod: paymentMethod,
-              items: cartItems,
-            };
-            let orderId = await submitOrder(orderData,paymentMethod);
+      const quantity = parseInt(quantityElement.textContent);
+      const unitPrice = parseFloat(
+        priceElement.textContent.replace("$", "").replace("₹", "").trim()
+      );
+      const totalPrice = parseFloat(
+        totalPriceElement.textContent.replace("$", "").replace("₹", "").trim()
+      );
 
-          });
-        }
+      subtotal += totalPrice;
+      console.log("unitPrice", unitPrice)
+      console.log("quantity", quantity);
+      
+      // Store item data for submission
+      const productNameElement = row.querySelector(".column-2");
+      const productName = productNameElement
+        ? productNameElement.textContent.trim()
+        : "Unknown Product";
 
-        // Quantity change event listeners
-        const updateQuantityButtons =
-          document.querySelectorAll(".update-qty-btn");
-        if (updateQuantityButtons.length > 0) {
-          updateQuantityButtons.forEach((button) => {
-            button.addEventListener("click", function () {
-              const row = this.closest(".table_row");
-              const productId = row.querySelector('input[type="hidden"]').value;
-              const quantityElement = row.querySelector(".column-3");
-              const quantity = parseInt(quantityElement.textContent);
-
-              // Update quantity on server
-              fetch("/updateCart", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ productId, quantity }),
-              })
-                .then((response) => {
-                  if (!response.ok) {
-                    throw new Error("Failed to update quantity");
-                  }
-                  return response.json();
-                })
-                .then((data) => {
-                  // Update UI with new values
-                  const priceElement = row.querySelector(".column-4");
-                  const totalPriceElement = row.querySelector(".column-5");
-                  const unitPrice = parseFloat(
-                    priceElement.textContent.replace("$", "").trim()
-                  );
-
-                  totalPriceElement.textContent = `$${(
-                    unitPrice * quantity
-                  ).toFixed(2)}`;
-
-                  // Recalculate cart totals
-                  calculateTotals();
-                })
-                .catch((error) => {
-                  console.error("Error updating quantity:", error);
-                  showAlert(
-                    "Error",
-                    "Failed to update quantity. Please try again.",
-                    "error"
-                  );
-                });
-            });
-          });
-        }
+      cartItems.push({
+        productId,
+        productName,
+        quantity,
+        price: unitPrice,
+        totalPrice,
       });
-    </script>
-    <script>
-      $(".js-select2").each(function () {
-        $(this).select2({
-          minimumResultsForSearch: 20,
-          dropdownParent: $(this).next(".dropDownSelect2"),
+    });
+
+    // Calculate total after discount
+    totalAmount = subtotal - discount;
+
+    // Update DOM elements
+    if (subtotalElement) {
+      subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+    }
+    if (totalElement) {
+      totalElement.textContent = `₹${totalAmount.toFixed(2)}`;
+    }
+    if (discountValueElement) {
+      discountValueElement.textContent = `₹${discount.toFixed(2)}`;
+    }
+
+    // Update payment options based on total amount
+    updatePaymentOptions();
+  }
+
+  // ========== UPDATE PAYMENT OPTIONS ==========
+  function updatePaymentOptions() {
+    const codOption = document.getElementById("payment1");
+    const paymentRestriction = document.getElementById("payment-restriction");
+
+    if (codOption && paymentRestriction) {
+      if (totalAmount > 5000) {
+        paymentRestriction.style.display = "block";
+        codOption.disabled = true;
+        document.getElementById("payment2").checked = true;
+      } else {
+        paymentRestriction.style.display = "none";
+        codOption.disabled = false;
+      }
+    }
+  }
+
+  // ========== HANDLE COUPON CLICK EVENTS ==========
+  couponElements.forEach(couponElement => {
+    couponElement.addEventListener("click", function() {
+      const couponText = this.textContent.trim();
+      const codeMatch = couponText.match(/Coupon Code: (.*)/);
+      
+      if (codeMatch && codeMatch[1]) {
+        couponInput.value = codeMatch[1].trim();
+        
+        // Get coupon ID
+        const couponIdElement = this.querySelector('#couponId');
+        if (couponIdElement) {
+          appliedCouponId = couponIdElement.value;
+        }
+      }
+    });
+  });
+
+  // ========== APPLY COUPON BUTTON ==========
+  if (applyCouponBtn && couponInput) {
+    applyCouponBtn.addEventListener("click", function() {
+      const couponCode = couponInput.value.trim();
+      
+      if (!couponCode) {
+        showAlert("Empty Coupon", "Please enter a coupon code.", "warning");
+        return;
+      }
+      
+      fetch("/applyCoupon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          couponCode, 
+          cartId: cartIdForApplyCoupon,
+          couponId: appliedCouponId
+        }),
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          // Make input read-only when coupon is applied
+          couponInput.readOnly = true;
+          couponInput.classList.add("bg-light");
+          
+          // Store applied coupon details
+          appliedCouponCode = couponCode;
+          if (data.couponId) {
+            appliedCouponId = data.couponId;
+          }
+          
+          // Update discount amount
+          couponDiscount = parseFloat(data.couponDiscountAmount) || 0;
+          discount = originalDiscount + couponDiscount;
+          console.log("couponDiscount", couponDiscount)
+          // Recalculate totals
+          calculateTotals();
+          
+          showAlert(
+            "Coupon Applied!",
+            `Coupon "${couponCode}" has been applied.`,
+            "success",
+            "Continue"
+          );
+        } else {
+          showAlert(
+            "Invalid Coupon",
+            data.message || "The coupon code is invalid or expired.",
+            "warning"
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error applying coupon:", error);
+        showAlert(
+          "Error",
+          "There was an error applying the coupon. Please try again.",
+          "error"
+        );
+      });
+    });
+  }
+
+  // ========== CANCEL COUPON BUTTON ==========
+  if (cancelCouponBtn) {
+    cancelCouponBtn.addEventListener("click", function() {
+      // Only proceed if a coupon is applied
+      if (couponInput.readOnly) {
+        // Make AJAX request to cancel coupon
+        fetch("/cancelCoupon", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cartId: cartIdForApplyCoupon,
+            couponId: appliedCouponId
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Reset UI elements
+          couponInput.value = "";
+          couponInput.readOnly = false;
+          couponInput.classList.remove("bg-light");
+          
+          // Reset discount values
+          appliedCouponId = null;
+          appliedCouponCode = null;
+          couponDiscount = 0;
+          discount = originalDiscount;
+          
+          // Recalculate totals
+          calculateTotals();
+          
+          showAlert("Coupon Removed", "The applied coupon has been canceled.", "info");
+        })
+        .catch(error => {
+          console.error("Error cancelling coupon:", error);
+          
+          // Still reset UI even if backend fails
+          couponInput.value = "";
+          couponInput.readOnly = false;
+          couponInput.classList.remove("bg-light");
+          
+          // Reset discount values
+          appliedCouponId = null;
+          appliedCouponCode = null;
+          couponDiscount = 0;
+          discount = originalDiscount;
+          
+          // Recalculate totals
+          calculateTotals();
+          
+          showAlert("Coupon Removed", "The applied coupon has been canceled.", "info");
         });
+      } else {
+        // If no coupon is applied, just clear the input
+        couponInput.value = "";
+      }
+    });
+  }
+
+  // ========== PLACE ORDER BUTTON ==========
+  if (placeOrderButton) {
+    placeOrderButton.addEventListener("click", async function(e) {
+      e.preventDefault();
+
+      // Check if cart is empty
+      if (cartItems.length === 0) {
+        showAlert(
+          "Empty Cart",
+          "Your cart is empty. Please add items to your cart before placing an order.",
+          "warning"
+        );
+        return;
+      }
+
+      // Get selected address
+      const selectedAddress = document.querySelector(
+        'input[name="address"]:checked'
+      );
+      if (!selectedAddress) {
+        showAlert(
+          "Address Required",
+          "Please select a delivery address.",
+          "error"
+        );
+        return;
+      }
+
+      // Get selected payment method
+      const paymentMethodRadio = document.querySelector(
+        'input[name="payment"]:checked'
+      );
+      if (!paymentMethodRadio) {
+        showAlert(
+          "Payment Required",
+          "Please select a payment method.",
+          "error"
+        );
+        return;
+      }
+
+      const paymentMethod =
+        paymentMethodRadio.id === "payment1" ? "COD" : "ONLINE";
+
+      // Force online payment for orders over ₹5,000
+      if (totalAmount > 5000 && paymentMethod === "COD") {
+        showAlert(
+          "Payment Method",
+          "Orders above ₹5,000 require online payment. Please select Razorpay payment option.",
+          "warning"
+        );
+        return;
+      }
+
+      // Prepare data for submission
+      const orderData = {
+        deliveryAddressId: selectedAddress.value,
+        totalAmount: subtotal,
+        payableAmount: totalAmount,
+        totalDiscount: discount,
+        originalDiscount: originalDiscount, 
+        couponDiscount: couponDiscount,
+        couponId: appliedCouponId,
+        couponCode: appliedCouponCode,
+        paymentMethod: paymentMethod,
+        items: cartItems,
+      };
+
+      submitOrder(orderData);
+    });
+  }
+
+  // ========== SUBMIT ORDER FUNCTION ==========
+  function submitOrder(orderData) {
+    fetch("/placeOrder", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(orderData),
+    })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((data) => {
+          throw new Error(data.message || "Network response was not ok");
+        });
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      Swal.fire({
+        title: "Order Placed Successfully!",
+        text: `Your order ID is ${data.orderId}. Thank you for shopping with us!`,
+        icon: "success",
+        confirmButtonText: "Continue",
       });
+
+      let orderId = data.orderId;
+      let paymentMethod = orderData.paymentMethod;
+      
+      if (paymentMethod === "ONLINE") {
+        handleOnlinePayment(totalAmount, orderId);
+      } else {
+        window.location.href = `/ordersuccess?order=${orderId}`;
+      }
+    })
+    .catch((error) => {
+      showAlert(
+        "Error",
+        error.message || "There was an error placing your order. Please try again.",
+        "error"
+      );
+      console.error("Error:", error);
+    });
+  }
+
+  // ========== HANDLE ONLINE PAYMENT ==========
+  function handleOnlinePayment(amount, orderId) {
+    fetch("/createRazorpayOrder", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount: amount }),
+    })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((data) => {
+          throw new Error(data.message || "Failed to create payment order");
+        });
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      // Initialize Razorpay checkout
+      const options = {
+        key: "rzp_test_Ar7OJGh05M40uW",
+        amount: data.amount * 100,
+        currency: data.currency || "INR",
+        name: "Your Store Name",
+        description: "Purchase Payment",
+        order_id: data.id,
+        handler: function(response) {
+          // Verify payment signature
+          verifyPayment(response, orderId);
+        },
+        prefill: {
+          name: data.customerName || "",
+          email: data.customerEmail || "",
+          contact: data.customerPhone || "",
+        },
+        theme: {
+          color: "#3399cc",
+        },
+        modal: {
+          ondismiss: function() {
+            showAlert(
+              "Payment Cancelled",
+              "Your payment process was cancelled. Please try again.",
+              "info"
+            );
+          },
+        },
+      };
+
+      // Make sure Razorpay is properly loaded
+      if (typeof Razorpay === "undefined") {
+        showAlert(
+          "Payment Error",
+          "Payment gateway is not loaded properly. Please refresh the page and try again.",
+          "error"
+        );
+        return;
+      }
+
+      try {
+        const razorpayCheckout = new Razorpay(options);
+        razorpayCheckout.open();
+      } catch (err) {
+        console.error("Razorpay initialization error:", err);
+        showAlert(
+          "Payment Error",
+          "Failed to initialize payment gateway. Please try again later.",
+          "error"
+        );
+      }
+    })
+    .catch((error) => {
+      showAlert(
+        "Error",
+        error.message || "There was an error creating your payment. Please try again.",
+        "error"
+      );
+      console.error("Error:", error);
+    });
+  }
+
+  // ========== VERIFY PAYMENT ==========
+  function verifyPayment(response, orderId) {
+    fetch("/verifyPayment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        razorpayOrderId: response.razorpay_order_id,
+        razorpayPaymentId: response.razorpay_payment_id,
+        razorpaySignature: response.razorpay_signature,
+        orderId: orderId,
+      }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data) {
+        window.location.href = `/ordersuccess?order=${orderId}`;
+      } else {
+        showAlert(
+          "Payment Verification Failed",
+          "Your payment could not be verified. Please contact support.",
+          "error"
+        );
+      }
+    })
+    .catch((error) => {
+      console.error("Payment verification error:", error);
+      showAlert(
+        "Error",
+        "There was an error verifying your payment. Please contact support.",
+        "error"
+      );
+    });
+  }
+
+  // Initialize calculations on page load
+  calculateTotals();
+});
     </script>
     <!--===============================================================================================-->
     <script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>

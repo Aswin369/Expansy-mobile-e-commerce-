@@ -30,8 +30,8 @@ const getShoppingCart = async (req, res) => {
 
                 return {
                     ...item.toObject(),
-                    unitPrice: item.unitPrice,   // ✅ Ensure unitPrice is passed
-                    totalPrice: item.totalPrice, // ✅ Ensure totalPrice is passed
+                    unitPrice: item.unitPrice,  
+                    totalPrice: item.totalPrice, 
                     specification
                 };
             })
@@ -51,45 +51,42 @@ const getShoppingCart = async (req, res) => {
 const productAddToCart = async (req, res) => {
     try {
         if (!req.session.user) {
-            return res.status(401).json({ success: false, message: "Login first" });
+            return res.status(401).json({ success: false, message: "Login first" })
         }
 
         const userId = req.session.user;
-        const { productId, quantity, salePrice, discountPrice, selectedSpecId, appliedOfferId } = req.body;
+        const { productId, quantity, salePrice, discountPrice, selectedSpecId, appliedOfferId } = req.body
 
         if (!userId) {
-            return res.status(400).json({ success: false, message: "User not found" });
+            return res.status(400).json({ success: false, message: "User not found" })
         }
 
         if (!productId || !selectedSpecId || quantity <= 0) {
-            return res.status(400).json({ success: false, message: "Invalid product details" });
+            return res.status(400).json({ success: false, message: "Invalid product details" })
         }
 
-        // Check if the product exists
+        
         const productDetail = await Product.findOne({ _id: productId });
         if (!productDetail) {
             return res.status(404).json({ success: false, message: "Product not found" });
         }
 
-        // Check if the selected specification exists
-        const spec = productDetail.specification.find(s => s._id.toString() === selectedSpecId);
+        const spec = productDetail.specification.find(s => s._id.toString() === selectedSpecId)
         if (!spec) {
-            return res.status(404).json({ success: false, message: "Specification not found" });
+            return res.status(404).json({ success: false, message: "Specification not found" })
         }
 
-        const offerApplied = mongoose.Types.ObjectId.isValid(appliedOfferId) ? appliedOfferId : null;
-
+        const offerApplied = mongoose.Types.ObjectId.isValid(appliedOfferId) ? appliedOfferId : null
 
         const availableStock = spec.quantity;
 
-        // Check if the user has a cart
         let userCart = await Cart.findOne({ userId });
 
         console.log("THis is user cart", userCart)
 
-        let existingCartItem = userCart ? userCart.items.find(item => item.specId.toString() === selectedSpecId) : null;
+        let existingCartItem = userCart ? userCart.items.find(item => item.specId.toString() === selectedSpecId) : null
 
-        // Calculate new total quantity
+       
         const currentCartQuantity = existingCartItem ? existingCartItem.quantity : 0;
         const totalQuantity = currentCartQuantity + quantity;
 
@@ -101,11 +98,11 @@ const productAddToCart = async (req, res) => {
 
         if (userCart) {
             if (existingCartItem) {
-                // Update existing cart item quantity and price
+                
                 existingCartItem.quantity += quantity;
                 existingCartItem.totalPrice += totalPrice;
             } else {
-                // Add new product to cart
+              
                 userCart.items.push({
                     productId,
                     specId: selectedSpecId,
@@ -118,7 +115,7 @@ const productAddToCart = async (req, res) => {
             }
             await userCart.save();
         } else {
-            // Create a new cart
+            
             const newCart = new Cart({
                 userId,
                 items: [{
@@ -191,7 +188,7 @@ const updateCart = async (req,res)=>{
     }
 }
 
-// checkout page controller
+
 
 const loadplaceOrder = async (req, res) => {
     try {
@@ -214,8 +211,6 @@ const loadplaceOrder = async (req, res) => {
         
         const validCoupons = await Coupon.find({isActive: true});
         
-
-
         const addressDetails = await Address.findOne({userId:userId})
         console.log("THis is cart details",cartDetails)
         console.log("THis is address details",addressDetails)
@@ -247,52 +242,46 @@ const loadCheckOutPage = async(req,res)=>{
 const addOrderDetails = async (req, res) => {
     try {
         const userId = req.session.user;
-        const { deliveryAddressId, totalAmount, payableAmount, paymentMethod } = req.body;
+        const {deliveryAddressId,totalAmount,payableAmount,totalDiscount,couponId,couponCode,paymentMethod,items} = req.body;
 
         console.log("This is req.body", req.body);
 
-        // Fetch delivery address
-        const addressData = await Address.findOne(
-            { userId: new mongoose.Types.ObjectId(userId), "address._id": new mongoose.Types.ObjectId(deliveryAddressId) },
-            { "address.$": 1 }
-        );
+        const addressData = await Address.findOne({userId:new mongoose.Types.ObjectId(userId),"address._id": new mongoose.Types.ObjectId(deliveryAddressId)},{"address.$":1})
 
         if (!addressData) {
-            return res.status(400).json({ success: false, message: "Invalid delivery address" });
+            return res.status(400).json({success:false,message:"Invalid delivery address"})
         }
 
-        const deliveryAddress = { ...addressData.address[0] };
+        const deliveryAddress = {...addressData.address[0]}
         console.log("User ID:", userId);
         console.log("User address ID:", deliveryAddressId);
 
         
-        const cartDetails = await Cart.findOne({ userId: userId }).populate("items.productId");
-
-        console.log("sdfgsdfgsdfgsdfgsdg",cartDetails)
-
-        if (!cartDetails) {
-            return res.status(400).json({ success: false, message: "Cart not found" });
+        const cartDetails = await Cart.findOne({userId})
+        if (!cartDetails || !cartDetails.items){
+            return res.status(400).json({success:false,message:"Cart is empty"});
         }
 
-        const cartId = cartDetails._id;
-        console.log("Cart ID:", cartId);
+        const orderProducts = items.map((item, index)=>{
+            const cartItem = cartDetails.items.find(cart => cart.productId.toString() === item.productId);
+            if (!cartItem || !cartItem.specId) {
+                throw new Error(`Missing specId for product at index ${index}`);
+            }
 
-        const orderProducts = cartDetails.items.map(item => ({
-            productId: new mongoose.Types.ObjectId(item.productId._id),
-            specId: new mongoose.Types.ObjectId(item.specId),
-            quantity: item.quantity,
-            price: item.price,
-            totalPrice: item.totalPrice,
-            offerId: item.offerApplied ? new mongoose.Types.ObjectId(item.offerApplied) : null, 
-        }));
-        
-        
-        console.log("Final Order Products:", orderProducts);
-        
+            return {
+                productId: new mongoose.Types.ObjectId(item.productId),
+                specId: new mongoose.Types.ObjectId(cartItem.specId),
+                quantity: item.quantity,
+                price: item.price, 
+                totalPrice: item.totalPrice || (item.price * item.quantity),
+            }
+        })
+        const hasUndefinedPrice = orderProducts.some(product => product.price === undefined);
+        if (hasUndefinedPrice) {
+            return res.status(400).json({ success: false, message: "Some products have an undefined price" });
+        }
 
-        console.log("Order Products:", orderProducts);
-
-        // Create new order
+        
         const newOrder = new Order({
             userId,
             products: orderProducts,
@@ -300,35 +289,29 @@ const addOrderDetails = async (req, res) => {
             totalAmount,
             payableAmount,
             paymentMethod: paymentMethod === "ONLINE" ? "razorpay" : paymentMethod,
+            offerAndCouponAmount: totalDiscount || 0,
+            couponId: couponId ? new mongoose.Types.ObjectId(couponId) : null,
+            couponCode: couponCode || null,
         });
 
-        console.log("newOrder: ", newOrder)
+        console.log("newOrder: ", newOrder);
 
         await newOrder.save();
-        await Cart.deleteOne({ _id: cartId });
-
         console.log("New Order ID:", newOrder._id);
+
         res.status(200).json({
             success: true,
             message: "Order placed successfully",
-            orderId: newOrder._id,
+            orderId: newOrder.orderId,
         });
 
         
         for (const item of orderProducts) {
             const { productId, specId, quantity } = item;
             const product = await Product.findOneAndUpdate(
-                {
-                    _id: productId,
-                    "specification._id": specId,
-                },
-                {
-                    $inc: { "specification.$.quantity": -quantity },
-                },
-                {
-                    new: true,
-                    runValidators: true,
-                }
+                { _id: productId, "specification._id": specId },
+                { $inc: { "specification.$.quantity": -quantity } },
+                { new: true, runValidators: true }
             );
 
             if (!product) {
@@ -336,20 +319,26 @@ const addOrderDetails = async (req, res) => {
             }
         }
 
+        await Cart.deleteOne({userId:userId})
+        console.log("kasjdfhkashdfkhask")
     } catch (error) {
         console.error("This error occurred in addOrderDetails", error);
-        res.redirect("/pageerror");
+        res.status(500).json({ success: false, message: error.message });
     }
-};
-
+}
 
 const loadSuccessPage = async(req,res)=>{
     try {
         const userId = req.session.user
+        const {order} = req.query
+
+        console.log(order)
         if(!userId){
             res.redirect("/login")
         }
-        res.render("orderSuccess")
+        res.render("orderSuccess",{
+            order
+        })
     } catch (error) {
         console.error("This error occured in loadSuccess page", error)
         res.redirect("/pageerror")
@@ -364,6 +353,8 @@ const razorpayOrder = async (req,res)=>{
             receipt: 'receipt_' + Math.random().toString(36).substring(7),
         };
 
+        console.log("skajdfhkasjdfhkashdfklh", options)
+
         const order = await razorpay.orders.create(options);
         console.log(order)
         res.status(200).json(order);
@@ -377,6 +368,9 @@ const razorpayOrder = async (req,res)=>{
 const verifiyPayment = async (req,res) =>{
     try {
         const { razorpayOrderId ,razorpayPaymentId,razorpaySignature,orderId} = req.body;
+
+        console.log("aksjdfa",req.body)
+
         console.log(razorpayOrderId ,razorpayPaymentId,razorpaySignature,orderId)
         const sign = razorpayOrderId + '|' + razorpayPaymentId;
         const expectedSign = crypto.createHmac('sha256', "7FaXYkyBxYgWdzIHBWr7ntSa")
@@ -387,7 +381,7 @@ const verifiyPayment = async (req,res) =>{
             const orderData = await Order.findById(orderId)
             orderData.paymentStatus = "success"
             await orderData.save()
-            res.status(200).json({ message: 'Payment verified successfully' });
+            res.status(200).json({ message: 'Payment verified successfully', orderId});
         } else {
             res.status(400).json({ error: 'Invalid payment signature' });
         }
@@ -398,63 +392,77 @@ const verifiyPayment = async (req,res) =>{
 
 } 
 
-const applyCoupon = async (req,res)=>{
+const applyCoupon = async (req, res) => {
     try {
-        console.log("coupon data", req.body)
-        const {couponCode, cartId} = req.body
-        if(!cartId){
-            return res.status(400).json({success:true, message:"CartId is not defined, Please try again"})
+        console.log("Coupon Data Received:", req.body);
+        const { couponCode, cartId } = req.body;
+
+        if (!cartId) {
+            return res.status(400).json({ success: false, message: "CartId is not defined, please try again" });
         }
 
-        let totalCartPrice = 0
-        const cartData = await Cart.findOne({_id:cartId})
-        cartData.items.forEach((val)=>{
-           totalCartPrice += val.price * val.quantity
-        })
-        console.log("first time totalCartPrice", totalCartPrice)
+        let totalCartPrice = 0;
+        let totalDiscount = 0;
 
-        const couponData = await Coupon.findOne({code:couponCode,isActive:true})
+        const cartData = await Cart.findOne({ _id: cartId });
 
-        if(!couponData){
-            return res.status(400).json({success:false, message: "Invalid please try another coupon"})
+        if (!cartData || !cartData.items || cartData.items.length === 0) {
+            return res.status(400).json({ success: false, message: "Cart not found or empty" });
         }
 
-        // const currentDate = new Date()
+        cartData.items.forEach((val) => {
+            totalCartPrice += val.totalPrice
+            totalDiscount += val.discountPriceforThisProduct
+        });
 
-        // if(currentDate < new Date(couponData.startDate) || currentDate > new Date(couponData.expirationDate)){
-        //     return res.status(400).json({success:false, message: "coupon is not valid at this time"})
-        // }
+        console.log("Total Cart Price:", totalCartPrice);
+        console.log("Total Product Discounts:", totalDiscount);
 
-        if(totalCartPrice < couponCode.minDiscountValue){
-            return res.status(400).json({success:false, message: `Coupon is only valid for above ${couponData.minDiscountValue}`})
+        if (isNaN(totalCartPrice) || totalCartPrice === 0) {
+            return res.status(400).json({ success: false, message: "Invalid total cart price" });
         }
 
-        let discountValue = couponData.discountValue
-
-        console.log("discountValue", discountValue)
-
-        let disCountAmount = (totalCartPrice * parseInt(couponData.discountValue)) / 100
-
-        console.log("forst disCountAmount", disCountAmount)
-
-        if(totalCartPrice > couponData.maxDiscountValue){
-            disCountAmount = totalCartPrice / couponData.discountValue
+        const couponData = await Coupon.findOne({ code: couponCode, isActive: true });
+        if (!couponData) {
+            return res.status(400).json({ success: false, message: "Invalid coupon, please try another" });
         }
 
-        const finalPrice = totalCartPrice - disCountAmount
+        let discountValue = Number(couponData.discountValue);
+        if (isNaN(discountValue)) {
+            return res.status(400).json({ success: false, message: "Invalid discount value in coupon" });
+        }
 
-        console.log("totalCartPrice",totalCartPrice)
-        console.log("disCountAmount",disCountAmount)
-        console.log("finalPrice",finalPrice)
+        if (totalCartPrice < couponData.minDiscountValue) {
+            return res.status(400).json({ success: false, message: `Coupon is only valid for purchases above ${couponData.minDiscountValue}` });
+        }
 
-        return res.status(200).json({success:true, message: "Coupon applied successfully", totalCartPrice, disCountAmount, finalPrice})
+        let couponDiscountAmount = ((totalCartPrice - totalDiscount) * discountValue) / 100;
+
+        if (couponDiscountAmount > couponData.maxDiscountValue) {
+            couponDiscountAmount = couponData.maxDiscountValue;
+        }
+
+        const finalPrice = totalCartPrice - totalDiscount - couponDiscountAmount;
+
+        console.log("Coupon Discount Amount:", couponDiscountAmount);
+        console.log("Final Price After All Discounts:", finalPrice);
+
+        return res.status(200).json({
+            success: true,
+            message: "Coupon applied successfully",
+            totalCartPrice,
+            totalDiscount,
+            couponDiscountAmount,
+            finalPrice,
+        });
 
     } catch (error) {
-        console.error("THis error occured in applycoupon", error)
-        res.redirect("/pageerror")
+        console.error("Error in applyCoupon:", error);
+        res.redirect("/pageerror");
     }
-}
- 
+};
+
+
 
 module.exports = {
     getShoppingCart,
