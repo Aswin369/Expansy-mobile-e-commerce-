@@ -247,7 +247,7 @@
 							</li>
 		
 							<li>
-								<a href="/shopPage">Shop</a>
+								<a href="/shop">Shop</a>
 							</li>
 		
 							<li class="label1">
@@ -258,7 +258,7 @@
 								<a href="/">Contact</a>
 							</li>
 							<li>
-								<a href="/profilePage">Profile</a>
+								<a href="/profile">Profile</a>
 							</li>
 							<li>
 								<% if (user) { %>
@@ -540,12 +540,13 @@
 										<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
 											<i class="fs-16 zmdi zmdi-minus"></i>
 										</div>
-										<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product" value="<%= item.quantity %>">
+										<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product" value="<%= item.quantity %>" readonly>
 										<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
 											<i class="fs-16 zmdi zmdi-plus"></i>
 										</div>
 									</div>
 								</td>
+								
 								<td class="column-5">₹<%= item.totalPrice?.toLocaleString() %></td>
 
 								<td class="column-6">
@@ -565,7 +566,7 @@
 						<h2>Your Cart is Empty</h2>
 						<p>Looks like you haven't added anything to your cart yet.<br>
 						   Discover our amazing products and start shopping!</p>
-						<a href="/shopPage" class="shop-now-btn">
+						<a href="/shop" class="shop-now-btn">
 							Start Shopping
 						</a>
 					</div>

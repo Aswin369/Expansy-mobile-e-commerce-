@@ -66,8 +66,7 @@ const getShopPage = async (req, res) => {
 const getProducts = async (req, res) => {
     try {
         let { sort } = req.query;
-
-       
+        console.log("aksjdhfjasgh", req.body)
         let sortOption = {};
         if (sort === "az") {
             sortOption = { productName: 1 }
@@ -76,12 +75,11 @@ const getProducts = async (req, res) => {
         } else if (sort === "new") {
             sortOption = { createdAt: -1 }
         }
-
-     
         let products = await Product.find({ isBlocked: false })
             .populate("category specification.ram specification.storage specification.color")
             .sort(sortOption);
 
+            console.log("sdjfhhasf",products)
         res.status(200).json({ products });
     } catch (error) {
         res.status(500).json({ message: "Server error", error })
@@ -101,12 +99,12 @@ const getFilteredProducts = async (req, res) => {
             filter["specification.salePrice"] = { $gte: Number(req.query.minPrice) }
         }
 
-        
         const products = await Product.find(filter)
             .populate({
                 path: "specification.ram specification.storage specification.color",
                 model: "Variant"
-            });
+            })
+            .sort({ "specification.salePrice": 1 }); // 🔹 Sort by salePrice in Ascending Order
 
         res.status(200).json({ success: true, products })
     } catch (error) {
@@ -114,6 +112,7 @@ const getFilteredProducts = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal Server Error" })
     }
 };
+
 
 
 const getFilteredProductsByCategory = async (req, res) => {

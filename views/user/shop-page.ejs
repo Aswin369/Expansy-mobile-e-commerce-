@@ -59,7 +59,7 @@
 							</li>
 		
 							<li>
-								<a href="/shopPage">Shop</a>
+								<a href="/shop">Shop</a>
 							</li>
 		
 							<li class="label1">
@@ -70,7 +70,7 @@
 								<a href="/">Contact</a>
 							</li>
 							<li>
-								<a href="/profilePage">Profile</a>
+								<a href="/profile">Profile</a>
 							</li>
 							<li>
 								<% if (user) { %>
@@ -369,17 +369,17 @@
 
 							<ul>
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
+									<a href="#" id="a-z" class=" stext-106 trans-04 sortingalphapets" style="color: rgb(170, 170, 170);">
 										aA - zZ
 									</a>
 								</li>
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
+									<a href="#" id="z-a" class=" stext-106 trans-04 sortingalphapets" style="color: rgb(170, 170, 170);">
 										zZ - aA
 									</a>
 								</li>
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
+									<a href="#" id="newArrivals" class=" stext-106 trans-04 sortingalphapets" style="color: rgb(170, 170, 170);">
 										New arrivals
 									</a>
 								</li>
@@ -997,7 +997,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
             const brandQuery = brand === "All" ? "" : `?brand=${brand}`;
 
             try {
-                const response = await fetch(`/shopPage${brandQuery}`, {
+                const response = await fetch(`/shop${brandQuery}`, {
                     headers: { "Accept": "application/json" }
                 });
 
@@ -1082,7 +1082,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
     // Select all sorting links
-    document.querySelectorAll(".filter-link").forEach(link => {
+    document.querySelectorAll(".sortingalphapets").forEach(link => {
         link.addEventListener("click", function (event) {
             event.preventDefault();
 
@@ -1124,6 +1124,7 @@ async function fetchProducts(sortType = "") {
 
 // Function to display products (already present in your script)
 function renderProducts(products) {
+	console.log("kjdfhkjsdfhkajsdf",products)
     const productContainer = document.querySelector(".isotope-grid");
     productContainer.innerHTML = ""; // Clear existing products
 

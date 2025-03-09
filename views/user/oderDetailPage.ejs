@@ -129,7 +129,7 @@
 							</li>
 		
 							<li>
-								<a href="/shopPage">Shop</a>
+								<a href="/shop">Shop</a>
 							</li>
 		
 							<li class="label1">
@@ -140,7 +140,7 @@
 								<a href="/">Contact</a>
 							</li>
 							<li>
-								<a href="/profilePage">Profile</a>
+								<a href="/profile">Profile</a>
 							</li>
 							<li>
 								<% if (user) { %>
@@ -374,18 +374,20 @@
         <div class="container py-5">
             <div class="order-card mb-5">
                 <!-- Order Header -->
-                <div class="order-header d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="fs-30 fw-bold mb-0">Order Details</h1>
-                        <div class="order-status pending-status mt-2"><%= orderData.status%></div>
-                    </div>
-					<input type="hidden" id="OrderIdVal" value="<%= orderData._id%>">
-					<div class="col-md-2 text-end">
-						<button class="cancel-btn" id="cancelOrder">
-							Cancel Order
-						  </button>
+				<div class="order-header d-flex justify-content-between align-items-center">
+					<div>
+						<h1 class="fs-30 fw-bold mb-0">Order Details</h1>
+						<div class="order-status pending-status mt-2"><%= orderData.status %></div>
 					</div>
-                </div>
+					<input type="hidden" id="OrderIdVal" value="<%= orderData._id %>">
+					<div class="col-md-2 text-end">
+						<button class="cancel-btn" id="cancelOrder" 
+							<%= orderData.status === "Cancelled" ? "disabled" : "" %>>
+							Cancel Order
+						</button>
+					</div>
+				</div>
+				
     
                 <!-- Payment Alert -->
                 <div class="payment-alert p-3 m-3 d-flex align-items-center">
@@ -469,16 +471,17 @@
                             <span>Total Amount</span>
                             <span>₹<%= orderData.payableAmount.toLocaleString()%></span>
                         </div>
+						<input type="hidden" id="totalAmountPrice" value="<%= orderData.payableAmount%>">
                     </div>
     
                     <!-- Actions -->
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="/profilePage" class="back-btn">
+                        <a href="/profile" class="back-btn">
                             <i class="bi bi-arrow-left me-1"></i> Back to Orders
                         </a>
-                        <button class="download-btn">
+                        <!-- <button class="download-btn">
                             <i class="bi bi-file-earmark-text me-2"></i>Download Invoice
-                        </button>
+                        </button> -->
                     </div>
                 </div>
             </div>
@@ -685,6 +688,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 	<script>
+		
 		function cancelOrder(productId, orderId) {
 		  Swal.fire({
 			title: 'Are you sure?',
@@ -731,7 +735,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 			  })
 			  .catch(error => {
 				// Don't show error if we successfully redirected
-				if (!window.location.href.includes('/profilePage')) {
+				if (!window.location.href.includes('/profile')) {
 				  console.error('Error:', error);
 				  Swal.fire({
 					title: 'Error!',
@@ -769,36 +773,59 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 		</script>
 
 		<script>
-	document.querySelector('#cancelOrder').addEventListener('click', function() {
-    const orderIdElement = document.getElementById("OrderIdVal");
-    if (!orderIdElement || !orderIdElement.value) {
-        console.error("Order ID not found!");
-        swal("Error", "Order ID is missing!", "error");
-        return;
-    }
-
-    const orderId = orderIdElement.value; // Get Order ID
-    console.log("Cancelling Order ID:", orderId);
-
-    // Show confirmation popup
+			
+			document.querySelector('#cancelOrder').addEventListener('click', function() {
+				const orderIdElement = document.getElementById("OrderIdVal");
+				if (!orderIdElement || !orderIdElement.value) {
+					console.error("Order ID not found!");
+					swal("Error", "Order ID is missing!", "error");
+					return;
+				}
+				
+				let totalAmountPrice = document.getElementById("totalAmountPrice").value
+				const orderId = orderIdElement.value; // Get Order ID
+				console.log("Cancelling Order ID:", orderId);
+				console.log("hgfgfc", totalAmountPrice);
+				
+    // Show confirmation popup with reason input
     swal({
-        title: "Are you sure?",
+        title: "Cancel Order",
         text: "Do you really want to cancel this order?",
+        content: {
+            element: "textarea",
+            attributes: {
+                placeholder: "Please provide a reason for cancellation",
+                style: "display: block; width: 100%; padding: 8px; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px;"
+            },
+        },
         icon: "warning",
         buttons: ["No, keep my order", "Yes, cancel it"],
         dangerMode: true,
     }).then((willCancel) => {
         if (willCancel) {
-            cancelOrder1(orderId);
+			
+            const reasonInput = document.querySelector(".swal-content textarea");
+            const cancellationReason = reasonInput ? reasonInput.value.trim() : "";
+            console.log("asdfjkh",cancellationReason)
+            if (!cancellationReason) {
+                swal("Warning", "Please provide a reason for cancellation", "warning");
+                return;
+            }
+            
+            cancelOrder1(orderId, cancellationReason, totalAmountPrice);
         }
     });
 });
 
-function cancelOrder1(orderId) {
+function cancelOrder1(orderId, reason, totalAmountPrice ) {
     fetch('/cancelOrder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: orderId }),
+        body: JSON.stringify({ 
+            orderId: orderId,
+            reason: reason ,
+			totalAmountPrice
+        }),
     })
     .then(response => response.json())
     .then(data => {

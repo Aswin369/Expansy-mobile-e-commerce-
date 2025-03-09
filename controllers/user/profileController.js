@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt")
 const Order = require("../../models/orderSchema")
 const env = require("dotenv").config()
 const session = require("express-session")
-
+const Wallet = require("../../models/walletSchema")
 
 const getProfilePage = async (req,res)=>{
     try {
@@ -15,13 +15,15 @@ const getProfilePage = async (req,res)=>{
         const userData = await User.findById({_id:id})
         const userAddress = await Address.find({userId:id})
         const oderDetails = await Order.find({userId:id})
-
-        console.log("dafhjk",oderDetails )
+        const walletDetailes = await Wallet.find({userId:id})
+        
+        console.log("wallet data", walletDetailes)
         res.render("profilePage",{
             user:id,
             data:userData,
             address:userAddress,
-            oderData: oderDetails
+            oderData: oderDetails,
+            walletData:walletDetailes
         })
 
     } catch (error) {
@@ -426,11 +428,28 @@ const deleteOrder = async(req,res)=>{
 
 const cancelOrder = async (req,res)=>{
     try {
+        const userId = req.session.user
         console.log("req.boy",req.body)
-        const {orderId} = req.body
-        await Order.findByIdAndUpdate(orderId,{$set:{status:"Cancelled"}})
+        const {orderId, reason,  totalAmountPrice} = req.body
+        let amount = parseInt(totalAmountPrice)
+        const wallet = await Wallet.findOne({userId:userId})
+
+        await Order.findByIdAndUpdate(orderId,{$set:{status:"Cancelled", returnReason:reason}})
+        res.status(201).json({success:true})
+
+        console.log("askldjf",wallet)
+        if(!wallet){
+            const walletData = new Wallet({
+                userId:userId,
+                balance:amount
+            })
+            await walletData.save()
+            console.log("jhsdfjasdf")
+        }else{
+            wallet.balance+=amount
+            await wallet.save()
+        }
         console.log("THiscompelfjkasdkjfhasdfasdf")
-        return res.status(201).json({success:true})
     } catch (error) {
         
     }

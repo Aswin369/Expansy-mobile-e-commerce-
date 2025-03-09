@@ -26,7 +26,7 @@ router.get("/auth/google/callback",passport.authenticate("google",{failureRedire
 })
 router.get("/logout",userController.logout)
 router.get("/productDetailPage/:id",productController.productDetail)
-router.get("/shopPage",shopPageController.getShopPage)
+router.get("/shop",shopPageController.getShopPage)
 router.get("/sorting", shopPageController.getProducts)
 router.get("/priceSorting", shopPageController.getFilteredProducts);
 router.get("/filterByCategory", shopPageController.getFilteredProductsByCategory)
@@ -43,7 +43,7 @@ router.get("/change-password",profileController.getchangePasswordPage)
 router.post("/change-password",profileController.changePassword)
 router.post("/profile-page-change-password", profileController.profilePageChangePassword)
 // user profile management
-router.get("/profilePage",userAuth,profileController.getProfilePage)
+router.get("/profile",userAuth,profileController.getProfilePage)
 router.post("/editProfile",userAuth,profileController.editUserProfile)
 router.post("/addaddress",userAuth,profileController.addUserAddress)
 router.delete("/deleteAddress/:addressId",userAuth,profileController.deleteAddress)

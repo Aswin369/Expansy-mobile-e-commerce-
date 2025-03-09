@@ -73,6 +73,19 @@
 <!--===============================================================================================-->
 <!-- Add these in your head -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+
+    .table-container {
+        max-height: 300px; /* Set a fixed height for scroll effect */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+
+    /* Hide scrollbar but allow scrolling */
+    .table-container::-webkit-scrollbar {
+        width: 0px;
+        display: none;
+    }
+</style>
 
 
 </head>
@@ -100,7 +113,7 @@
 							</li>
 		
 							<li>
-								<a href="/shopPage">Shop</a>
+								<a href="/shop">Shop</a>
 							</li>
 		
 							<li class="label1">
@@ -111,7 +124,7 @@
 								<a href="/">Contact</a>
 							</li>
 							<li>
-								<a href="/profilePage">Profile</a>
+								<a href="/profile">Profile</a>
 							</li>
 							<li>
 								<% if (user) { %>
@@ -262,26 +275,26 @@
             <div class="col-md-3 mb-4">
                 <div class="list-group">
                     <a href="#dashboard" class="list-group-item list-group-item-action active" data-bs-toggle="list">
-                        <i class="fas fa-user me-2"></i> Dashboard
+                         Dashboard
                     </a>
 					
                     <a href="#orders" class="list-group-item list-group-item-action" data-bs-toggle="list">
-                        <i class="fas fa-shopping-bag me-2"></i> Orders
+                         Orders
                     </a>
                     <a href="#update-profile" class="list-group-item list-group-item-action" data-bs-toggle="list">
-                        <i class="fas fa-edit me-2"></i> Update Profile
+                         Update Profile
                     </a>
                     <a href="#addresses" class="list-group-item list-group-item-action" data-bs-toggle="list">
-                        <i class="fas fa-map-marker-alt me-2"></i> Addresses
+                         Addresses
                     </a>
                     <a href="#wallet" class="list-group-item list-group-item-action" data-bs-toggle="list">
-                        <i class="fas fa-wallet me-2"></i> Wallet
+                         Wallet
                     </a>
                     <a href="#forgot-password" class="list-group-item list-group-item-action" data-bs-toggle="list">
-                        <i class="fas fa-lock me-2"></i> Change Password
+                         Change Password
                     </a>
                     <a href="#" class="list-group-item list-group-item-action text-danger">
-                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                         Logout
                     </a>
                 </div>
             </div>
@@ -362,12 +375,12 @@
 
                     <!-- Orders -->
                     <div class="tab-pane fade" id="orders">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">My Orders</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
+						<div class="card">
+							<div class="card-header">
+								<h5 class="card-title mb-0">My Orders</h5>
+							</div>
+							<div class="card-body">
+								<div class="table-responsive table-container"> <!-- Added new class -->
 									<table class="table table-hover">
 										<thead>
 											<tr>
@@ -375,33 +388,29 @@
 												<th>Date</th>
 												<th>Status</th>
 												<th>Total</th>
-												<th>Actions</th> <!-- New column for buttons -->
+												<th>Actions</th>
 											</tr>
 										</thead>
 										<tbody>
-											<%oderData.forEach((item)=>{%>
+											<% oderData.forEach((item) => { %>
 											<tr>
-												<td><%= item.orderId%></td>
+												<td><%= item.orderId %></td>
 												<td><%= item.createdAt.toISOString().split('T')[0] %></td>
-												<td><span class="badge bg-success"><%= item.status%></span></td>
-												<td><%= item.payableAmount%></td>
+												<td><span class="badge bg-success"><%= item.status %></span></td>
+												<td><%= item.payableAmount %></td>
 												<td>
-													
-													
 													<button class="btn btn-primary btn-sm view-btn">
-														<a href="/ordersview/<%= item._id%>" style="text-decoration: none; color: white;">View</a> 
+														<a href="/ordersview/<%= item._id %>" style="text-decoration: none; color: white;">View</a>
 													</button>
-													
 												</td>
 											</tr>
-											<%})%>
+											<% }) %>
 										</tbody>
 									</table>
 								</div>
-								
-                            </div>
-                        </div>
-                    </div>
+							</div>
+						</div>
+					</div>
 
                     <!-- Update Profile -->
                     <div class="tab-pane fade" id="update-profile">
@@ -583,7 +592,7 @@
                             <div class="card-body">
                                 <div class="bg-light p-3 rounded mb-4">
                                     <h6 class="text-muted">Total Balance</h6>
-                                    <h2 class="mb-0">₹<%= data.wallet%></h2>
+                                    <h2 class="mb-0">₹<%= walletData[0].balance%></h2>
                                 </div>
                                 <h6 class="mb-3">Transaction History</h6>
                                 <div class="list-group">

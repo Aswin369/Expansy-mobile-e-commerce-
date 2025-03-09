@@ -244,7 +244,7 @@ const addOrderDetails = async (req, res) => {
         const userId = req.session.user;
         const {deliveryAddressId,totalAmount,payableAmount,totalDiscount,couponId,couponCode,paymentMethod,items} = req.body;
 
-        console.log("This is req.body", req.body);
+        // console.log("This is req.body", req.body);
 
         const addressData = await Address.findOne({userId:new mongoose.Types.ObjectId(userId),"address._id": new mongoose.Types.ObjectId(deliveryAddressId)},{"address.$":1})
 
@@ -253,8 +253,8 @@ const addOrderDetails = async (req, res) => {
         }
 
         const deliveryAddress = {...addressData.address[0]}
-        console.log("User ID:", userId);
-        console.log("User address ID:", deliveryAddressId);
+        // console.log("User ID:", userId);
+        // console.log("User address ID:", deliveryAddressId);
 
         
         const cartDetails = await Cart.findOne({userId})
@@ -294,15 +294,16 @@ const addOrderDetails = async (req, res) => {
             couponCode: couponCode || null,
         });
 
-        console.log("newOrder: ", newOrder);
+        // console.log("newOrder: ", newOrder);
 
         await newOrder.save();
-        console.log("New Order ID:", newOrder._id);
+        // console.log("New Order ID:", newOrder._id);
 
         res.status(200).json({
             success: true,
             message: "Order placed successfully",
             orderId: newOrder.orderId,
+            id:newOrder._id
         });
 
         
@@ -320,7 +321,7 @@ const addOrderDetails = async (req, res) => {
         }
 
         await Cart.deleteOne({userId:userId})
-        console.log("kasjdfhkashdfkhask")
+        // console.log("kasjdfhkashdfkhask")
     } catch (error) {
         console.error("This error occurred in addOrderDetails", error);
         res.status(500).json({ success: false, message: error.message });
@@ -367,7 +368,7 @@ const razorpayOrder = async (req,res)=>{
 
 const verifiyPayment = async (req,res) =>{
     try {
-        const { razorpayOrderId ,razorpayPaymentId,razorpaySignature,orderId} = req.body;
+        const { razorpayOrderId ,razorpayPaymentId,razorpaySignature,orderId,id} = req.body;
 
         console.log("aksjdfa",req.body)
 
@@ -378,9 +379,10 @@ const verifiyPayment = async (req,res) =>{
             .digest('hex');
 
         if (razorpaySignature === expectedSign) {
-            const orderData = await Order.findById(orderId)
+            const orderData = await Order.findById(id)
             orderData.paymentStatus = "success"
             await orderData.save()
+            console.log("sfjsahdf",orderData)
             res.status(200).json({ message: 'Payment verified successfully', orderId});
         } else {
             res.status(400).json({ error: 'Invalid payment signature' });

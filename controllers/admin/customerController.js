@@ -24,14 +24,17 @@ const customerInfo = async (req, res) => {
             .exec();
 
         
+        console.log("user data",userData)
+
         const formattedUserData = userData.map(user => ({
             id: user._id,
             name: user.name,
             email: user.email,
-            date: user.createdOn.toLocaleDateString("en-US"), 
+            date: user.createdAt, 
             isBlocked: user.isBlocked,
         }));
-
+        console.log("jgyhyg",formattedUserData);
+        
         const count = await User.countDocuments({
             isAdmin: false,
             $or: [
@@ -48,6 +51,7 @@ const customerInfo = async (req, res) => {
             currentPage: page,
             search
         });
+        console.log("askdfjaksjf")
     } catch (error) {
         console.error("Error fetching customer data:", error);
         res.status(500).send("Server Error");

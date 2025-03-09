@@ -563,7 +563,7 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div>
                                                 <h4 class="card-title mb-2">Total Discounts</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0"><%= %></p>
+                                                <p class="text-muted fw-medium fs-22 mb-0"><%= totalDiscount%></p>
                                             </div>
                                             <div>
                                                 <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -683,12 +683,13 @@
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
      <script>
-        document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function() {
     // Get references to the DOM elements
     const startDateInput = document.getElementById('startDate');
     const endDateInput = document.getElementById('endDate');
     const filterBtn = document.getElementById('filterBtn');
     const downloadExcelBtn = document.getElementById('downloadExcel');
+    const downloadPdfBtn = document.getElementById('downloadPdf');
     
     // Add event listener to the filter button
     filterBtn.addEventListener('click', function() {
@@ -883,6 +884,11 @@
         downloadExcel();
     });
     
+    // Event listener for PDF download button
+    downloadPdfBtn.addEventListener('click', function() {
+        downloadPdf();
+    });
+    
     // Function to handle Excel download with current filter params
     function downloadExcel() {
         const startDate = startDateInput.value;
@@ -913,7 +919,45 @@
         });
         
         // Redirect to download endpoint
-        window.location.href = `/saleReportExcel${queryParams}`;
+        window.location.href = `/admin/saleReportExcel${queryParams}`;
+        
+        // Close the loading dialog after a short delay
+        setTimeout(() => {
+            Swal.close();
+        }, 2000);
+    }
+    
+    // Function to handle PDF download with current filter params
+    function downloadPdf() {
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+        
+        // Validate dates for download
+        if (!startDate || !endDate) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Please select both start and end dates before exporting',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        // Build query parameters
+        let queryParams = `?startDate=${startDate}&endDate=${endDate}`;
+        
+        // Show loading message
+        Swal.fire({
+            title: 'Generating PDF...',
+            text: 'Please wait while we prepare your download',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Redirect to download endpoint
+        window.location.href = `/admin/saleReportPdf${queryParams}`;
         
         // Close the loading dialog after a short delay
         setTimeout(() => {

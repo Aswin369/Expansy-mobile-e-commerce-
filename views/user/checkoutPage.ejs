@@ -126,7 +126,7 @@
                 </li>
 
                 <li>
-                  <a href="/shopPage">Shop</a>
+                  <a href="/shop">Shop</a>
                 </li>
 
                 <li class="label1">
@@ -137,7 +137,7 @@
                   <a href="/">Contact</a>
                 </li>
                 <li>
-                  <a href="/profilePage">Profile</a>
+                  <a href="/profile">Profile</a>
                 </li>
                 <li>
                   <% if (user) { %>
@@ -1192,7 +1192,7 @@
       return response.json();
     })
     .then((data) => {
-      console.log(data);
+      console.log("this data from backend",data);
       Swal.fire({
         title: "Order Placed Successfully!",
         text: `Your order ID is ${data.orderId}. Thank you for shopping with us!`,
@@ -1202,11 +1202,11 @@
 
       let orderId = data.orderId;
       let paymentMethod = orderData.paymentMethod;
-      
+      let id = data.id
       if (paymentMethod === "ONLINE") {
-        handleOnlinePayment(totalAmount, orderId);
+        handleOnlinePayment(totalAmount, orderId, id);
       } else {
-        window.location.href = `/ordersuccess?order=${orderId}`;
+        window.location.href = `/ordersuccess?order=${orderId}&id=${id}`;
       }
     })
     .catch((error) => {
@@ -1220,7 +1220,7 @@
   }
 
   // ========== HANDLE ONLINE PAYMENT ==========
-  function handleOnlinePayment(amount, orderId) {
+  function handleOnlinePayment(amount, orderId, id) {
     fetch("/createRazorpayOrder", {
       method: "POST",
       headers: {
@@ -1237,7 +1237,7 @@
       return response.json();
     })
     .then((data) => {
-      console.log(data);
+      console.log('thsi data form createrazorpay',data);
       // Initialize Razorpay checkout
       const options = {
         key: "rzp_test_Ar7OJGh05M40uW",
@@ -1248,7 +1248,7 @@
         order_id: data.id,
         handler: function(response) {
           // Verify payment signature
-          verifyPayment(response, orderId);
+          verifyPayment(response, orderId, id);
         },
         prefill: {
           name: data.customerName || "",
@@ -1302,7 +1302,7 @@
   }
 
   // ========== VERIFY PAYMENT ==========
-  function verifyPayment(response, orderId) {
+  function verifyPayment(response, orderId, id) {
     fetch("/verifyPayment", {
       method: "POST",
       headers: {
@@ -1313,6 +1313,7 @@
         razorpayPaymentId: response.razorpay_payment_id,
         razorpaySignature: response.razorpay_signature,
         orderId: orderId,
+        id:id
       }),
     })
     .then((response) => response.json())
