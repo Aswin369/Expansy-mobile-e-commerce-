@@ -68,6 +68,7 @@ router.get("/blockColor/:id",adminAuth,variantController.blockColor)
 router.get("/getOrderPage",adminAuth,orderController.getOrderPage)
 router.get("/orderDetail/:id",adminAuth, orderController.getOrderDetailPage)
 router.post("/update-status",adminAuth,orderController.changeStatus)
+router.post("/approveRequest",adminAuth,orderController.changeStatusToApproveRequest)
 // Coupon management
 router.get("/getCouponList",adminAuth,couponController.getcouponList)
 router.get("/getCouponaddPage",adminAuth,couponController.getCouponAddPage)

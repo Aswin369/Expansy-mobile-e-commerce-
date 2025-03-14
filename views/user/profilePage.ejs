@@ -712,26 +712,36 @@
 
                                 </div>
                                 <h6 class="mb-3">Transaction History</h6>
-                                <div class="list-group">
-                                    <div class="list-group-item">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-0">Order Payment</h6>
-                                                <small class="text-muted">10 Feb 2024</small>
-                                            </div>
-                                            <span class="text-danger">-$50.00</span>
-                                        </div>
-                                    </div>
-                                    <div class="list-group-item">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-0">Wallet Recharge</h6>
-                                                <small class="text-muted">09 Feb 2024</small>
-                                            </div>
-                                            <span class="text-success">+$100.00</span>
-                                        </div>
-                                    </div>
-                                </div>
+								<div class="list-group" style="max-height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+									<% findTranscationHistory.forEach(transaction => { %>
+										<div class="list-group-item" style="padding: 15px 20px; border-bottom: 1px solid #f0f0f0;">
+											<div class="d-flex justify-content-between align-items-center">
+												<div>
+													<% if (transaction.type === 'credit') { %>
+														<h6 class="mb-0 text-success">Wallet Recharge</h6>
+													<% } else if (transaction.type === 'debit') { %>
+														<h6 class="mb-0 text-danger">Order Payment</h6>
+													<% } %>
+													<small class="text-muted">
+														<%= new Date(transaction.date).toLocaleDateString('en-GB', {
+															day: '2-digit',
+															month: 'short',
+															year: 'numeric'
+														}) %>
+													</small>
+												</div>
+								
+												<% if (transaction.type === 'credit') { %>
+													<span class="text-success fw-bold">+₹<%= transaction.amount.toLocaleString() %></span>
+												<% } else if (transaction.type === 'debit') { %>
+													<span class="text-danger fw-bold">-₹<%= transaction.amount.toLocaleString() %></span>
+												<% } %>
+											</div>
+										</div>
+									<% }) %>
+								</div>
+								
+								
                             </div>
                         </div>
                     </div>

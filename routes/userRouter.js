@@ -49,6 +49,7 @@ router.post("/updateAddress/:addressId",userAuth,profileController.updateAddress
 router.get("/ordersview/:orderId",userAuth,profileController.loadOrderDetailPage)
 router.get("/deleteOrder",userAuth,profileController.deleteOrder)
 router.post("/cancelOrder",userAuth,profileController.cancelOrder)
+router.get("/returnRequest",userAuth,profileController.returnRequest)
 // shopping cart management
 router.get('/shoppingCart',userAuth,shoppingCartController.getShoppingCart)
 router.post("/addToCart",shoppingCartController.productAddToCart)

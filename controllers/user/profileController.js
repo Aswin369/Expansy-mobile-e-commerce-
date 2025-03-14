@@ -8,25 +8,27 @@ const env = require("dotenv").config()
 const session = require("express-session")
 const Wallet = require("../../models/walletSchema")
 const Product = require("../../models/productSchema")
+const Transaction = require("../../models/walletTransaction")
+
 
 const getProfilePage = async (req, res) => {
     try {
         const id = req.session.user;
         const page = parseInt(req.query.page) || 1;
-        const addressPage = parseInt(req.query.addressPage) || 1; // Address pagination
+        const addressPage = parseInt(req.query.addressPage) || 1; 
         const limit = 5;
-        const addressLimit = 2; // Limit per page
+        const addressLimit = 2;
         const skip = (page - 1) * limit;
         const addressSkip = (addressPage - 1) * addressLimit;
 
-        // Get user data
+        
         const userData = await User.findById({_id: id});
         const walletDetails = await Wallet.find({userId: id});
 
-        // Get user address (single document with multiple addresses)
+       
         const userAddress = await Address.findOne({ userId: id });
 
-        // If user has addresses, paginate them
+        
         let paginatedAddresses = [];
         let totalAddressPages = 0;
 
@@ -35,7 +37,10 @@ const getProfilePage = async (req, res) => {
             paginatedAddresses = userAddress.address.slice(addressSkip, addressSkip + addressLimit);
         }
 
-        // Orders Pagination
+        const findTranscationHistory = await Transaction.find({userId:id}).sort({createdAt: -1})
+         
+        console.log("asdfkljaskdjf",findTranscationHistory)
+        
         const totalOrders = await Order.countDocuments({userId: id});
         const totalPages = Math.ceil(totalOrders / limit);
         const orderDetails = await Order.find({userId: id})
@@ -50,9 +55,10 @@ const getProfilePage = async (req, res) => {
         res.render("profilePage", {
             user: id,
             data: userData,
-            address: paginatedAddresses, // Send only paginated addresses
+            address: paginatedAddresses, 
             oderData: orderDetails,
             walletData: walletDetails,
+            findTranscationHistory,
             pagination: {
                 currentPage: page,
                 totalPages: totalPages,
@@ -570,6 +576,24 @@ const cancelOrder = async (req, res) => {
 };
 
 
+const returnRequest = async (req,res)=>{
+    try {
+        const userId = req.session.user
+        console.log("req.query",req.query)
+        const {orderId, productId, specId, quantity, id, amount, reason} = req.query
+
+        const changeOrderStatus = await Order.updateOne({_id:orderId, "products._id":id},{$set:{"products.$.status":"Return Requested","products.$.reason":reason}})
+
+        if(changeOrderStatus.modifiedCount === 0){
+            return res.status(400).json({success:false, message: "Failed to request return"})
+        }
+
+        return res.status(200).json({success:true,message: "Return request submitted successfully"})
+    } catch (error) {
+        console.error("This error occured in return request function", error)
+        res.redirect("/pagerror")
+    }
+}
 
 const profilePageChangePassword = async (req, res) => {
     try {
@@ -613,5 +637,6 @@ module.exports = {
     loadOrderDetailPage,
     deleteOrder,
     cancelOrder,
+    returnRequest,
     profilePageChangePassword
 }
