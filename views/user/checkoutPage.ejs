@@ -69,7 +69,39 @@
     <!--===============================================================================================-->
 
     <style>
+
+/* Scrollable Address Container */
+.address-container {
+    max-height: 250px; /* Adjust the height as needed */
+    overflow-y: scroll; /* Enables scrolling */
+    scrollbar-width: none; /* Hides scrollbar for Firefox */
+    -ms-overflow-style: none; /* Hides scrollbar for IE/Edge */
+}
+
+/* Hides scrollbar for WebKit browsers (Chrome, Safari) */
+.address-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Add New Address Button - Centered */
+.add-address-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto; /* Centers horizontally */
+    width: 200px; /* Set a fixed width */
+    height: 40px; /* Set a fixed height */
+    background-color: #007bff; /* Button color */
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+}
+
+
+
       .checkbox-round {
+        margin-left: 10px;
         width: 20px;
         height: 20px;
         background-color: white;
@@ -84,7 +116,7 @@
       }
 
       .checkbox-round:checked {
-        border: 1px solid #e65540;
+        border: 1px solid #131110;
       }
 
       .checkbox-round:checked:after {
@@ -96,7 +128,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: #e65540;
+        background-color: #383635;
       }
     </style>
   </head>
@@ -431,11 +463,11 @@
                     <input type="hidden" value="<%= item.productId._id%>" />
                     
                     <input type="hidden" id="discountPriceforThisProduct" value="<%= item.discountPriceforThisProduct%>">
-                    console.log("<%= item.discountPriceforThisProduct%>")
+                    
                     <input type="hidden" id="discountId" value="<%= item.offerApplied%>">
                     <td class="column-3"><%= item.quantity %></td>
-                    <td class="column-4">$ <%= item.unitPrice %></td>
-                    <td class="column-5">$ <%= item.totalPrice %></td>
+                    <td class="column-4">₹ <%= item.unitPrice %></td>
+                    <td class="column-5">₹ <%= item.totalPrice %></td>
                   </tr>
                   <% }); %>
                 </table>
@@ -445,12 +477,10 @@
                 <div class="container mt-5">
                   <div class="row">
                     <div class="col-md-6">
-                      <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">
+                      <div class="card mb-4 bor13">
+                        <div class="card-header bg3 text-white">
                           Apply Coupon
                           <input type="hidden" id="cartIdForApplyCoupon" value="<%= cartData._id%>">
-                          
-                          
                         </div>
                         <div class="card-body">
                           <div class="input-group">
@@ -458,17 +488,17 @@
                               type="text"
                               class="form-control"
                               id="couponInput"
-                              placeholder="Enter coupon code"
+                              placeholder="Enter coupon"
                             />
                             <button
-                              class="btn btn-outline-primary"
+                              class="btn bg3 cl0 hov-btn3"
                               type="button"
                               id="applyCoupon"
                             >
                               Apply
                             </button>
                             <button
-                              class="btn btn-outline-danger ms-2"
+                              class="btn bg8 cl2 hov-btn3 m-l-5"
                               type="button"
                               id="cancelCoupon"
                             >
@@ -480,8 +510,8 @@
                     </div>
               
                     <div class="col-md-6">
-                      <div class="card">
-                        <div class="card-header bg-success text-white">
+                      <div class="card bor13">
+                        <div class="card-header bg3 text-white">
                           Available Coupons
                         </div>
                         <div class="card-body" id="couponList">
@@ -490,7 +520,6 @@
                               <div class="alert alert-info text-center" id="coupon-<%= index %>">
                                 Coupon Code: <%= coupon?.code || "Unknown Coupon" %>
                                 <input type="hidden", id="couponId" value="<%= coupon._id%>">
-                                
                               </div>
                             <% }); %>
                           <% } else { %>
@@ -508,44 +537,41 @@
               <!-- Address Selection Box -->
               <div class="bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm m-t-20">
                 <h4 class="mtext-109 cl2 p-b-20">Select Address</h4>
-
-                <div class="rs1-select2 rs2-select2 bor8 bg0 m-b-12 m-t-9">
-                  <% addrressData?.address?.forEach((addr, index) => { %>
-                  <div class="flex-w p-b-10">
-                    <div class="size-204 flex-w flex-m m-r-20 m-tb-10">
-                      <input class="checkbox-round" id="address<%= index %>"
-                      type="radio" name="address" value="<%= addr?._id %>" <%=
-                      index === 0 ? 'checked' : '' %>>
-                      <label
-                        for="address<%= index %>"
-                        class="stext-104 cl2 p-l-10"
-                      >
-                        <%= addr?.addressType %>, <%= addr?.city %>, <%=
-                        addr?.state %> - <%= addr?.pincode %>
-                      </label>
-                      <div class="address-details stext-104 cl2 p-l-30 m-t-5">
-                        <p>Landmark: <%= addr?.landMark %></p>
-                        <p>City: <%= addr?.city %></p>
-                        <p>State: <%= addr?.state %></p>
-                        <p>Pincode: <%= addr?.pincode %></p>
-                        <p>Phone: <%= addr?.phone %></p>
-                        <p>Alt Phone: <%= addr?.altPhone %></p>
-                      </div>
+            
+                <!-- Scrollable Container -->
+                <div class="rs1-select2 rs2-select2 bor8 bg0 m-b-12 m-t-9 address-container">
+                    <% addrressData?.address?.forEach((addr, index) => { %>
+                    <div class="flex-w p-b-10">
+                        <div class="size-204 flex-w flex-m m-r-20 m-tb-10">
+                            <input class="checkbox-round" id="address<%= index %>" type="radio" name="address"
+                                value="<%= addr?._id %>" <%= index === 0 ? 'checked' : '' %>>
+                            <label for="address<%= index %>" class="stext-104 cl2 p-l-10">
+                                <%= addr?.addressType %>, <%= addr?.city %>, <%= addr?.state %> - <%= addr?.pincode %>
+                            </label>
+                            <div class="address-details stext-104 cl2 p-l-30 m-t-5">
+                                <p>Landmark: <%= addr?.landMark %></p>
+                                <p>City: <%= addr?.city %></p>
+                                <p>State: <%= addr?.state %></p>
+                                <p>Pincode: <%= addr?.pincode %></p>
+                                <p>Phone: <%= addr?.phone %></p>
+                                <p>Alt Phone: <%= addr?.altPhone %></p>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                  <% }); %>
-
-                  <div class="flex-w">
-                    <div class="size-204 flex-w flex-m m-r-20 m-tb-10">
-                      <div
-                        class="flex-c-m stext-101 cl2 size-115 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer"
-                      >
-                        Add New Address
-                      </div>
-                    </div>
-                  </div>
+                    <% }); %>
+            
+                    <!-- Add New Address Button Centered -->
+                   
                 </div>
+                <div class="flex-w">
+                  <div class="size-204 flex-w flex-m m-r-20 m-tb-10">
+                      <div class="flex-c-m stext-101 cl2 size-115 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer add-address-btn">
+                          Add New Address
+                      </div>
+                  </div>
               </div>
+            </div>
+            
             </div>
           </div>
 

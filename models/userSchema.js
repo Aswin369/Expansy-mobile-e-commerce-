@@ -37,19 +37,19 @@ const userSchema = new mongoose.Schema(
       },
       wallet: {
         type: Number,
-        default: 0, // Can be used to store referral bonuses
+        default: 0, 
       },
       referralCode: {
         type: String,
-        unique: true, // Each user should have a unique referral code
+        unique: true,
         required: true,
         default: function () {
-          return Math.random().toString(36).substr(2, 8).toUpperCase(); // Auto-generate a code
+          return Math.random().toString(36).substr(2, 8).toUpperCase(); 
         },
       },
       referredBy: {
         type: String,
-        ref: "User", // Stores the referral code of the person who referred this user
+        ref: "User",
         default: null,
       },
     },

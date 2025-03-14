@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer")
 const bcrypt = require("bcrypt")
 const env = require("dotenv").config()
 const productSchema = require("../../models/productSchema")
+const Wallet = require("../../models/walletSchema")
 
 const loadHomepage = async (req, res) => {
     try {
@@ -129,7 +130,7 @@ const signup = async (req,res)=>{
                 referrer.wallet += 50
                 await referrer.save()
             }else{
-                return res.status(400).json({ message: "Invalid referral code" })
+                return res.status(400).json({ message:"Invalid referral code"})
             }
         }
 

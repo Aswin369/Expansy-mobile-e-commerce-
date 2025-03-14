@@ -3,168 +3,142 @@ const Product = require("../../models/productSchema")
 const Brand = require("../../models/brandSchema")
 const Category = require("../../models/categorySchema")
 
+// Controller - getShopPage function
 const getShopPage = async (req, res) => {
     try {
-        const user = req.session.user
+        // Initialize query object
+        const queryObj = { isBlocked: false };
+        
+        // Get page from query params, default to 1
         const page = parseInt(req.query.page) || 1;
-        const limit = 18;
+        const limit = 8; // Products per page
         const skip = (page - 1) * limit;
-        const brandName = req.query.brand || null;
-
-        let query = { isBlocked: false };
-
-        if (brandName && brandName !== "All") {
-            const brand = await Brand.findOne({ brandName: { $regex: new RegExp("^" + brandName + "$", "i")}})
-            if (!brand) {
-                
-                return res.json({ 
-                    products: [],  
-                    message: `No products found for brand: ${brandName}`,
-                    currentPage: page, 
-                    totalProducts: 0, 
-                    totalPages: 0 
-                });
+        
+        // --- FILTER HANDLING ---
+        
+        // 1. Brand filter
+        if (req.query.brand && req.query.brand !== 'All') {
+            // Find brand ID by brandName (not name as in your original code)
+            const brand = await Brand.findOne({ brandName: req.query.brand });
+            if (brand) {
+                queryObj.brand = brand._id;
+                console.log("Found brand:", brand);
+            } else {
+                console.log("Brand not found:", req.query.brand);
             }
-
-            query.brand = brand._id;
         }
-
-        const productData = await Product.find(query)
-            .sort({ createdAt: 1 })
-            .skip(skip)
-            .limit(limit)
-            .populate("brand");
-
-        const totalProducts = await Product.countDocuments(query)
-        const totalPages = Math.ceil(totalProducts / limit)
-
-        if (req.headers.accept && req.headers.accept.includes("application/json")) {
-            return res.json({
-                products: productData,
-                message: productData.length === 0 ? `No products found for brand: ${brandName}` : "",
-                currentPage: page,
-                totalProducts: totalProducts,
-                totalPages: totalPages
-            });
-        }
-
         
-        res.render("shop-page", {
-            user:user,
-            product: productData,
-            currentPage: page,
-            totalProducts: totalProducts,
-            totalPages: totalPages
-        });
-
-    } catch (error) {
-        console.error("Error loading shop page:", error)
-        res.status(500).json({ message: "Server error" })
-    }
-};
-
-const getProducts = async (req, res) => {
-    try {
-        let { sort } = req.query;
-        console.log("aksjdhfjasgh", req.body)
-        let sortOption = {};
-        if (sort === "az") {
-            sortOption = { productName: 1 }
-        } else if (sort === "za") {
-            sortOption = { productName: -1 }
-        } else if (sort === "new") {
-            sortOption = { createdAt: -1 }
-        }
-        let products = await Product.find({ isBlocked: false })
-            .populate("category specification.ram specification.storage specification.color")
-            .sort(sortOption);
-
-            console.log("sdjfhhasf",products)
-        res.status(200).json({ products });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error })
-    }
-};
-
-const getFilteredProducts = async (req, res) => {
-    try {
-        let filter = {}
-
-        if (req.query.minPrice && req.query.maxPrice) {
-            filter["specification.salePrice"] = { 
-                $gte: Number(req.query.minPrice), 
-                $lte: Number(req.query.maxPrice) 
+        // 2. Price range filter
+        if (req.query.price) {
+            // Parse price range string like "₹10,000.00 - ₹35,000.00"
+            const priceRange = req.query.price;
+            let minPrice, maxPrice;
+            
+            // Handle special case for "₹100,000.00+"
+            if (priceRange.includes('+')) {
+                minPrice = parseFloat(priceRange.replace(/[₹,\+\s]/g, ''));
+                maxPrice = Number.MAX_SAFE_INTEGER;
+            } else {
+                // Split by dash and convert to numbers
+                const [min, max] = priceRange.split('-').map(p => 
+                    parseFloat(p.replace(/[₹,\s]/g, ''))
+                );
+                minPrice = min;
+                maxPrice = max;
+            }
+            
+            // Add price range to query for specification.salePrice
+            queryObj['specification.salePrice'] = { 
+                $gte: minPrice, 
+                $lte: maxPrice 
             };
-        } else if (req.query.minPrice) {
-            filter["specification.salePrice"] = { $gte: Number(req.query.minPrice) }
         }
-
-        const products = await Product.find(filter)
-            .populate({
-                path: "specification.ram specification.storage specification.color",
-                model: "Variant"
-            })
-            .sort({ "specification.salePrice": 1 }); // 🔹 Sort by salePrice in Ascending Order
-
-        res.status(200).json({ success: true, products })
-    } catch (error) {
-        console.error("Error fetching filtered products:", error)
-        res.status(500).json({ success: false, message: "Internal Server Error" })
-    }
-};
-
-
-
-const getFilteredProductsByCategory = async (req, res) => {
-    try {
-        const categoryName = req.query.category;
-
-       
-        const category = await Category.findOne({ name: categoryName})
-
-        if (!category) {
-            return res.status(404).json({ success: false, message: "Category not found" })
+        
+        // 3. Category filter
+        if (req.query.category && req.query.category !== 'All') {
+            // Find category ID by name
+            const category = await Category.findOne({ 
+                name: { $regex: new RegExp(req.query.category, 'i') } 
+            });
+            if (category) {
+                queryObj.category = category._id;
+            }
         }
-
         
-        const products = await Product.find({ category: category._id })
-            .populate("specification.ram")
-            .populate("specification.storage")
-            .populate("specification.color");;
-
-        res.status(200).json({ success: true, products })
-    } catch (error) {
-        console.error("Error fetching filtered products by category:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" })
-    }
-};
-
-
-const searchProducts = async (req, res) => {
-    try {
-       
-
-        const productName = req.query.productName?.trim() || "";
-
-       
-        const products = await Product.find({
-            productName: { $regex: productName, $options: "i" },
-            isBlocked: false
-        }).populate("brand category specification.ram specification.storage specification.color")
-
+        // 4. Search query implementation
+        if (req.query.search) {
+            queryObj.productName = { 
+                $regex: new RegExp(req.query.search, 'i') 
+            };
+        }
         
-
-        res.json({ success: true, products })
+        // --- SORTING HANDLING ---
+        let sortOption = {};
+        
+        if (req.query.sort) {
+            switch(req.query.sort) {
+                case 'a-z':
+                    sortOption = { productName: 1 }; // Ascending
+                    break;
+                case 'z-a':
+                    sortOption = { productName: -1 }; // Descending
+                    break;
+                case 'new':
+                    sortOption = { createdAt: -1 }; // Latest first
+                    break;
+                default:
+                    sortOption = { createdAt: -1 }; // Default to newest
+            }
+        } else {
+            // Default sorting
+            sortOption = { createdAt: -1 };
+        }
+        
+        // --- EXECUTE QUERY ---
+        
+        // Count total filtered products for pagination
+        const totalProducts = await Product.countDocuments(queryObj);
+        const totalPages = Math.ceil(totalProducts / limit);
+        
+        // Get products with populated references
+        const products = await Product.find(queryObj)
+            .populate('brand')
+            .populate('category')
+            .populate('specification.ram')
+            .populate('specification.storage')
+            .populate('specification.color')
+            .sort(sortOption)
+            .skip(skip)
+            .limit(limit);
+        
+        // Get all brands for filter buttons
+        const allBrands = await Brand.find({ isBlocked: false });
+        
+        // Render the shop page
+        res.render('shop-page', {
+            product: products,
+            brands: allBrands, // Pass all brands to the template
+            currentPage: page,
+            totalPages,
+            totalProducts,
+            // Pass current filters to highlight active options
+            activeFilters: {
+                brand: req.query.brand || 'All',
+                price: req.query.price || '',
+                category: req.query.category || '',
+                sort: req.query.sort || '',
+                search: req.query.search || ''
+            }
+        });
+        
     } catch (error) {
-        console.error("Error searching products:", error)
-        res.status(500).json({ success: false, message: "Internal Server Error"})
+        console.error('Shop page error:', error);
+        res.status(500).render('error', { 
+            message: 'Something went wrong fetching products' 
+        });
     }
-};
+}
 
 module.exports = {
-    getShopPage,
-    getProducts,
-    getFilteredProducts,
-    getFilteredProductsByCategory,
-    searchProducts
+    getShopPage
 }

@@ -7,30 +7,73 @@ const Order = require("../../models/orderSchema")
 const env = require("dotenv").config()
 const session = require("express-session")
 const Wallet = require("../../models/walletSchema")
+const Product = require("../../models/productSchema")
 
-const getProfilePage = async (req,res)=>{
+const getProfilePage = async (req, res) => {
     try {
-        
-        const id = req.session.user
-        const userData = await User.findById({_id:id})
-        const userAddress = await Address.find({userId:id})
-        const oderDetails = await Order.find({userId:id})
-        const walletDetailes = await Wallet.find({userId:id})
-        
-        console.log("wallet data", walletDetailes)
-        res.render("profilePage",{
-            user:id,
-            data:userData,
-            address:userAddress,
-            oderData: oderDetails,
-            walletData:walletDetailes
-        })
+        const id = req.session.user;
+        const page = parseInt(req.query.page) || 1;
+        const addressPage = parseInt(req.query.addressPage) || 1; // Address pagination
+        const limit = 5;
+        const addressLimit = 2; // Limit per page
+        const skip = (page - 1) * limit;
+        const addressSkip = (addressPage - 1) * addressLimit;
+
+        // Get user data
+        const userData = await User.findById({_id: id});
+        const walletDetails = await Wallet.find({userId: id});
+
+        // Get user address (single document with multiple addresses)
+        const userAddress = await Address.findOne({ userId: id });
+
+        // If user has addresses, paginate them
+        let paginatedAddresses = [];
+        let totalAddressPages = 0;
+
+        if (userAddress && userAddress.address.length > 0) {
+            totalAddressPages = Math.ceil(userAddress.address.length / addressLimit);
+            paginatedAddresses = userAddress.address.slice(addressSkip, addressSkip + addressLimit);
+        }
+
+        // Orders Pagination
+        const totalOrders = await Order.countDocuments({userId: id});
+        const totalPages = Math.ceil(totalOrders / limit);
+        const orderDetails = await Order.find({userId: id})
+            .sort({createdAt: -1})
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: 'products.productId',
+                select: 'productName productImage'
+            });
+
+        res.render("profilePage", {
+            user: id,
+            data: userData,
+            address: paginatedAddresses, // Send only paginated addresses
+            oderData: orderDetails,
+            walletData: walletDetails,
+            pagination: {
+                currentPage: page,
+                totalPages: totalPages,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            },
+            addressPagination: {
+                currentAddressPage: addressPage,
+                totalAddressPages: totalAddressPages,
+                hasNextAddressPage: addressPage < totalAddressPages,
+                hasPrevAddressPage: addressPage > 1
+            }
+        });
 
     } catch (error) {
-        console.error("Error occured in getProfilePage",error)
-        res.redirect("/pageerror")
+        console.error("Error occurred in getProfilePage", error);
+        res.redirect("/pageerror");
     }
-}
+};
+
+
 
 const editUserProfile = async (req,res)=>{
     try {
@@ -170,7 +213,7 @@ const updateAddress = async (req,res)=>{
     }
 }
 
-// forgot password controllers
+
 
 function generateOtp(){
     return Math.floor(100000+Math.random()*900000).toString()
@@ -389,6 +432,8 @@ const loadOrderDetailPage = async (req, res) => {
         const userId = req.session.user
         const orderDetails = await Order.findById(orderId).populate("products.productId")
         
+        console.log("orderDetails",orderDetails)
+
         if (!orderDetails) {
             
             return res.status(404).json({ message: "Order not found" });
@@ -406,19 +451,58 @@ const loadOrderDetailPage = async (req, res) => {
 
 const deleteOrder = async(req,res)=>{
     try {
-        const {orderId, productId} = req.query
+        const {orderId, productId, quantity, specId, id, amount} = req.query
         console.log("dshka",req.query)
         console.log("asldfkjlasdkjf",req.query)
         const userId = req.session.user
-        const order = await Order.findOneAndUpdate(
-            { _id: orderId, userId:userId},
-            { $pull: { products: { _id: productId } } },
-            {new:true})
+
+        let quantityToNumber = Number(quantity)
+
+        console.log("quaertity", typeof quantityToNumber)
+
+        const specObjectId = new mongoose.Types.ObjectId(specId);
+
+       
+        const productUpdateQuantity = await Product.updateOne({_id:productId,"specification._id":specObjectId},{$inc:{"specification.$.quantity":quantityToNumber}},{new:true})
+
+        console.log("asdfaskljdfojk",productUpdateQuantity)
+
         
-        if(order.products<=0){
-            await Order.findByIdAndUpdate({_id:orderId},{$set:{status:"Cancelled"}})
-           return  res.redirect("/profilePage")
+
+        const order = await Order.updateOne(
+            { _id: orderId, "products.productId": productId },
+            { 
+                $set: { "products.$.status": "Cancelled" }, 
+                $inc: { payableAmount: -amount }  
+            }
+        );
+        
+        
+        console.log("orderasdfkashdf", order)
+
+            console.log("ghfgfdfd", order);
+            
+
+        const convertAmount = Number(amount)
+        const addWallet =await  Wallet.updateOne({userId:userId},{$inc:{balance:convertAmount}})
+
+        if(addWallet.matchedCount === 0){
+            const newWallet = new Wallet({
+                userId:userId,
+                balance:convertAmount
+            })
+            await newWallet.save()
         }
+
+        const order1 = await Order.findOne({ _id: orderId });
+
+        const allCancelled = order1.products.every(item => item.status === "Cancelled");
+
+        if (allCancelled) {
+            await Order.findByIdAndUpdate(orderId, { $set: { status: "Cancelled" } });
+        }
+        
+
         return res.status(201).json({success:true})
     } catch (error) {
         console.error("This error found in deleteOrder", error)
@@ -426,40 +510,71 @@ const deleteOrder = async(req,res)=>{
     }
 }
 
-const cancelOrder = async (req,res)=>{
+const cancelOrder = async (req, res) => {
     try {
-        const userId = req.session.user
-        console.log("req.boy",req.body)
-        const {orderId, reason,  totalAmountPrice} = req.body
-        let amount = parseInt(totalAmountPrice)
-        const wallet = await Wallet.findOne({userId:userId})
+        const userId = req.session.user;
+        const { orderId, reason, totalAmountPrice } = req.body;
+        const amount = parseInt(totalAmountPrice);
 
-        await Order.findByIdAndUpdate(orderId,{$set:{status:"Cancelled", returnReason:reason}})
-        res.status(201).json({success:true})
-
-        console.log("askldjf",wallet)
-        if(!wallet){
-            const walletData = new Wallet({
-                userId:userId,
-                balance:amount
-            })
-            await walletData.save()
-            console.log("jhsdfjasdf")
-        }else{
-            wallet.balance+=amount
-            await wallet.save()
+        // Find the order and populate product details
+        const order = await Order.findById(orderId).populate("products.productId");
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
         }
-        console.log("THiscompelfjkasdkjfhasdfasdf")
+
+        // Update order status and each product's status in the products array
+        await Order.findByIdAndUpdate(orderId, {
+            $set: { 
+                status: "Cancelled", 
+                returnReason: reason, 
+                "products.$[].status": "Cancelled" // Update all product statuses to "Cancelled"
+            }
+        });
+
+        // Increment product quantities in the Product collection
+        for (const item of order.products) {
+            const product = await Product.findById(item.productId);
+
+            if (!product) continue; // Skip if product not found
+
+            const specIndex = product.specification.findIndex(spec => 
+                spec._id.toString() === item.specId.toString()
+            );
+
+            if (specIndex !== -1) {
+                product.specification[specIndex].quantity += item.quantity;
+                await product.save();
+            }
+        }
+
+        // Wallet logic
+        const wallet = await Wallet.findOne({ userId: userId });
+
+        if (!wallet) {
+            const walletData = new Wallet({
+                userId: userId,
+                balance: amount
+            });
+            await walletData.save();
+        } else {
+            wallet.balance += amount;
+            await wallet.save();
+        }
+
+        return res.status(201).json({ success: true });
+
     } catch (error) {
-        
+        console.error("Error in cancelOrder:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-}
+};
+
+
 
 const profilePageChangePassword = async (req, res) => {
     try {
         const userId = req.session.user;
-        console.log("Received password change request:", req.body)
-        console.log("User ID:", userId)
+        
         const { oldPassword, newPassword } = req.body
         const user = await User.findOne({ _id: userId });
         console.log("user", user)

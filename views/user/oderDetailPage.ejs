@@ -421,17 +421,24 @@
 									</div>
 									<div class="col-md-4">
 										<h3 class="fs-15 fw-bold"><%= product.productId.productName %></h3>
-										<div class="badge bg-success"><%= orderData.status %></div>
+										<div class="badge bg-success"><%= product.status %></div>
 									</div>
+									
+									
 									<div class="col-md-4">
 										<p class="mb-1">Quantity: <%= product.quantity %></p>
 										<p class="mb-1">Unit Price: ₹<%= product.price.toLocaleString() %></p>
 										<p class="fw-bold">Total Price: ₹<%= product.totalPrice.toLocaleString() %></p>
 									</div>
 									<div class="col-md-2 text-end">
-										<button class="cancel-btn" onclick="cancelOrder('<%= product._id %>', '<%= orderData._id %>')">
+										<button 
+											class="cancel-btn" 
+											onclick="cancelOrder('<%= product.productId._id %>', '<%= orderData._id %>', '<%= product.specId%>', '<%= product.quantity %>', '<%= product._id%>', '<%= product.totalPrice%>', '<%= orderData.userId%>')" 
+											<%= product.status === "Cancelled" ? "disabled" : "" %>
+										>
 											Cancel
-										  </button>
+										</button>
+
 									</div>
 								</div>
 							</div>
@@ -479,9 +486,9 @@
                         <a href="/profile" class="back-btn">
                             <i class="bi bi-arrow-left me-1"></i> Back to Orders
                         </a>
-                        <!-- <button class="download-btn">
+                        <button class="download-btn">
                             <i class="bi bi-file-earmark-text me-2"></i>Download Invoice
-                        </button> -->
+                        </button>
                     </div>
                 </div>
             </div>
@@ -689,7 +696,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 
 	<script>
 		
-		function cancelOrder(productId, orderId) {
+		function cancelOrder(productId, orderId,specId, quantity, id,amount, userId) {
 		  Swal.fire({
 			title: 'Are you sure?',
 			text: "Do you want to cancel this order?",
@@ -700,7 +707,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 			confirmButtonText: 'Yes, cancel it!'
 		  }).then((result) => {
 			if (result.isConfirmed) {
-			  fetch(`/deleteOrder?orderId=${orderId}&productId=${productId}`, {
+			  fetch(`/deleteOrder?orderId=${orderId}&productId=${productId}&specId=${specId}&quantity=${quantity}&id=${id}&amount=${amount}&userId=${userId}`, {
 				method: 'GET',
 				headers: {
 				  'Content-Type': 'application/json'

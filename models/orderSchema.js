@@ -20,6 +20,7 @@ const orderSchema = new mongoose.Schema({
         },
         specId:{
             type: mongoose.Schema.Types.ObjectId,
+            ref: "Variant",
             required: true
         },
         quantity:{
@@ -38,11 +39,16 @@ const orderSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Offer"
       },
+      status:{
+        type: String,
+        default: "Ordered",
+        enum: ["Ordered", "Cancelled"]
+      }
     }],
     status: { 
         type: String, 
         default: 'Pending', 
-        enum: ['Return Requested', 'Return Approved', 'Return Rejected','Ordered', 'Pending', 'Delivered', 'Cancelled'] 
+        enum: ['Return Requested', 'Return Approved', 'Return Rejected','Ordered', 'Pending', 'Delivered', 'Cancelled']
     },
     deliveryAddress: { 
         type: Object, 

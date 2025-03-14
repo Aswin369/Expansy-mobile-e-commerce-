@@ -27,10 +27,7 @@ router.get("/auth/google/callback",passport.authenticate("google",{failureRedire
 router.get("/logout",userController.logout)
 router.get("/productDetailPage/:id",productController.productDetail)
 router.get("/shop",shopPageController.getShopPage)
-router.get("/sorting", shopPageController.getProducts)
-router.get("/priceSorting", shopPageController.getFilteredProducts);
-router.get("/filterByCategory", shopPageController.getFilteredProductsByCategory)
-router.get("/search", shopPageController.searchProducts)
+
 
 
 // userForgot password
