@@ -49,20 +49,34 @@ const getSaleReport = async (req, res) => {
 const saleReportFilter = async (req, res) => {
     try {
         console.log("Request Data:", req.body);
-        const { startDate, endDate } = req.body;
+        const { startDate, endDate, paymentStatus } = req.body;
 
-        
         const start = new Date(startDate);
         const end = new Date(endDate);
-       
-
         
-        const orders = await Order.find({ 
-            createdAt: { $gte: start, $lte: end } 
-        }).populate("userId", "name") 
-          .sort({ createdAt: -1 }); 
+        // Set end date to end of day (23:59:59)
+        end.setHours(23, 59, 59, 999);
 
-        console.log("orderlist",orders)
+        // Create filter object for MongoDB query
+        const filter = { 
+            createdAt: { $gte: start, $lte: end }
+        };
+        
+        // Add payment status filter if specified (for successful payments only)
+        if (paymentStatus && paymentStatus.length > 0) {
+            // Handle both single string and array inputs
+            if (Array.isArray(paymentStatus)) {
+                filter.paymentStatus = { $in: paymentStatus };
+            } else {
+                filter.paymentStatus = paymentStatus;
+            }
+        }
+
+        const orders = await Order.find(filter)
+            .populate("userId", "name") 
+            .sort({ createdAt: -1 }); 
+
+        console.log("Filtered orders count:", orders.length);
 
         res.json({
             success: true,
@@ -96,7 +110,8 @@ const generatePdfReport = async (req, res) => {
 
         
         const orders = await Order.find({
-            createdAt: { $gte: start, $lte: end }
+            createdAt: { $gte: start, $lte: end },
+            paymentStatus: 'success'  // Only include orders with success payment status
         }).populate('userId', 'name');
 
     
@@ -238,13 +253,12 @@ const generatePdfReport = async (req, res) => {
             message: 'An error occurred while generating PDF report'
         });
     }
-};
+}
 
 const generateExcelReport = async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
 
-       
         if (!startDate || !endDate) {
             return res.status(400).json({
                 success: false,
@@ -252,22 +266,22 @@ const generateExcelReport = async (req, res) => {
             });
         }
 
-        
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
         
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
 
-        
+        // Filter only orders with 'success' payment status
         const orders = await Order.find({
-            createdAt: { $gte: start, $lte: end }
+            createdAt: { $gte: start, $lte: end },
+            paymentStatus: 'success'  // Only include orders with success payment status
         }).populate('userId', 'name');
 
-        
+        // Create a new workbook
         const workbook = new ExcelJS.Workbook();
         
-        
+        // Set workbook properties
         workbook.creator = 'Sales Report System';
         workbook.lastModifiedBy = 'Admin';
         workbook.created = new Date();
@@ -277,7 +291,7 @@ const generateExcelReport = async (req, res) => {
             properties: { tabColor: { argb: '4F81BD' } }
         });
 
-       
+        // Define columns
         worksheet.columns = [
             { header: 'Order ID', key: 'orderId', width: 15 },
             { header: 'Customer Name', key: 'customerName', width: 25 },
@@ -287,7 +301,11 @@ const generateExcelReport = async (req, res) => {
             { header: 'Order Status', key: 'orderStatus', width: 15 }
         ];
 
+        // Add title and date range - Important fix for heading
+        worksheet.getRow(1).height = 24; // Set height for title row
+        worksheet.getRow(2).height = 20; // Set height for date range row
         
+        // Merge cells for title and apply formatting
         worksheet.mergeCells('A1:F1');
         const titleCell = worksheet.getCell('A1');
         titleCell.value = 'Sales Report';
@@ -296,8 +314,9 @@ const generateExcelReport = async (req, res) => {
             size: 16,
             bold: true
         };
-        titleCell.alignment = { horizontal: 'center' };
+        titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
         
+        // Merge cells for date range and apply formatting
         worksheet.mergeCells('A2:F2');
         const dateRangeCell = worksheet.getCell('A2');
         dateRangeCell.value = `Date Range: ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}`;
@@ -305,12 +324,12 @@ const generateExcelReport = async (req, res) => {
             name: 'Arial',
             size: 12
         };
-        dateRangeCell.alignment = { horizontal: 'center' };
+        dateRangeCell.alignment = { horizontal: 'center', vertical: 'middle' };
         
-        
+        // Add empty row for spacing
         worksheet.addRow([]);
 
-       
+        // Format header row (now at row 4 with correct indexing)
         const headerRow = worksheet.getRow(4);
         headerRow.font = {
             name: 'Arial',
@@ -318,8 +337,9 @@ const generateExcelReport = async (req, res) => {
             bold: true,
             color: { argb: 'FFFFFF' }
         };
+        headerRow.height = 20; // Set height for header row
         
-       
+        // Style each header cell
         worksheet.columns.forEach((column, index) => {
             const cell = headerRow.getCell(index + 1);
             cell.fill = {
@@ -327,7 +347,7 @@ const generateExcelReport = async (req, res) => {
                 pattern: 'solid',
                 fgColor: { argb: '4F81BD' }
             };
-            cell.alignment = { horizontal: 'center' };
+            cell.alignment = { horizontal: 'center', vertical: 'middle' };
             cell.border = {
                 top: { style: 'thin' },
                 left: { style: 'thin' },
@@ -336,7 +356,7 @@ const generateExcelReport = async (req, res) => {
             };
         });
 
-       
+        // Add data rows starting from row 5
         let dataRowIndex = 5; 
         orders.forEach(order => {
             const row = worksheet.addRow({
@@ -348,7 +368,7 @@ const generateExcelReport = async (req, res) => {
                 orderStatus: order.status
             });
             
-            
+            // Style data cells
             row.eachCell((cell) => {
                 cell.border = {
                     top: { style: 'thin' },
@@ -363,55 +383,57 @@ const generateExcelReport = async (req, res) => {
                 };
             });
             
+            // Align specific columns
+            row.getCell(1).alignment = { horizontal: 'center' }; // Order ID
+            row.getCell(3).alignment = { horizontal: 'center' }; // Order Date
+            row.getCell(5).alignment = { horizontal: 'center' }; // Payment Status
+            row.getCell(6).alignment = { horizontal: 'center' }; // Order Status
             
-            row.getCell(1).alignment = { horizontal: 'center' }; 
-            row.getCell(3).alignment = { horizontal: 'center' }; 
-            row.getCell(5).alignment = { horizontal: 'center' }; 
-            row.getCell(6).alignment = { horizontal: 'center' };
-            
-            
+            // Get specific cells for special formatting
             const paymentStatusCell = row.getCell(5);
             const orderStatusCell = row.getCell(6);
             
-            
-            switch(order.paymentStatus?.toLowerCase()) {
-                case 'paid':
-                    paymentStatusCell.font.color = { argb: '006100' };
-                    break;
-                case 'pending':
-                    paymentStatusCell.font.color = { argb: 'FF9900' };
-                    break;
-                case 'failed':
-                    paymentStatusCell.font.color = { argb: 'FF0000' };
-                    break;
+            // Set payment status colors (though all should be 'success')
+            if (order.paymentStatus === 'success') {
+                paymentStatusCell.font.color = { argb: '006100' }; // Green color
             }
             
-          
+            // Set order status colors
             switch(order.status?.toLowerCase()) {
                 case 'delivered':
-                    orderStatusCell.font.color = { argb: '006100' };
+                    orderStatusCell.font.color = { argb: '006100' }; // Green
                     break;
                 case 'shipped':
-                    orderStatusCell.font.color = { argb: '0000FF' };
+                    orderStatusCell.font.color = { argb: '0000FF' }; // Blue
                     break;
+                case 'ordered':
                 case 'pending':
-                    orderStatusCell.font.color = { argb: 'FF9900' };
+                    orderStatusCell.font.color = { argb: 'FF9900' }; // Orange
                     break;
                 case 'cancelled':
-                    orderStatusCell.font.color = { argb: 'FF0000' };
+                    orderStatusCell.font.color = { argb: 'FF0000' }; // Red
+                    break;
+                case 'return requested':
+                    orderStatusCell.font.color = { argb: 'FF00FF' }; // Purple
+                    break;
+                case 'return approved':
+                    orderStatusCell.font.color = { argb: '008080' }; // Teal
+                    break;
+                case 'return rejected':
+                    orderStatusCell.font.color = { argb: 'FF0000' }; // Red
                     break;
             }
             
             dataRowIndex++;
         });
 
+        // Format date column
+        worksheet.getColumn('orderDate').numFmt = 'dd/mm/yyyy';
         
-        worksheet.getColumn('orderDate').numFmt = 'mm/dd/yyyy';
-        
-       
+        // Add summary section
         const summaryRowIndex = dataRowIndex + 2;
         
-       
+        // Total orders
         worksheet.mergeCells(`A${summaryRowIndex}:E${summaryRowIndex}`);
         const totalOrdersCell = worksheet.getCell(`A${summaryRowIndex}`);
         totalOrdersCell.value = 'Total Orders:';
@@ -429,7 +451,7 @@ const generateExcelReport = async (req, res) => {
         };
         totalOrdersValueCell.alignment = { horizontal: 'center' };
         
-        
+        // Total amount
         const totalAmount = orders.reduce((sum, order) => sum + (order.payableAmount || 0), 0);
         
         worksheet.mergeCells(`A${summaryRowIndex + 1}:E${summaryRowIndex + 1}`);
@@ -443,20 +465,20 @@ const generateExcelReport = async (req, res) => {
         
         const totalAmountValueCell = worksheet.getCell(`F${summaryRowIndex + 1}`);
         totalAmountValueCell.value = totalAmount;
-        totalAmountValueCell.numFmt = '"$"#,##0.00';
+        totalAmountValueCell.numFmt = '"₹"#,##0.00';
         totalAmountValueCell.font = {
             bold: true,
             size: 12
         };
         totalAmountValueCell.alignment = { horizontal: 'center' };
 
-        
+        // Add table filtering capability
         worksheet.autoFilter = {
             from: { row: 4, column: 1 },
             to: { row: dataRowIndex - 1, column: 6 }
         };
 
-       
+        // Set page setup for printing
         worksheet.pageSetup = {
             orientation: 'landscape',
             fitToPage: true,
@@ -466,16 +488,16 @@ const generateExcelReport = async (req, res) => {
             showGridLines: false
         };
 
-        
+        // Generate filename
         const cleanStartDate = startDate.replace(/[^\w-]/g, '-');
         const cleanEndDate = endDate.replace(/[^\w-]/g, '-');
         const fileName = `SalesReport_${cleanStartDate}_to_${cleanEndDate}.xlsx`;
 
-       
+        // Set response headers
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
 
-        
+        // Write workbook to response
         await workbook.xlsx.write(res);
         res.end();
     } catch (error) {

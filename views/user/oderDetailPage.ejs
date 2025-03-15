@@ -494,7 +494,7 @@
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Total Discount</span>
-                            <span>₹0</span>
+                            <span>₹<%= orderData.offerAndCouponAmount.toLocaleString()%></span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
                             <span>Shipping Charge</span>
@@ -988,6 +988,22 @@ function cancelOrder1(orderId, reason, totalAmountPrice ) {
 }
 
 		</script>
+
+
+
+<script>
+	// Add this script to your order details page
+	document.addEventListener('DOMContentLoaded', function() {
+    const downloadInvoiceBtn = document.querySelector('.download-btn');
+    
+    if (downloadInvoiceBtn) {
+        downloadInvoiceBtn.addEventListener('click', function() {
+            const orderId = document.getElementById('OrderIdVal').value;
+            window.location.href = `/invoice/${orderId}`;
+        });
+    }
+});
+</script>
 	
 </body>
 </html>

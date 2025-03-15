@@ -577,45 +577,54 @@
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col-xl-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="row align-items-center">
-                                            <!-- Date filters -->
-                                            <div class="col-md-8">
-                                                <div class="d-flex flex-wrap gap-3">
-                                                    <div class="input-group" style="max-width: 200px;">
-                                                        <span class="input-group-text">From</span>
-                                                        <input type="date" class="form-control" id="startDate">
-                                                    </div>
-                                                    <div class="input-group" style="max-width: 200px;">
-                                                        <span class="input-group-text">To</span>
-                                                        <input type="date" class="form-control" id="endDate">
-                                                    </div>
-                                                    <button type="button" class="btn btn-primary" id="filterBtn">
-                                                        <iconify-icon icon="solar:filter-broken" class="me-1"></iconify-icon>
-                                                        Filter
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <!-- Download buttons -->
-                                            <div class="col-md-4">
-                                                <div class="d-flex justify-content-md-end gap-2">
-                                                    <button type="button" class="btn btn-soft-success" id="downloadExcel">
-                                                        <iconify-icon icon="solar:file-download-broken" class="me-1"></iconify-icon>
-                                                        Export Excel
-                                                    </button>
-                                                    <button type="button" class="btn btn-soft-danger" id="downloadPdf">
-                                                        <iconify-icon icon="solar:file-download-broken" class="me-1"></iconify-icon>
-                                                        Export PDF
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                         <div class="col-xl-12">
+                             <div class="card">
+                                 <div class="card-body">
+                                     <div class="row align-items-center">
+                                         <!-- Date filters and time range buttons -->
+                                         <div class="col-md-8">
+                                             <div class="d-flex flex-wrap gap-2 align-items-center">
+                                                 <div class="input-group" style="max-width: 200px;">
+                                                     <span class="input-group-text">From</span>
+                                                     <input type="date" class="form-control" id="startDate">
+                                                 </div>
+                                                 <div class="input-group" style="max-width: 200px;">
+                                                     <span class="input-group-text">To</span>
+                                                     <input type="date" class="form-control" id="endDate">
+                                                     
+                                                 </div>
+                                                 <button type="button" class="btn btn-primary" id="filterBtn">
+                                                  <iconify-icon icon="solar:filter-broken" class="me-1"></iconify-icon>
+                                                  Filter
+                                              </button>
+                                                 <div class="d-flex gap-4" style="margin-left: 90px;">
+                                                     
+                                                     <button type="button" class="btn btn-outline-primary" id="oneDayBtn">Today</button>
+                                                     <button type="button" class="btn btn-outline-primary" id="oneWeekBtn">1 Week</button>
+                                                     <button type="button" class="btn btn-outline-primary" id="oneMonthBtn">1 Month</button>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <!-- Download buttons -->
+                                         <div class="col-md-4">
+                                             <div class="d-flex justify-content-md-end gap-2">
+                                                 <button type="button" class="btn btn-soft-success" id="downloadExcel">
+                                                     <iconify-icon icon="solar:file-download-broken" class="me-1"></iconify-icon>
+                                                     Export Excel
+                                                 </button>
+                                                 <button type="button" class="btn btn-soft-danger" id="downloadPdf">
+                                                     <iconify-icon icon="solar:file-download-broken" class="me-1"></iconify-icon>
+                                                     Export PDF
+                                                 </button>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     
+
                     
                         <div class="row">
                             <div class="col-xl-12">
@@ -690,6 +699,9 @@
     const filterBtn = document.getElementById('filterBtn');
     const downloadExcelBtn = document.getElementById('downloadExcel');
     const downloadPdfBtn = document.getElementById('downloadPdf');
+    const oneDayBtn = document.getElementById('oneDayBtn');
+    const oneWeekBtn = document.getElementById('oneWeekBtn');
+    const oneMonthBtn = document.getElementById('oneMonthBtn');
     
     // Add event listener to the filter button
     filterBtn.addEventListener('click', function() {
@@ -722,12 +734,66 @@
         // Prepare data to send to backend
         const filterData = {
             startDate: startDate,
-            endDate: endDate
+            endDate: endDate,
+            paymentStatus: ['paid', 'success'] // Only include successful payments
         };
         
         // Send data to backend using fetch API
         sendFilterToBackend(filterData);
     });
+    
+    // Add event listeners for time range buttons
+    oneDayBtn.addEventListener('click', function() {
+        setDateRange('today');
+    });
+    
+    oneWeekBtn.addEventListener('click', function() {
+        setDateRange('week');
+    });
+    
+    oneMonthBtn.addEventListener('click', function() {
+        setDateRange('month');
+    });
+    
+    // Function to set date range based on button clicked
+    function setDateRange(range) {
+        const today = new Date();
+        let startDate = new Date();
+        
+        // Calculate start date based on selected range
+        switch(range) {
+            case 'today':
+                // Set start date to beginning of today
+                startDate.setHours(0, 0, 0, 0);
+                break;
+            case 'week':
+                // Set start date to 7 days ago
+                startDate.setDate(today.getDate() - 7);
+                break;
+            case 'month':
+                // Set start date to 30 days ago
+                startDate.setDate(today.getDate() - 30);
+                break;
+        }
+        
+        // Format dates for input fields (YYYY-MM-DD)
+        const formattedStartDate = startDate.toISOString().split('T')[0];
+        const formattedEndDate = today.toISOString().split('T')[0];
+        
+        // Update input fields
+        startDateInput.value = formattedStartDate;
+        endDateInput.value = formattedEndDate;
+        
+        // Prepare filter data
+        const filterData = {
+            startDate: formattedStartDate,
+            endDate: formattedEndDate,
+            paymentStatus: ['paid', 'success'] // Include both paid and success statuses
+        };
+        
+        // Apply the filter
+        sendFilterToBackend(filterData);
+    }
     
     // Function to send filter data to backend
     function sendFilterToBackend(filterData) {
@@ -817,6 +883,7 @@
             let badgeClass = '';
             switch(status.toLowerCase()) {
                 case 'paid':
+                case 'success':
                     badgeClass = 'bg-success';
                     break;
                 case 'pending':
@@ -842,13 +909,20 @@
                     badgeClass = 'border-info text-info';
                     break;
                 case 'pending':
+                case 'ordered':
                     badgeClass = 'border-warning text-warning';
                     break;
                 case 'cancelled':
                     badgeClass = 'border-danger text-danger';
                     break;
-                case 'draft':
-                    badgeClass = 'border-secondary text-secondary';
+                case 'return requested':
+                    badgeClass = 'border-info text-info';
+                    break;
+                case 'return approved':
+                    badgeClass = 'border-success text-success';
+                    break;
+                case 'return rejected':
+                    badgeClass = 'border-danger text-danger';
                     break;
                 default:
                     badgeClass = 'border-secondary text-secondary';
@@ -906,7 +980,7 @@
         }
         
         // Build query parameters
-        let queryParams = `?startDate=${startDate}&endDate=${endDate}`;
+        let queryParams = `?startDate=${startDate}&endDate=${endDate}&paymentStatus=paid,success`;
         
         // Show loading message
         Swal.fire({
@@ -944,7 +1018,7 @@
         }
         
         // Build query parameters
-        let queryParams = `?startDate=${startDate}&endDate=${endDate}`;
+        let queryParams = `?startDate=${startDate}&endDate=${endDate}&paymentStatus=paid,success`;
         
         // Show loading message
         Swal.fire({

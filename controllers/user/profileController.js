@@ -9,7 +9,7 @@ const session = require("express-session")
 const Wallet = require("../../models/walletSchema")
 const Product = require("../../models/productSchema")
 const Transaction = require("../../models/walletTransaction")
-
+const PDFDocument = require('pdfkit');
 
 const getProfilePage = async (req, res) => {
     try {
@@ -620,6 +620,242 @@ const profilePageChangePassword = async (req, res) => {
     }
 };
 
+
+const generateInvoice = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        
+        // Fetch order data from database
+        const orderData = await Order.findById(orderId)
+            .populate('products.productId')
+            .populate('products.specId')
+            .populate('userId', 'name email'); // Adjust fields based on your User model
+        
+        if (!orderData) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+        
+        // Create PDF document
+        const doc = new PDFDocument({ margin: 50 });
+        
+        // Set response headers
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=Invoice_${orderData.orderId}.pdf`);
+        
+        // Pipe the PDF directly to the response
+        doc.pipe(res);
+        
+        // Add company logo (optional)
+        // const logoPath = path.join(__dirname, '../public/images/logo.png');
+        // doc.image(logoPath, 50, 45, { width: 100 });
+        
+        // Add invoice title
+        doc.fontSize(25)
+           .font('Helvetica-Bold')
+           .text('INVOICE', { align: 'center' });
+        
+        doc.moveDown();
+        
+        // Add invoice information
+        doc.fontSize(12)
+           .font('Helvetica-Bold');
+           
+        // Add a formatted date
+        const formattedDate = new Date().toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+        
+        doc.text(`Invoice Date: ${formattedDate}`, { align: 'right' });
+        doc.text(`Order ID: ${orderData.orderId}`);
+        doc.text(`Order Date: ${new Date(orderData.createdAt).toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })}`);
+        
+        doc.moveDown();
+        
+        // Add customer and shipping information side by side
+        const customerY = doc.y;
+        
+        // Customer Information
+        doc.font('Helvetica-Bold')
+           .text('Customer Information:', 50, customerY);
+        
+        doc.font('Helvetica')
+           .fontSize(10)
+           .text(`Name: ${orderData.userId.name || 'N/A'}`, 50, customerY + 20)
+           .text(`Email: ${orderData.userId.email || 'N/A'}`, 50, customerY + 35);
+        
+        // Shipping Information
+        doc.font('Helvetica-Bold')
+           .fontSize(12)
+           .text('Shipping Information:', 430, customerY);
+        
+        // Handle deliveryAddress fields based on your schema
+        const address = orderData.deliveryAddress;
+        
+        doc.font('Helvetica')
+           .fontSize(10)
+           .text(`Address: ${address.addressType || 'N/A'}`, 430, customerY + 20)
+           .text(`${address.landMark || 'N/A'}`, 430, customerY + 35)
+           .text(`${address.city || 'N/A'}, ${address.state || 'N/A'} - ${address.pincode || 'N/A'}`, 430, customerY + 50)
+           .text(`Phone: ${address.phone || 'N/A'}`, 430, customerY + 65)
+           .text(`Alt Phone: ${address.altPhone || 'N/A'}`, 430, customerY + 80);
+        
+        // Add payment information
+        doc.font('Helvetica-Bold')
+           .fontSize(12)
+           .text('Payment Information:', 50, customerY + 70);
+        
+        doc.font('Helvetica')
+           .fontSize(10)
+           .text(`Method: ${orderData.paymentMethod}`, 50, customerY + 90)
+           .text(`Status: ${orderData.paymentStatus}`, 50, customerY + 105);
+        
+        // Add order status
+        doc.font('Helvetica-Bold')
+           .fontSize(12)
+           .text('Order Status:', 50, customerY + 125);
+        
+        doc.font('Helvetica')
+           .fontSize(10)
+           .text(`${orderData.status}`, 50, customerY + 140);
+        
+        doc.moveDown(2);
+        
+        // Add products table header
+        const itemsTableY = Math.max(customerY + 160, doc.y);
+        
+        doc.font('Helvetica-Bold')
+           .fontSize(12)
+           .text('Product', 50, itemsTableY)
+           .text('Status', 230, itemsTableY, { width: 60, align: 'center' })
+           .text('Quantity', 290, itemsTableY, { width: 60, align: 'center' })
+           .text('Unit Price', 350, itemsTableY, { width: 80, align: 'right' })
+           .text('Total', 450, itemsTableY, { width: 80, align: 'right' });
+        
+        // Draw a line below the header
+        doc.moveTo(50, itemsTableY + 20)
+           .lineTo(550, itemsTableY + 20)
+           .stroke();
+        
+        // Add products
+        let itemY = itemsTableY + 30;
+        
+        orderData.products.forEach((item, index) => {
+            const productName = item.productId.productName || 'Product';
+            const variantInfo = item.specId ? `(${item.specId.color || ''} ${item.specId.size || ''})`.trim() : '';
+            const displayName = variantInfo ? `${productName} ${variantInfo}` : productName;
+            
+            const status = item.status || 'N/A';
+            const quantity = item.quantity;
+            const unitPrice = `₹${item.price.toLocaleString()}`;
+            const total = `₹${item.totalPrice.toLocaleString()}`;
+            
+            // Wrap long product names
+            const productNameWidth = 170;
+            const wrappedName = wrapText(doc, displayName, productNameWidth);
+            
+            const lineHeight = wrappedName.length * 15; // 15 points per line
+            const lineHeightActual = Math.max(lineHeight, 20); // At least 20 points
+            
+            wrappedName.forEach((line, i) => {
+                doc.font('Helvetica')
+                   .fontSize(10)
+                   .text(line, 50, itemY + (i * 15));
+            });
+            
+            doc.text(status, 230, itemY, { width: 60, align: 'center' })
+               .text(quantity.toString(), 290, itemY, { width: 60, align: 'center' })
+               .text(unitPrice, 350, itemY, { width: 80, align: 'right' })
+               .text(total, 450, itemY, { width: 80, align: 'right' });
+            
+            // Draw a light gray line below each product
+            itemY += lineHeightActual + 10;
+            
+            if (index < orderData.products.length - 1) {
+                doc.strokeColor('#e0e0e0')
+                   .moveTo(50, itemY - 5)
+                   .lineTo(550, itemY - 5)
+                   .stroke()
+                   .strokeColor('#000000'); // Reset to black
+            }
+        });
+        
+        // Draw a line above the summary
+        doc.strokeColor('#000000')
+           .moveTo(50, itemY)
+           .lineTo(550, itemY)
+           .stroke();
+        
+        // Add order summary
+        const summaryY = itemY + 20;
+        
+        doc.font('Helvetica')
+           .fontSize(10)
+           .text('Subtotal:', 380, summaryY)
+           .text(`₹${orderData.totalAmount.toLocaleString()}`, 450, summaryY, { width: 80, align: 'right' });
+        
+        doc.text('Discount:', 380, summaryY + 20)
+           .text(`₹${orderData.offerAndCouponAmount.toLocaleString()}`, 450, summaryY + 20, { width: 80, align: 'right' });
+        
+        doc.text('Shipping:', 380, summaryY + 40)
+           .text('₹0', 450, summaryY + 40, { width: 80, align: 'right' });
+        
+        // Add total
+        doc.font('Helvetica-Bold')
+           .fontSize(12)
+           .text('Total Amount:', 380, summaryY + 65)
+           .text(`₹${orderData.payableAmount.toLocaleString()}`, 450, summaryY + 65, { width: 80, align: 'right' });
+        
+        // Add footer
+        const footerY = doc.page.height - 50;
+        
+        doc.font('Helvetica')
+           .fontSize(10)
+           .text('Thank you for your purchase. For any questions or concerns, please contact our customer support.', 50, footerY, { align: 'center' });
+        
+        // Finalize PDF
+        doc.end();
+        
+    } catch (error) {
+        console.error('Error generating invoice:', error);
+        res.status(500).json({ message: 'Error generating invoice', error: error.message });
+    }
+};
+
+// Helper function to wrap text
+function wrapText(doc, text, width) {
+    if (!text) return [''];
+    
+    const words = text.toString().split(' ');
+    const lines = [];
+    let line = '';
+    
+    words.forEach(word => {
+        const testLine = line + (line ? ' ' : '') + word;
+        const testWidth = doc.widthOfString(testLine);
+        
+        if (testWidth > width) {
+            lines.push(line);
+            line = word;
+        } else {
+            line = testLine;
+        }
+    });
+    
+    if (line) {
+        lines.push(line);
+    }
+    
+    return lines.length > 0 ? lines : [''];
+}
+
 module.exports = {
     getProfilePage,
     editUserProfile,
@@ -638,5 +874,6 @@ module.exports = {
     deleteOrder,
     cancelOrder,
     returnRequest,
-    profilePageChangePassword
+    profilePageChangePassword,
+    generateInvoice
 }
