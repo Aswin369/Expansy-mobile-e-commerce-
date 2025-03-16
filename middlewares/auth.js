@@ -10,6 +10,7 @@ const userAuth = (req,res,next)=>{
                 next()
                 console.log(2)
             }else{
+                console.log("skdjfhkas")
                 res.redirect("/login")
             }
         })
@@ -18,6 +19,7 @@ const userAuth = (req,res,next)=>{
             res.status(500).send("internal server error")
         })
     }else{
+        console.log("sdjfsdh")
       return  res.redirect("/login")
     }
 }

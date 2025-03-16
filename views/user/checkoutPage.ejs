@@ -587,7 +587,7 @@
                 </div>
 
                 <div class="size-209">
-                  <span class="mtext-110 cl2"> $79.65 </span>
+                  <span class="mtext-110 cl2"></span>
                 </div>
               </div>
 
@@ -598,7 +598,16 @@
                 </div>
 
                 <div class="size-209">
-                  <span class="mtext-110 cl2"> Free Shipping </span>
+                  <span class="mtext-110 cl2">₹50</span>
+                </div>
+              </div>
+              <div class="flex-w flex-t bor12 p-t-15 p-b-15">
+                <div class="size-208">
+                  <span class="stext-110 cl2"> Coupon: </span>
+                </div>
+
+                <div class="size-209">
+                  <span class="mtext-110 cl2" id="couponAppliedOrNot"></span>
                 </div>
               </div>
               
@@ -661,7 +670,7 @@
                 </div>
 
                 <div class="size-209 p-t-1">
-                  <span class="mtext-110 cl2"> $69.65 </span>
+                  <span class="mtext-110 cl2"></span>
                 </div>
               </div>
 
@@ -847,7 +856,8 @@
   let discount = 0.0;
   let originalDiscount = 0.0;
   let couponDiscount = 0.0;
-  let totalAmount = 0;
+  let payTotalAmount = 0;
+  let shippingCharge = 50;
   let appliedCouponId = null;
   let appliedCouponCode = null;
 
@@ -860,7 +870,7 @@
   const cancelCouponBtn = document.getElementById("cancelCoupon");
   const placeOrderButton = document.querySelector("button.flex-c-m.stext-101.cl0.size-116");
   const cartIdForApplyCoupon = document.getElementById("cartIdForApplyCoupon").value;
-
+  
   // Get all available coupon elements
   const couponElements = document.querySelectorAll('[id^="coupon-"]');
   
@@ -895,77 +905,101 @@
   }
 
   // ========== CALCULATE TOTALS FUNCTION ==========
-  function calculateTotals() {
-    // Get all cart items
-    const itemRows = document.querySelectorAll(".table_row");
-    subtotal = 0;
-    cartItems = [];
+  // Modify the calculateTotals function to properly handle discounts
+function calculateTotals() {
+  // Get all cart items
+  const itemRows = document.querySelectorAll(".table_row");
+  subtotal = 0;
+  cartItems = [];
 
-    itemRows.forEach((row) => {
-      // Get the hidden product ID field
-      const productIdInput = row.querySelector('input[type="hidden"]');
-      if (!productIdInput) {
-        console.error("Product ID input not found for a cart item");
-        return; // Skip this item
-      }
-      const productId = productIdInput.value;
+  itemRows.forEach((row) => {
+    // Get the hidden product ID field
+    const productIdInput = row.querySelector('input[type="hidden"]');
+    if (!productIdInput) {
+      console.error("Product ID input not found for a cart item");
+      return; // Skip this item
+    }
+    const productId = productIdInput.value;
 
-      const quantityElement = row.querySelector(".column-3");
-      const priceElement = row.querySelector(".column-4");
-      const totalPriceElement = row.querySelector(".column-5");
+    const quantityElement = row.querySelector(".column-3");
+    const priceElement = row.querySelector(".column-4");
+    const totalPriceElement = row.querySelector(".column-5");
 
-      console.log("priceElement", priceElement)
-      console.log("totalPriceElement", totalPriceElement)
+    if (!quantityElement || !priceElement || !totalPriceElement) {
+      console.error("Required element missing for cart item");
+      return; // Skip this item
+    }
 
-      if (!quantityElement || !priceElement || !totalPriceElement) {
-        console.error("Required element missing for cart item");
-        return; // Skip this item
-      }
+    const quantity = parseInt(quantityElement.textContent);
+    const unitPrice = parseFloat(
+      priceElement.textContent.replace("$", "").replace("₹", "").trim()
+    );
+    const totalPrice = parseFloat(
+      totalPriceElement.textContent.replace("$", "").replace("₹", "").trim()
+    );
 
-      const quantity = parseInt(quantityElement.textContent);
-      const unitPrice = parseFloat(
-        priceElement.textContent.replace("$", "").replace("₹", "").trim()
-      );
-      const totalPrice = parseFloat(
-        totalPriceElement.textContent.replace("$", "").replace("₹", "").trim()
-      );
+    subtotal += totalPrice;
+    
+    // Store item data for submission
+    const productNameElement = row.querySelector(".column-2");
+    const productName = productNameElement
+      ? productNameElement.textContent.trim()
+      : "Unknown Product";
 
-      subtotal += totalPrice;
-      console.log("unitPrice", unitPrice)
-      console.log("quantity", quantity);
-      
-      // Store item data for submission
-      const productNameElement = row.querySelector(".column-2");
-      const productName = productNameElement
-        ? productNameElement.textContent.trim()
-        : "Unknown Product";
-
-      cartItems.push({
-        productId,
-        productName,
-        quantity,
-        price: unitPrice,
-        totalPrice,
-      });
+    cartItems.push({
+      productId,
+      productName,
+      quantity,
+      price: unitPrice,
+      totalPrice,
     });
+  });
 
-    // Calculate total after discount
-    totalAmount = subtotal - discount;
+  // Add shipping charge ONCE after calculating item subtotal
+  const subtotalBeforeShipping = subtotal;
+ 
 
-    // Update DOM elements
-    if (subtotalElement) {
-      subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
-    }
-    if (totalElement) {
-      totalElement.textContent = `₹${totalAmount.toFixed(2)}`;
-    }
-    if (discountValueElement) {
-      discountValueElement.textContent = `₹${discount.toFixed(2)}`;
-    }
-
-    // Update payment options based on total amount
-    updatePaymentOptions();
+  // Calculate total after applying both discounts
+  // The product discounts are already reflected in the item prices
+  // So we only need to subtract the coupon discount
+  payTotalAmount = subtotal - couponDiscount;
+   
+  // Update DOM elements
+  if (subtotalElement) {
+    subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
   }
+  if (totalElement) {
+    payTotalAmount = payTotalAmount + shippingCharge
+    totalElement.textContent = `₹${payTotalAmount.toFixed(2)}`;
+  }
+  
+  // Show both original product discount and coupon discount
+  if (discountValueElement) {
+    // First check if we have both kinds of discounts
+    if (originalDiscount > 0 && couponDiscount > 0) {
+      discountValueElement.textContent = `₹${originalDiscount.toFixed(2)} (products) + ₹${couponDiscount.toFixed(2)} (coupon)`;
+    } else if (couponDiscount > 0) {
+      discountValueElement.textContent = `₹${couponDiscount.toFixed(2)} (coupon)`;
+    } else if (originalDiscount > 0) {
+      discountValueElement.textContent = `₹${originalDiscount.toFixed(2)} `;
+    } else {
+      discountValueElement.textContent = `₹0.00`;
+    }
+  }
+  
+  // Update coupon status text if element exists
+  const couponStatusElement = document.getElementById("couponAppliedOrNot");
+  if (couponStatusElement) {
+    if (appliedCouponCode) {
+      couponStatusElement.textContent = `Code: ${appliedCouponCode}`;
+    } else {
+      couponStatusElement.textContent = "No coupon applied";
+    }
+  }
+
+  // Update payment options based on total amount
+  updatePaymentOptions();
+}
 
   // ========== UPDATE PAYMENT OPTIONS ==========
   function updatePaymentOptions() {
@@ -973,7 +1007,7 @@
     const paymentRestriction = document.getElementById("payment-restriction");
 
     if (codOption && paymentRestriction) {
-      if (totalAmount > 5000) {
+      if (payTotalAmount > 5000) {
         paymentRestriction.style.display = "block";
         codOption.disabled = true;
         document.getElementById("payment2").checked = true;
@@ -1173,7 +1207,7 @@
         paymentMethodRadio.id === "payment1" ? "COD" : "ONLINE";
 
       // Force online payment for orders over ₹5,000
-      if (totalAmount > 5000 && paymentMethod === "COD") {
+      if (payTotalAmount > 5000 && paymentMethod === "COD") {
         showAlert(
           "Payment Method",
           "Orders above ₹5,000 require online payment. Please select Razorpay payment option.",
@@ -1186,7 +1220,7 @@
       const orderData = {
         deliveryAddressId: selectedAddress.value,
         totalAmount: subtotal,
-        payableAmount: totalAmount,
+        payableAmount: payTotalAmount,
         totalDiscount: discount,
         originalDiscount: originalDiscount, 
         couponDiscount: couponDiscount,
@@ -1194,7 +1228,10 @@
         couponCode: appliedCouponCode,
         paymentMethod: paymentMethod,
         items: cartItems,
+        shippingCharge
       };
+
+      console.log("dsjfjsasdf", orderData)
 
       submitOrder(orderData);
     });
@@ -1230,7 +1267,7 @@
       let paymentMethod = orderData.paymentMethod;
       let id = data.id
       if (paymentMethod === "ONLINE") {
-        handleOnlinePayment(totalAmount, orderId, id);
+        handleOnlinePayment(payTotalAmount, orderId, id);
       } else {
         window.location.href = `/ordersuccess?order=${orderId}&id=${id}`;
       }
@@ -1246,123 +1283,136 @@
   }
 
   // ========== HANDLE ONLINE PAYMENT ==========
-  function handleOnlinePayment(amount, orderId, id) {
-    fetch("/createRazorpayOrder", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  // Inside the handleOnlinePayment function, modify it like this:
+function handleOnlinePayment(amount, orderId, id) {
+  
+    console.log("this is my handleonlinePatmekjdf", amount, orderId, id)
+
+  const amountInPaise = Math.round(amount * 100);
+  
+  fetch("/createRazorpayOrder", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ amount: amountInPaise }), // Send the original amount, let backend handle conversion
+  })
+  .then((response) => {
+    if (!response.ok) {
+      return response.json().then((data) => {
+        throw new Error(data.message || "Failed to create payment order");
+      });
+    }
+    return response.json();
+  })
+  .then((data) => {
+    console.log('Razorpay order data:', data);
+    
+    // Initialize Razorpay checkout
+    const options = {
+      key: "rzp_test_Ar7OJGh05M40uW",
+      amount: data.amount, // Use the amount directly from the response, don't multiply by 100
+      currency: data.currency || "INR",
+      name: "Your Store Name",
+      description: "Purchase Payment",
+      order_id: data.id,
+      handler: function(response) {
+        // Verify payment signature
+        verifyPayment(response, orderId, id);
       },
-      body: JSON.stringify({ amount: amount }),
-    })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((data) => {
-          throw new Error(data.message || "Failed to create payment order");
-        });
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log('thsi data form createrazorpay',data);
-      // Initialize Razorpay checkout
-      const options = {
-        key: "rzp_test_Ar7OJGh05M40uW",
-        amount: data.amount * 100,
-        currency: data.currency || "INR",
-        name: "Your Store Name",
-        description: "Purchase Payment",
-        order_id: data.id,
-        handler: function(response) {
-          // Verify payment signature
-          verifyPayment(response, orderId, id);
+      prefill: {
+        name: data.customerName || "",
+        email: data.customerEmail || "",
+        contact: data.customerPhone || "",
+      },
+      theme: {
+        color: "#3399cc",
+      },
+      modal: {
+        ondismiss: function() {
+          showAlert(
+            "Payment Cancelled",
+            "Your payment process was cancelled. Please try again.",
+            "info"
+          );
         },
-        prefill: {
-          name: data.customerName || "",
-          email: data.customerEmail || "",
-          contact: data.customerPhone || "",
-        },
-        theme: {
-          color: "#3399cc",
-        },
-        modal: {
-          ondismiss: function() {
-            showAlert(
-              "Payment Cancelled",
-              "Your payment process was cancelled. Please try again.",
-              "info"
-            );
-          },
-        },
-      };
+      },
+    };
 
-      // Make sure Razorpay is properly loaded
-      if (typeof Razorpay === "undefined") {
-        showAlert(
-          "Payment Error",
-          "Payment gateway is not loaded properly. Please refresh the page and try again.",
-          "error"
-        );
-        return;
-      }
-
-      try {
-        const razorpayCheckout = new Razorpay(options);
-        razorpayCheckout.open();
-      } catch (err) {
-        console.error("Razorpay initialization error:", err);
-        showAlert(
-          "Payment Error",
-          "Failed to initialize payment gateway. Please try again later.",
-          "error"
-        );
-      }
-    })
-    .catch((error) => {
+    // Make sure Razorpay is properly loaded
+    if (typeof Razorpay === "undefined") {
       showAlert(
-        "Error",
-        error.message || "There was an error creating your payment. Please try again.",
+        "Payment Error",
+        "Payment gateway is not loaded properly. Please refresh the page and try again.",
         "error"
       );
-      console.error("Error:", error);
-    });
-  }
+      return;
+    }
+
+    try {
+      const razorpayCheckout = new Razorpay(options);
+      razorpayCheckout.open();
+    } catch (err) {
+      console.error("Razorpay initialization error:", err);
+      showAlert(
+        "Payment Error",
+        "Failed to initialize payment gateway. Please try again later.",
+        "error"
+      );
+    }
+  })
+  .catch((error) => {
+    showAlert(
+      "Error",
+      error.message || "There was an error creating your payment. Please try again.",
+      "error"
+    );
+    console.error("Error:", error);
+  });
+}
 
   // ========== VERIFY PAYMENT ==========
   function verifyPayment(response, orderId, id) {
-    fetch("/verifyPayment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        razorpayOrderId: response.razorpay_order_id,
-        razorpayPaymentId: response.razorpay_payment_id,
-        razorpaySignature: response.razorpay_signature,
-        orderId: orderId,
-        id:id
-      }),
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data) {
-        window.location.href = `/ordersuccess?order=${orderId}`;
-      } else {
-        showAlert(
-          "Payment Verification Failed",
-          "Your payment could not be verified. Please contact support.",
-          "error"
-        );
-      }
-    })
-    .catch((error) => {
-      console.error("Payment verification error:", error);
+  // First log the response for debugging
+  console.log("Payment verification response:", response);
+  
+  // Check if we have required fields
+  if (!response.razorpay_payment_id || !response.razorpay_order_id || !response.razorpay_signature) {
+    showAlert(
+      "Payment Verification Failed",
+      "Missing payment information. Please contact support.",
+      "error"
+    );
+    return;
+  }
+
+  fetch("/verifyPayment", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      razorpayOrderId: response.razorpay_order_id,
+      razorpayPaymentId: response.razorpay_payment_id,
+      razorpaySignature: response.razorpay_signature,
+      orderId: orderId,
+      id: id
+    }),
+  })
+  .then(response => response.json()) 
+   .then((data) => {
+    console.log("dfgdfgsdfgsf", data)
+    if (data) {
+      window.location.href = `/ordersuccess?order=${orderId}&id=${id}`;
+    } else {
       showAlert(
-        "Error",
-        "There was an error verifying your payment. Please contact support.",
+        "Payment Verification Failed",
+        data.message || "Your payment could not be verified. Please contact support.",
         "error"
       );
-    });
-  }
+    }
+})
+}
 
   // Initialize calculations on page load
   calculateTotals();

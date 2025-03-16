@@ -53,6 +53,8 @@ const changeStatus = async (req, res) => {
     try {
         const { orderId, status } = req.body;
 
+        
+
         console.log("sdsdf", req.body)
         if (!orderId || !status) {
             return res.status(401).json({ success: false, message: "Select an option" });
@@ -130,7 +132,7 @@ const changeStatus = async (req, res) => {
         
         const updatedOrder = await Order.findByIdAndUpdate(
             orderId,
-            { $set: { status: "Cancelled" } },
+            { $set: { status: status } },
             { new: true }
         );
 

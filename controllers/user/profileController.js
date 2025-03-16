@@ -522,26 +522,26 @@ const cancelOrder = async (req, res) => {
         const { orderId, reason, totalAmountPrice } = req.body;
         const amount = parseInt(totalAmountPrice);
 
-        // Find the order and populate product details
+       
         const order = await Order.findById(orderId).populate("products.productId");
         if (!order) {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
 
-        // Update order status and each product's status in the products array
+       
         await Order.findByIdAndUpdate(orderId, {
             $set: { 
                 status: "Cancelled", 
                 returnReason: reason, 
-                "products.$[].status": "Cancelled" // Update all product statuses to "Cancelled"
+                "products.$[].status": "Cancelled" 
             }
         });
 
-        // Increment product quantities in the Product collection
+        
         for (const item of order.products) {
             const product = await Product.findById(item.productId);
 
-            if (!product) continue; // Skip if product not found
+            if (!product) continue; 
 
             const specIndex = product.specification.findIndex(spec => 
                 spec._id.toString() === item.specId.toString()
@@ -553,7 +553,7 @@ const cancelOrder = async (req, res) => {
             }
         }
 
-        // Wallet logic
+  
         const wallet = await Wallet.findOne({ userId: userId });
 
         if (!wallet) {
@@ -625,42 +625,38 @@ const generateInvoice = async (req, res) => {
     try {
         const orderId = req.params.orderId;
         
-        // Fetch order data from database
+      
         const orderData = await Order.findById(orderId)
             .populate('products.productId')
             .populate('products.specId')
-            .populate('userId', 'name email'); // Adjust fields based on your User model
+            .populate('userId', 'name email'); 
         
         if (!orderData) {
             return res.status(404).json({ message: 'Order not found' });
         }
         
-        // Create PDF document
+      
         const doc = new PDFDocument({ margin: 50 });
         
-        // Set response headers
+     
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename=Invoice_${orderData.orderId}.pdf`);
         
-        // Pipe the PDF directly to the response
+    
         doc.pipe(res);
         
-        // Add company logo (optional)
-        // const logoPath = path.join(__dirname, '../public/images/logo.png');
-        // doc.image(logoPath, 50, 45, { width: 100 });
-        
-        // Add invoice title
+  
         doc.fontSize(25)
            .font('Helvetica-Bold')
            .text('INVOICE', { align: 'center' });
         
         doc.moveDown();
         
-        // Add invoice information
+   
         doc.fontSize(12)
            .font('Helvetica-Bold');
            
-        // Add a formatted date
+ 
         const formattedDate = new Date().toLocaleDateString('en-US', {
             day: '2-digit',
             month: 'long',
@@ -679,10 +675,10 @@ const generateInvoice = async (req, res) => {
         
         doc.moveDown();
         
-        // Add customer and shipping information side by side
+      
         const customerY = doc.y;
         
-        // Customer Information
+
         doc.font('Helvetica-Bold')
            .text('Customer Information:', 50, customerY);
         
@@ -691,12 +687,12 @@ const generateInvoice = async (req, res) => {
            .text(`Name: ${orderData.userId.name || 'N/A'}`, 50, customerY + 20)
            .text(`Email: ${orderData.userId.email || 'N/A'}`, 50, customerY + 35);
         
-        // Shipping Information
+    
         doc.font('Helvetica-Bold')
            .fontSize(12)
            .text('Shipping Information:', 430, customerY);
         
-        // Handle deliveryAddress fields based on your schema
+ 
         const address = orderData.deliveryAddress;
         
         doc.font('Helvetica')
@@ -707,7 +703,7 @@ const generateInvoice = async (req, res) => {
            .text(`Phone: ${address.phone || 'N/A'}`, 430, customerY + 65)
            .text(`Alt Phone: ${address.altPhone || 'N/A'}`, 430, customerY + 80);
         
-        // Add payment information
+
         doc.font('Helvetica-Bold')
            .fontSize(12)
            .text('Payment Information:', 50, customerY + 70);
@@ -717,7 +713,7 @@ const generateInvoice = async (req, res) => {
            .text(`Method: ${orderData.paymentMethod}`, 50, customerY + 90)
            .text(`Status: ${orderData.paymentStatus}`, 50, customerY + 105);
         
-        // Add order status
+
         doc.font('Helvetica-Bold')
            .fontSize(12)
            .text('Order Status:', 50, customerY + 125);
@@ -728,7 +724,7 @@ const generateInvoice = async (req, res) => {
         
         doc.moveDown(2);
         
-        // Add products table header
+
         const itemsTableY = Math.max(customerY + 160, doc.y);
         
         doc.font('Helvetica-Bold')
@@ -739,12 +735,12 @@ const generateInvoice = async (req, res) => {
            .text('Unit Price', 350, itemsTableY, { width: 80, align: 'right' })
            .text('Total', 450, itemsTableY, { width: 80, align: 'right' });
         
-        // Draw a line below the header
+    
         doc.moveTo(50, itemsTableY + 20)
            .lineTo(550, itemsTableY + 20)
            .stroke();
         
-        // Add products
+
         let itemY = itemsTableY + 30;
         
         orderData.products.forEach((item, index) => {
@@ -757,12 +753,12 @@ const generateInvoice = async (req, res) => {
             const unitPrice = `₹${item.price.toLocaleString()}`;
             const total = `₹${item.totalPrice.toLocaleString()}`;
             
-            // Wrap long product names
+         
             const productNameWidth = 170;
             const wrappedName = wrapText(doc, displayName, productNameWidth);
             
-            const lineHeight = wrappedName.length * 15; // 15 points per line
-            const lineHeightActual = Math.max(lineHeight, 20); // At least 20 points
+            const lineHeight = wrappedName.length * 15
+            const lineHeightActual = Math.max(lineHeight, 20); 
             
             wrappedName.forEach((line, i) => {
                 doc.font('Helvetica')
@@ -775,7 +771,7 @@ const generateInvoice = async (req, res) => {
                .text(unitPrice, 350, itemY, { width: 80, align: 'right' })
                .text(total, 450, itemY, { width: 80, align: 'right' });
             
-            // Draw a light gray line below each product
+            
             itemY += lineHeightActual + 10;
             
             if (index < orderData.products.length - 1) {
@@ -783,17 +779,17 @@ const generateInvoice = async (req, res) => {
                    .moveTo(50, itemY - 5)
                    .lineTo(550, itemY - 5)
                    .stroke()
-                   .strokeColor('#000000'); // Reset to black
+                   .strokeColor('#000000'); 
             }
         });
         
-        // Draw a line above the summary
+      
         doc.strokeColor('#000000')
            .moveTo(50, itemY)
            .lineTo(550, itemY)
            .stroke();
         
-        // Add order summary
+  
         const summaryY = itemY + 20;
         
         doc.font('Helvetica')
@@ -807,20 +803,20 @@ const generateInvoice = async (req, res) => {
         doc.text('Shipping:', 380, summaryY + 40)
            .text('₹0', 450, summaryY + 40, { width: 80, align: 'right' });
         
-        // Add total
+     
         doc.font('Helvetica-Bold')
            .fontSize(12)
            .text('Total Amount:', 380, summaryY + 65)
            .text(`₹${orderData.payableAmount.toLocaleString()}`, 450, summaryY + 65, { width: 80, align: 'right' });
         
-        // Add footer
+     
         const footerY = doc.page.height - 50;
         
         doc.font('Helvetica')
            .fontSize(10)
            .text('Thank you for your purchase. For any questions or concerns, please contact our customer support.', 50, footerY, { align: 'center' });
         
-        // Finalize PDF
+ 
         doc.end();
         
     } catch (error) {
@@ -829,7 +825,7 @@ const generateInvoice = async (req, res) => {
     }
 };
 
-// Helper function to wrap text
+
 function wrapText(doc, text, width) {
     if (!text) return [''];
     

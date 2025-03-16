@@ -81,11 +81,15 @@ const orderSchema = new mongoose.Schema({
         type:Number,
         default:0
     },
+    shippingCharge:{
+        type:Number,
+        default:0
+    },
     returnReason: {
         type: String,
         default: null
     }
-}, { timestamps: true });
+}, { timestamps: true })
 
 
 const Order = mongoose.model("Order", orderSchema);

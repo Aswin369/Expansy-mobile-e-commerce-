@@ -598,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const numericFields = document.querySelectorAll('#coupons-limits, #Min-Discount-Value, #Max-Discount-Value');
     numericFields.forEach(field => {
         field.addEventListener('keydown', function(e) {
-            if (e.key === 'e' || e.key === 'E') {
+            if (e.key === 'e' || e.key === 'E' || e.key === "-") {
                 e.preventDefault();
             }
         });

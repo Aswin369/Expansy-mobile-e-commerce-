@@ -242,15 +242,40 @@ const loadCheckOutPage = async(req,res)=>{
 const addOrderDetails = async (req, res) => {
     try {
         const userId = req.session.user;
-        const {deliveryAddressId,totalAmount,payableAmount,totalDiscount,couponId,couponCode,paymentMethod,items} = req.body;
+        const {deliveryAddressId,totalAmount,payableAmount,totalDiscount,couponId,couponCode,paymentMethod,items,shippingCharge} = req.body;
 
-        
+        console.log("khsdfkjs",req.body)
 
         const addressData = await Address.findOne({userId:new mongoose.Types.ObjectId(userId),"address._id": new mongoose.Types.ObjectId(deliveryAddressId)},{"address.$":1})
 
-        if (!addressData) {
-            return res.status(400).json({success:false,message:"Invalid delivery address"})
+        if (couponCode) {
+            const coupon = await Coupon.findOne({_id: couponId,code:couponCode, 
+                isActive: true
+            });
+        
+            // Check if the coupon exists
+            if (!coupon) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: "Invalid or inactive coupon." 
+                });
+            }
+        
+            // Check if the coupon usage limit is reached
+            if (coupon.currentUsage >= coupon.maxUsage) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: "Coupon usage limit has been reached." 
+                });
+            }
+        
+            // Increment usage only if conditions are met
+            await Coupon.findByIdAndUpdate(
+                coupon._id,
+                { $inc: { currentUsage: 1, maxUsage: -1 } }
+            );
         }
+        
 
         const deliveryAddress = {...addressData.address[0]}
         
@@ -281,6 +306,8 @@ const addOrderDetails = async (req, res) => {
         }
 
         
+
+
         const newOrder = new Order({
             userId,
             products: orderProducts,
@@ -291,6 +318,7 @@ const addOrderDetails = async (req, res) => {
             offerAndCouponAmount: totalDiscount || 0,
             couponId: couponId ? new mongoose.Types.ObjectId(couponId) : null,
             couponCode: couponCode || null,
+            shippingCharge: shippingCharge
         });
 
        
@@ -332,7 +360,7 @@ const loadSuccessPage = async(req,res)=>{
         const userId = req.session.user
         const {order} = req.query
 
-        console.log(order)
+        console.log("dkasfhdjhfkajsdhfj",order)
         if(!userId){
             res.redirect("/login")
         }
@@ -367,31 +395,38 @@ const razorpayOrder = async (req,res)=>{
 
 const verifiyPayment = async (req,res) =>{
     try {
-        const { razorpayOrderId ,razorpayPaymentId,razorpaySignature,orderId,id} = req.body;
+        const { razorpayOrderId, razorpayPaymentId, razorpaySignature, orderId, id } = req.body;
 
-        console.log("aksjdfa",req.body)
+        console.log("verifuy payment", req.body)
 
-        console.log(razorpayOrderId ,razorpayPaymentId,razorpaySignature,orderId)
+        if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+            return res.status(400).json({ error: "Missing payment information" });
+        }
+
         const sign = razorpayOrderId + '|' + razorpayPaymentId;
-        const expectedSign = crypto.createHmac('sha256', "7FaXYkyBxYgWdzIHBWr7ntSa")
+        const expectedSign = crypto.createHmac('sha256', "YOUR_CORRECT_SECRET_KEY")
             .update(sign.toString())
             .digest('hex');
 
         if (razorpaySignature === expectedSign) {
-            const orderData = await Order.findById(id)
-            orderData.paymentStatus = "success"
-            await orderData.save()
-            console.log("sfjsahdf",orderData)
-            res.status(200).json({ message: 'Payment verified successfully', orderId});
+            const orderData = await Order.findById(id);
+            if (!orderData) {
+                return res.status(404).json({ error: 'Order not found' });
+            }
+
+            orderData.paymentStatus = "success";
+            await orderData.save();
+
+            res.status(200).json({success: true, message: 'Payment verified successfully', orderId, id});
         } else {
             res.status(400).json({ error: 'Invalid payment signature' });
         }
     } catch (err) {
-        console.error(err)
+        console.error(err);
         res.status(500).json({ error: err.message });
-    } 
-
-} 
+    }
+}
+ 
 
 const applyCoupon = async (req, res) => {
     try {

@@ -50,7 +50,7 @@ const createOffer = async (req, res) => {
         console.log("Request body:", req.body);
         let { start_date, end_date, offer_name, offer_type, offer_item, description, discount_value } = req.body;
 
-        // Convert date format from "DD-MM-YYYY" to "YYYY-MM-DD"
+       
         const formatDate = (dateString) => {
             const [day, month, year] = dateString.split("-");
             return new Date(`${year}-${month}-${day}`);
@@ -59,7 +59,7 @@ const createOffer = async (req, res) => {
         start_date = formatDate(start_date);
         end_date = formatDate(end_date);
 
-        // Prepare offer data
+     
         const offerData = new Offer({
             offerName: offer_name,
             startDate: start_date,
@@ -71,7 +71,7 @@ const createOffer = async (req, res) => {
             applicableCategories: offer_type === "category" ? offer_item : null
         });
 
-        // Save the offer
+    
         const savedOffer = await offerData.save();
         console.log("Offer saved successfully:", savedOffer);
 
@@ -182,7 +182,7 @@ const editOffer = async (req, res) => {
             return res.status(400).json({ success: false, message: "Cannot find offerId" });
         }
 
-        // Prepare the updated offer data
+        
         const formatDate = (dateString) => {
             const [day, month, year] = dateString.split("-");
             return new Date(`${year}-${month}-${day}`);
@@ -193,26 +193,26 @@ const editOffer = async (req, res) => {
             description: description,
             discountValue: discount_value,
             applicableTo: offer_type,
-            startDate: formatDate(start_date),  // Convert formatted string to Date object
-            expirationDate: formatDate(end_date), // Convert formatted string to Date object
+            startDate: formatDate(start_date), 
+            expirationDate: formatDate(end_date), 
             applicableProducts: offer_type === "product" ? offer_item : null,
             applicableCategories: offer_type === "category" ? offer_item : null,
         };
         
 
-        // Update the offer first
+   
         const updatedOffer = await Offer.findByIdAndUpdate(offerId, { $set: updateData }, { new: true });
         if (!updatedOffer) {
             return res.status(400).json({ success: false, message: "Offer update failed, please try again" });
         }
         console.log("Offer updated successfully:", updatedOffer);
 
-        // After updating, store the offerId in the respective schema
+       
         if (offer_type === "product") {
             console.log("Updating product offer...");
             const updateProductOffer = await Product.findByIdAndUpdate(
                 offer_item,
-                { $set: { productOffer: offerId } }, // Store offer ID instead of discount_value
+                { $set: { productOffer: offerId } }, 
                 { new: true }
             );
 
@@ -225,7 +225,7 @@ const editOffer = async (req, res) => {
             console.log("Updating category offer...");
             const updateCategoryOffer = await Category.findByIdAndUpdate(
                 offer_item,
-                { $set: { categoryOffer: offerId } }, // Store offer ID instead of discount_value
+                { $set: { categoryOffer: offerId } },
                 { new: true }
             );
 

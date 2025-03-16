@@ -47,7 +47,7 @@ const addProducts = async (req, res) => {
         const categoryId = await Category.findOne({
             category:productCategories._id
         })
-        // console.log("category id ",categoryId)
+       
         
         if(!categoryId){
             return res.status(400).json({
@@ -127,7 +127,7 @@ const getAllProducts = async (req, res) => {
         .populate("brand")
         .exec();
 
-        // console.log("Fetched Product Data:", JSON.stringify(productData, null, 2));
+       
 
         const count = await Product.countDocuments({
             productName: { $regex: new RegExp(".*" + search + ".*", "i") } 
@@ -312,8 +312,7 @@ const viewProduct = async (req, res) => {
         const brandcategory = await Product.findById(id)
             .populate('brand', 'brandName')
             .populate('category', 'name');
-        // console.log(productDetails);
-        // console.log("brand adn vategory",brandcategory)
+        
         res.render("product-details", {
             productDetails,
             brandcategory

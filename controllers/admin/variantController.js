@@ -13,7 +13,7 @@ const getVariantList = async (req,res)=>{
             StorageData,
             colorData
         })
-        // console.log(StorageData)
+        
     } catch (error) {
         console.error("Error in gettingVariant Page",error)
         res.redirect("/pageerror")
