@@ -459,7 +459,7 @@
 											  '<%= product.totalPrice %>', 
 											  '<%= orderData.userId %>'
 											)"
-											<%= product.status === "Cancelled" || product.status === "Return Requested" ? "disabled" : "" || product.status === "Return Approved" ? "disabled" : "" %>
+											<%= product.status === "Cancelled" || product.status === "Return Requested" ? "disabled" : "" || product.status === "Return Approved" ? "disabled" : "" || product.status === "Return Rejected" ? "disabled" : ""%>
 										  >
 											Return Request
 										  </button>

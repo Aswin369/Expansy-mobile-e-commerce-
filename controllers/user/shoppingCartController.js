@@ -257,7 +257,6 @@ const addOrderDetails = async (req, res) => {
                 isActive: true
             });
         
-            // Check if the coupon exists
             if (!coupon) {
                 return res.status(400).json({ 
                     success: false, 
@@ -265,15 +264,15 @@ const addOrderDetails = async (req, res) => {
                 });
             }
         
-            // Check if the coupon usage limit is reached
-            if (coupon.currentUsage >= coupon.maxUsage) {
+      
+            if (coupon.maxUsage <= 0) {
                 return res.status(400).json({ 
                     success: false, 
                     message: "Coupon usage limit has been reached." 
                 });
             }
         
-            // Increment usage only if conditions are met
+  
             await Coupon.findByIdAndUpdate(
                 coupon._id,
                 { $inc: { currentUsage: 1, maxUsage: -1 } }
@@ -408,7 +407,7 @@ const verifiyPayment = async (req,res) =>{
         }
 
         const sign = razorpayOrderId + '|' + razorpayPaymentId;
-        const expectedSign = crypto.createHmac('sha256', "YOUR_CORRECT_SECRET_KEY")
+        const expectedSign = crypto.createHmac('sha256', "7FaXYkyBxYgWdzIHBWr7ntSa")
             .update(sign.toString())
             .digest('hex');
 

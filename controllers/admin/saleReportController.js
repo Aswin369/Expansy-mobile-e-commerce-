@@ -17,7 +17,7 @@ const getSaleReport = async (req, res) => {
                     totalDiscount: { $sum: "$offerAndCouponAmount" }
                 }
             }
-        ]);
+        ])
 
         const result = salesData.length > 0 ? salesData[0] : {
             totalOrders: 0,
@@ -37,13 +37,13 @@ const getSaleReport = async (req, res) => {
             totalSuccess: result.totalSuccess,
             totalSale: result.totalSale,
             totalDiscount: result.totalDiscount
-        });
+        })
 
     } catch (error) {
         console.error("This error occurred in getSaleReport:", error);
         res.redirect("/pageerror");
     }
-};
+}
 
 
 const saleReportFilter = async (req, res) => {

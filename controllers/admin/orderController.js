@@ -3,6 +3,7 @@ const Address = require("../../models/addressSchema")
 const Product = require("../../models/productSchema")
 const Transaction = require("../../models/walletTransaction")
 const Wallet = require("../../models/walletSchema")
+const { json } = require("body-parser")
 
 const getOrderPage = async (req,res)=>{
     try {
@@ -213,11 +214,30 @@ const changeStatusToApproveRequest = async (req, res) => {
     }
 };
 
+const changeStatusTorejected = async(req,res) =>{
+    try {
+        const {orderId, productId} = req.body
+        console.log("fasldfj",req.body)
+        const orderStatus =  await Order.updateOne(
+            { _id: orderId, "products._id": productId },
+            { $set: { "products.$.status": "Return Rejected" } }
+        );
+        console.log("askdjfhjh",orderStatus)
+        if(orderStatus.modifiedCount === 0){
+            return res.status(404).json({success:false, message: "Order not found"})
+        }
 
+        return res.status(200).json({success:true, message: "Successfull"})
+    } catch (error) {
+        console.error("This error occured in changeStatusTorejected",error)
+        res.redirect("/pageerror")
+    }
+}
 
 module.exports = {
     getOrderPage,
     getOrderDetailPage,
     changeStatus,
-    changeStatusToApproveRequest
+    changeStatusToApproveRequest,
+    changeStatusTorejected
 }
