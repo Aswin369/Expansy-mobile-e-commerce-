@@ -490,7 +490,7 @@
                         <h2 class="fs-26 fw-bold mb-3">Order Summary</h2>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Subtotal</span>
-                            <span>₹<%= orderData.totalAmount.toLocaleString()%></span>
+                            <span>₹<%= (orderData.payableAmount + orderData.offerAndCouponAmount).toLocaleString()%></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Total Discount</span>
@@ -504,6 +504,7 @@
                             <span>Total Amount</span>
                             <span>₹<%= orderData.payableAmount.toLocaleString()%></span>
                         </div>
+						
 						<input type="hidden" id="totalAmountPrice" value="<%= orderData.payableAmount%>">
                     </div>
     

@@ -89,6 +89,10 @@ const productAddToCart = async (req, res) => {
        
         const currentCartQuantity = existingCartItem ? existingCartItem.quantity : 0;
         const totalQuantity = currentCartQuantity + quantity;
+       
+        if(totalQuantity > 5){
+            return res.status(400).json({ success: false, message: "Quantity cannot greater than 5" });
+        }
 
         if (totalQuantity > availableStock) {
             return res.status(400).json({ success: false, message: "Not enough stock available!" });

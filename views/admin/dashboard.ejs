@@ -444,122 +444,94 @@
                <div class="container-fluid">
 
                     <!-- Start here.... -->
-                    <div class="row">
-                         <div class="col-xxl-5">
-                              <div class="row">
-                                   <div class="col-12">
-                                        <div class="alert alert-primary text-truncate mb-3" role="alert">
-                                             We regret to inform you that our server is currently experiencing technical difficulties.
-                                        </div>
-                                   </div>
+                    
+                         
+                    <div class="row mb-3">
+                         <div class="col-xl-12">
+                             <div class="card">
+                                 <div class="card-body">
+                                     <div class="d-flex align-items-center gap-2 flex-wrap">
+                                         <!-- Date Filters -->
+                                         <div class="input-group" style="max-width: 200px;">
+                                             <span class="input-group-text">From</span>
+                                             <input type="date" class="form-control" id="startDate">
+                                         </div>
+                     
+                                         <div class="input-group" style="max-width: 200px;">
+                                             <span class="input-group-text">To</span>
+                                             <input type="date" class="form-control" id="endDate">
+                                         </div>
+                     
+                                         <!-- Buttons -->
+                                         <button type="button" class="btn btn-primary" id="filterBtn">
+                                             <iconify-icon icon="solar:filter-broken" class="me-1"></iconify-icon>
+                                             Filter
+                                         </button>
+                                         <button type="button" class="btn btn-outline-primary" id="oneDayBtn">Weekly</button>
+                                         <button type="button" class="btn btn-outline-primary" id="oneWeekBtn">Monthly</button>
+                                         <button type="button" class="btn btn-outline-primary" id="oneMonthBtn">Yearly</button>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     
+                     
+                     <div class="row">
+                     <div class="col-md-6 col-xl-3">
+                         <div class="card">
+                             <div class="card-body">
+                                 <div class="d-flex align-items-center justify-content-between">
+                                     <div>
+                                         <h4 class="card-title mb-2">Total Order</h4>
+                                         <p class="text-muted fw-medium fs-22 mb-0">45</p>
+                                     </div>
+                                     <div>
+                                         <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                             <iconify-icon icon="solar:chat-round-money-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="col-md-6 col-xl-3">
+                         <div class="card">
+                             <div class="card-body">
+                                 <div class="d-flex align-items-center justify-content-between">
+                                     <div>
+                                         <h4 class="card-title mb-2">Order Cancel</h4>
+                                         <p class="text-muted fw-medium fs-22 mb-0">45</p>
+                                     </div>
+                                     <div>
+                                         <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                             <iconify-icon icon="solar:cart-cross-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="col-md-6 col-xl-3">
+                         <div class="card">
+                             <div class="card-body">
+                                 <div class="d-flex align-items-center justify-content-between">
+                                     <div>
+                                         <h4 class="card-title mb-2">Order Pending</h4>
+                                         <p class="text-muted fw-medium fs-22 mb-0">45</p>
+                                     </div>
+                                     <div>
+                                         <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                             <iconify-icon icon="solar:clock-circle-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
 
-                                   <div class="col-md-6">
-                                        <div class="card overflow-hidden">
-                                             <div class="card-body">
-                                                  <div class="row">
-                                                       <div class="col-6">
-                                                            <div class="avatar-md bg-soft-primary rounded">
-                                                                 <iconify-icon icon="solar:cart-5-bold-duotone" class="avatar-title fs-32 text-primary"></iconify-icon>
-                                                            </div>
-                                                       </div> <!-- end col -->
-                                                       <div class="col-6 text-end">
-                                                            <p class="text-muted mb-0 text-truncate">Total Orders</p>
-                                                            <h3 class="text-dark mt-1 mb-0">13, 647</h3>
-                                                       </div> <!-- end col -->
-                                                  </div> <!-- end row-->
-                                             </div> <!-- end card body -->
-                                             <div class="card-footer py-2 bg-light bg-opacity-50">
-                                                  <div class="d-flex align-items-center justify-content-between">
-                                                       <div>
-                                                            <span class="text-success"> <i class="bx bxs-up-arrow fs-12"></i> 2.3%</span>
-                                                            <span class="text-muted ms-1 fs-12">Last Week</span>
-                                                       </div>
-                                                       <a href="#!" class="text-reset fw-semibold fs-12">View More</a>
-                                                  </div>
-                                             </div> <!-- end card body -->
-                                        </div> <!-- end card -->
-                                   </div> <!-- end col -->
-                                   <div class="col-md-6">
-                                        <div class="card overflow-hidden">
-                                             <div class="card-body">
-                                                  <div class="row">
-                                                       <div class="col-6">
-                                                            <div class="avatar-md bg-soft-primary rounded">
-                                                                 <i class="bx bx-award avatar-title fs-24 text-primary"></i>
-                                                            </div>
-                                                       </div> <!-- end col -->
-                                                       <div class="col-6 text-end">
-                                                            <p class="text-muted mb-0 text-truncate">New Leads</p>
-                                                            <h3 class="text-dark mt-1 mb-0">9, 526</h3>
-                                                       </div> <!-- end col -->
-                                                  </div> <!-- end row-->
-                                             </div> <!-- end card body -->
-                                             <div class="card-footer py-2 bg-light bg-opacity-50">
-                                                  <div class="d-flex align-items-center justify-content-between">
-                                                       <div>
-                                                            <span class="text-success"> <i class="bx bxs-up-arrow fs-12"></i> 8.1%</span>
-                                                            <span class="text-muted ms-1 fs-12">Last Month</span>
-                                                       </div>
-                                                       <a href="#!" class="text-reset fw-semibold fs-12">View More</a>
-                                                  </div>
-                                             </div> <!-- end card body -->
-                                        </div> <!-- end card -->
-                                   </div> <!-- end col -->
-                                   <div class="col-md-6">
-                                        <div class="card overflow-hidden">
-                                             <div class="card-body">
-                                                  <div class="row">
-                                                       <div class="col-6">
-                                                            <div class="avatar-md bg-soft-primary rounded">
-                                                                 <i class="bx bxs-backpack avatar-title fs-24 text-primary"></i>
-                                                            </div>
-                                                       </div> <!-- end col -->
-                                                       <div class="col-6 text-end">
-                                                            <p class="text-muted mb-0 text-truncate">Deals</p>
-                                                            <h3 class="text-dark mt-1 mb-0">976</h3>
-                                                       </div> <!-- end col -->
-                                                  </div> <!-- end row-->
-                                             </div> <!-- end card body -->
-                                             <div class="card-footer py-2 bg-light bg-opacity-50">
-                                                  <div class="d-flex align-items-center justify-content-between">
-                                                       <div>
-                                                            <span class="text-danger"> <i class="bx bxs-down-arrow fs-12"></i> 0.3%</span>
-                                                            <span class="text-muted ms-1 fs-12">Last Month</span>
-                                                       </div>
-                                                       <a href="#!" class="text-reset fw-semibold fs-12">View More</a>
-                                                  </div>
-                                             </div> <!-- end card body -->
-                                        </div> <!-- end card -->
-                                   </div> <!-- end col -->
-                                   <div class="col-md-6">
-                                        <div class="card overflow-hidden">
-                                             <div class="card-body">
-                                                  <div class="row">
-                                                       <div class="col-6">
-                                                            <div class="avatar-md bg-soft-primary rounded">
-                                                                 <i class="bx bx-dollar-circle avatar-title text-primary fs-24"></i>
-                                                            </div>
-                                                       </div> <!-- end col -->
-                                                       <div class="col-6 text-end">
-                                                            <p class="text-muted mb-0 text-truncate">Booked Revenue</p>
-                                                            <h3 class="text-dark mt-1 mb-0">$123.6k</h3>
-                                                       </div> <!-- end col -->
-                                                  </div> <!-- end row-->
-                                             </div> <!-- end card body -->
-                                             <div class="card-footer py-2 bg-light bg-opacity-50">
-                                                  <div class="d-flex align-items-center justify-content-between">
-                                                       <div>
-                                                            <span class="text-danger"> <i class="bx bxs-down-arrow fs-12"></i> 10.6%</span>
-                                                            <span class="text-muted ms-1 fs-12">Last Month</span>
-                                                       </div>
-                                                       <a href="#!" class="text-reset fw-semibold fs-12">View More</a>
-                                                  </div>
-                                             </div> <!-- end card body -->
-                                        </div> <!-- end card -->
-                                   </div> <!-- end col -->
-                              </div> <!-- end row -->
-                         </div> <!-- end col -->
-
+                     <div>
+           
                          <div class="col-xxl-7">
                               <div class="card">
                                    <div class="card-body">
@@ -582,106 +554,6 @@
                     </div> <!-- end row -->
 
                     <div class="row">
-                         <div class="col-lg-4">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <h5 class="card-title">Conversions</h5>
-                                        <div id="conversions" class="apex-charts mb-2 mt-n2"></div>
-                                        <div class="row text-center">
-                                             <div class="col-6">
-                                                  <p class="text-muted mb-2">This Week</p>
-                                                  <h3 class="text-dark mb-3">23.5k</h3>
-                                             </div> <!-- end col -->
-                                             <div class="col-6">
-                                                  <p class="text-muted mb-2">Last Week</p>
-                                                  <h3 class="text-dark mb-3">41.05k</h3>
-                                             </div> <!-- end col -->
-                                        </div> <!-- end row -->
-                                        <div class="text-center">
-                                             <button type="button" class="btn btn-light shadow-none w-100">View Details</button>
-                                        </div> <!-- end row -->
-                                   </div>
-                              </div>
-                         </div> <!-- end left chart card -->
-
-                         <div class="col-lg-4">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <h5 class="card-title">Sessions by Country</h5>
-                                        <div id="world-map-markers" style="height: 316px">
-                                        </div>
-                                        <div class="row text-center">
-                                             <div class="col-6">
-                                                  <p class="text-muted mb-2">This Week</p>
-                                                  <h3 class="text-dark mb-3">23.5k</h3>
-                                             </div> <!-- end col -->
-                                             <div class="col-6">
-                                                  <p class="text-muted mb-2">Last Week</p>
-                                                  <h3 class="text-dark mb-3">41.05k</h3>
-                                             </div> <!-- end col -->
-                                        </div> <!-- end row -->
-                                   </div>
-                              </div> <!-- end card-->
-                         </div> <!-- end col -->
-
-                         <div class="col-lg-4">
-                              <div class="card card-height-100">
-                                   <div class="card-header d-flex align-items-center justify-content-between gap-2">
-                                        <h4 class="card-title flex-grow-1">Top Pages</h4>
-
-                                        <a href="#" class="btn btn-sm btn-soft-primary">View All</a>
-                                   </div>
-                                   <div class="table-responsive">
-                                        <table class="table table-hover table-nowrap table-centered m-0">
-                                             <thead class="bg-light bg-opacity-50">
-                                                  <tr>
-                                                       <th class="text-muted ps-3">Page Path</th>
-                                                       <th class="text-muted">Page Views</th>
-                                                       <th class="text-muted">Exit Rate</th>
-                                                  </tr>
-                                             </thead>
-                                             <tbody>
-                                                  <tr>
-                                                       <td class="ps-3"><a href="#" class="text-muted">larkon/ecommerce.html</a></td>
-                                                       <td>465 </td>
-                                                       <td><span class="badge badge-soft-success">4.4%</span></td>
-                                                  </tr>
-                                                  <tr>
-                                                       <td class="ps-3"><a href="#" class="text-muted">larkon/dashboard.html</a></td>
-                                                       <td> 426</td>
-                                                       <td><span class="badge badge-soft-danger">20.4%</span></td>
-                                                  </tr>
-                                                  <tr>
-                                                       <td class="ps-3"><a href="#" class="text-muted">larkon/chat.html</a></td>
-                                                       <td>254 </td>
-                                                       <td><span class="badge badge-soft-warning">12.25%</span></td>
-                                                  </tr>
-                                                  <tr>
-                                                       <td class="ps-3"><a href="#" class="text-muted">larkon/auth-login.html</a></td>
-                                                       <td> 3369</td>
-                                                       <td><span class="badge badge-soft-success">5.2%</span></td>
-                                                  </tr>
-                                                  <tr>
-                                                       <td class="ps-3"><a href="#" class="text-muted">larkon/email.html</a></td>
-                                                       <td>985 </td>
-                                                       <td><span class="badge badge-soft-danger">64.2%</span></td>
-                                                  </tr>
-                                                  <tr>
-                                                       <td class="ps-3"><a href="#" class="text-muted">larkon/social.html</a></td>
-                                                       <td>653 </td>
-                                                       <td><span class="badge badge-soft-success">2.4%</span></td>
-                                                  </tr>
-                                                  <tr>
-                                                       <td class="ps-3"><a href="#" class="text-muted">larkon/blog.html</a></td>
-                                                       <td>478 </td>
-                                                       <td><span class="badge badge-soft-danger">1.4%</span></td>
-                                                  </tr>
-                                             </tbody>
-                                        </table>
-                                   </div>
-                              </div>
-                         </div> <!-- end col -->
-
                          <div class="col-xl-4 d-none">
                               <div class="card">
                                    <div class="card-header d-flex justify-content-between align-items-center">

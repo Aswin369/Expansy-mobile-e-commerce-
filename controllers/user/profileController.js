@@ -472,14 +472,15 @@ const deleteOrder = async(req,res)=>{
         const productUpdateQuantity = await Product.updateOne({_id:productId,"specification._id":specObjectId},{$inc:{"specification.$.quantity":quantityToNumber}},{new:true})
 
         console.log("asdfaskljdfojk",productUpdateQuantity)
-
+        
+        const convertAmount = Number(amount)
         
 
         const order = await Order.updateOne(
             { _id: orderId, "products.productId": productId },
             { 
                 $set: { "products.$.status": "Cancelled" }, 
-                $inc: { payableAmount: -amount }  
+                $inc: { payableAmount: -convertAmount }  
             }
         );
         
@@ -489,7 +490,6 @@ const deleteOrder = async(req,res)=>{
             console.log("ghfgfdfd", order);
             
 
-        const convertAmount = Number(amount)
         const addWallet =await  Wallet.updateOne({userId:userId},{$inc:{balance:convertAmount}})
 
         if(addWallet.matchedCount === 0){
@@ -498,6 +498,20 @@ const deleteOrder = async(req,res)=>{
                 balance:convertAmount
             })
             await newWallet.save()
+        }
+
+
+        const walletData = await Wallet.findOne({ userId: userId });
+
+        if (walletData) {
+            await Transaction.create({
+                walletId: walletData._id,
+                userId: userId,
+                type: 'credit',    
+                amount: convertAmount,
+                associatedOrder: orderId,
+                status: 'success'
+            });
         }
 
         const order1 = await Order.findOne({ _id: orderId });
@@ -554,18 +568,28 @@ const cancelOrder = async (req, res) => {
         }
 
   
-        const wallet = await Wallet.findOne({ userId: userId });
+        let wallet = await Wallet.findOne({ userId: userId });
 
         if (!wallet) {
-            const walletData = new Wallet({
+            wallet = new Wallet({
                 userId: userId,
                 balance: amount
             });
-            await walletData.save();
+            await wallet.save();
         } else {
             wallet.balance += amount;
             await wallet.save();
         }
+
+      
+        await Transaction.create({
+            walletId: wallet._id,
+            userId: userId,
+            type: 'credit', 
+            amount: amount,
+            associatedOrder: orderId,
+            status: 'success'
+        });
 
         return res.status(201).json({ success: true });
 
