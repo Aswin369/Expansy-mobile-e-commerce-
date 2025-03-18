@@ -12,6 +12,7 @@ const orderController = require("../controllers/admin/orderController")
 const couponController = require("../controllers/admin/counponController")
 const offerController = require("../controllers/admin/offerController")
 const saleReportController = require("../controllers/admin/saleReportController")
+const walletController = require("../controllers/admin/walletController")
 
 // router.get("/pageerror",adminController.pageerror)
 router.get("/login",adminController.loadLogin)
@@ -91,5 +92,7 @@ router.get("/getSaleReportPage",adminAuth,saleReportController.getSaleReport)
 router.post("/saleReportFilter",adminAuth,saleReportController.saleReportFilter)
 router.get('/saleReportExcel',adminAuth,saleReportController.generateExcelReport);
 router.get('/saleReportPdf', adminAuth,saleReportController.generatePdfReport);
-
+// Wallet Transaction
+router.get("/getWalletListingPage",adminAuth,walletController.getWalletList)
+router.get("/viewDetails/:id",adminAuth,walletController.viewDetails)
 module.exports = router

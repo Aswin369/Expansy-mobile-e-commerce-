@@ -457,7 +457,7 @@ const loadOrderDetailPage = async (req, res) => {
 
 const deleteOrder = async(req,res)=>{
     try {
-        const {orderId, productId, quantity, specId, id, amount} = req.query
+        const {orderId, productId, quantity, specId, id, amount, reason} = req.query
         console.log("dshka",req.query)
         console.log("asldfkjlasdkjf",req.query)
         const userId = req.session.user
@@ -479,10 +479,11 @@ const deleteOrder = async(req,res)=>{
         const order = await Order.updateOne(
             { _id: orderId, "products.productId": productId },
             { 
-                $set: { "products.$.status": "Cancelled" }, 
+                $set: { "products.$.status": "Cancelled", "products.$.reason": reason}, 
                 $inc: { payableAmount: -convertAmount }  
-            }
-        );
+            },
+            {new: true})
+        
         
         
         console.log("orderasdfkashdf", order)
