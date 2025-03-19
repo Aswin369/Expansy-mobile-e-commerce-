@@ -25,8 +25,109 @@
      <!-- App css (Require in all Page) -->
      <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
 
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ApexCharts CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.0/apexcharts.min.css">
+
      <!-- Theme Config js (Require in all Page) -->
      <script src="/assets/js/config.js"></script>
+     <style>
+          .card {
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            border: none;
+            border-radius: 0.5rem;
+        }
+        .avatar-md {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chart-container {
+            min-height: 300px;
+            width: 100%;
+        }
+        .btn-outline-primary.active {
+            background-color: #4e73df;
+            color: white;
+        }
+        .form-select.dropdown-selector {
+            max-width: 150px;
+        }
+          :root {
+              --primary-color: #22c55e;
+              --secondary-color: #ff6c2f;
+              --light-bg: #f8f9fa;
+              --border-color: #e9ecef;
+          }
+          
+          body {
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              background-color: #232427;
+          }
+          
+          .dashboard-title {
+              color: #22282e;
+              margin-bottom: 20px;
+              font-weight: 600;
+          }
+          
+          .card {
+              border-radius: 10px;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+              margin-bottom: 25px;
+              border: none;
+          }
+          
+          .card-header {
+              background-color: #22282e;
+              border-bottom: 1px solid var(--border-color);
+              padding: 18px 20px;
+              border-radius: 10px 10px 0 0 !important;
+          }
+          
+          .card-title {
+              font-size: 18px;
+              font-weight: 600;
+              color: #eeeeee;
+              margin-bottom: 0;
+          }
+          
+          .card-body {
+              padding: 20px;
+          }
+          
+          .btn-outline-light {
+              color: #6c757d;
+              border-color: #dee2e6;
+          }
+          
+          
+          .chart-container {
+              min-height: 350px;
+          }
+          
+          .dropdown-selector {
+              max-width: 200px;
+          }
+          
+          .highlight {
+              color: var(--secondary-color);
+              font-weight: bold;
+          }
+          
+          @media (max-width: 767px) {
+              .card-header {
+                  flex-direction: column;
+                  align-items: flex-start !important;
+              }
+              
+              .card-header .btn-group {
+                  margin-top: 10px;
+              }
+          }
+      </style>
 </head>
 
 <body>
@@ -446,384 +547,195 @@
                     <!-- Start here.... -->
                     
                          
-                    <div class="row mb-3">
-                         <div class="col-xl-12">
-                             <div class="card">
-                                 <div class="card-body">
-                                     <div class="d-flex align-items-center gap-2 flex-wrap">
-                                         <!-- Date Filters -->
-                                         <div class="input-group" style="max-width: 200px;">
-                                             <span class="input-group-text">From</span>
-                                             <input type="date" class="form-control" id="startDate">
-                                         </div>
-                     
-                                         <div class="input-group" style="max-width: 200px;">
-                                             <span class="input-group-text">To</span>
-                                             <input type="date" class="form-control" id="endDate">
-                                         </div>
-                     
-                                         <!-- Buttons -->
-                                         <button type="button" class="btn btn-primary" id="filterBtn">
-                                             <iconify-icon icon="solar:filter-broken" class="me-1"></iconify-icon>
-                                             Filter
-                                         </button>
-                                         <button type="button" class="btn btn-outline-primary" id="oneDayBtn">Weekly</button>
-                                         <button type="button" class="btn btn-outline-primary" id="oneWeekBtn">Monthly</button>
-                                         <button type="button" class="btn btn-outline-primary" id="oneMonthBtn">Yearly</button>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                     
-                     
-                     <div class="row">
-                     <div class="col-md-6 col-xl-3">
-                         <div class="card">
-                             <div class="card-body">
-                                 <div class="d-flex align-items-center justify-content-between">
-                                     <div>
-                                         <h4 class="card-title mb-2">Total Order</h4>
-                                         <p class="text-muted fw-medium fs-22 mb-0">45</p>
-                                     </div>
-                                     <div>
-                                         <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                             <iconify-icon icon="solar:chat-round-money-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                    <div class="container-fluid p-4">
+                         <h1 class="h3 mb-4 text-gray-800">Sales Analytics Dashboard</h1>
+                         
+                         <!-- Date Filters Section -->
+                         <div class="row mb-3">
+                             <div class="col-xl-12">
+                                 <div class="card">
+                                     <div class="card-body">
+                                         <div class="d-flex align-items-center gap-2 flex-wrap">
+                                             <!-- Date Filters -->
+                                             <div class="input-group" style="max-width: 200px;">
+                                                 <span class="input-group-text">From</span>
+                                                 <input type="date" class="form-control" id="startDate">
+                                             </div>
+                                 
+                                             <div class="input-group" style="max-width: 200px;">
+                                                 <span class="input-group-text">To</span>
+                                                 <input type="date" class="form-control" id="endDate">
+                                             </div>
+                                 
+                                             <!-- Buttons -->
+                                             <button type="button" class="btn btn-primary" id="filterBtn">
+                                                 <i class="fas fa-filter me-1"></i>
+                                                 Filter
+                                             </button>
+                                             <button type="button" class="btn btn-outline-primary" id="oneDayBtn">Weekly</button>
+                                             <button type="button" class="btn btn-outline-primary" id="oneWeekBtn">Monthly</button>
+                                             <button type="button" class="btn btn-outline-primary active" id="oneMonthBtn">Yearly</button>
                                          </div>
                                      </div>
                                  </div>
                              </div>
                          </div>
-                     </div>
-                     <div class="col-md-6 col-xl-3">
-                         <div class="card">
-                             <div class="card-body">
-                                 <div class="d-flex align-items-center justify-content-between">
-                                     <div>
-                                         <h4 class="card-title mb-2">Order Cancel</h4>
-                                         <p class="text-muted fw-medium fs-22 mb-0">45</p>
-                                     </div>
-                                     <div>
-                                         <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                             <iconify-icon icon="solar:cart-cross-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                     <div class="col-md-6 col-xl-3">
-                         <div class="card">
-                             <div class="card-body">
-                                 <div class="d-flex align-items-center justify-content-between">
-                                     <div>
-                                         <h4 class="card-title mb-2">Order Pending</h4>
-                                         <p class="text-muted fw-medium fs-22 mb-0">45</p>
-                                     </div>
-                                     <div>
-                                         <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                             <iconify-icon icon="solar:clock-circle-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-
-                     <div>
-           
-                         <div class="col-xxl-7">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                             <h4 class="card-title">Performance</h4>
+                         
+                         <!-- Stats Cards -->
+                         <div class="row mb-4">
+                             <div class="col-md-6 col-xl-3">
+                                 <div class="card">
+                                     <div class="card-body">
+                                         <div class="d-flex align-items-center justify-content-between">
                                              <div>
-                                                  <button type="button" class="btn btn-sm btn-outline-light">ALL</button>
-                                                  <button type="button" class="btn btn-sm btn-outline-light">1M</button>
-                                                  <button type="button" class="btn btn-sm btn-outline-light">6M</button>
-                                                  <button type="button" class="btn btn-sm btn-outline-light active">1Y</button>
+                                                 <h4 class="card-title mb-2">Total Order</h4>
+                                                 <p class="text-muted fw-medium fs-22 mb-0">0</p>
                                              </div>
-                                        </div> <!-- end card-title-->
-
-                                        <div dir="ltr">
-                                             <div id="dash-performance-chart" class="apex-charts"></div>
-                                        </div>
-                                   </div> <!-- end card body -->
-                              </div> <!-- end card -->
-                         </div> <!-- end col -->
-                    </div> <!-- end row -->
-
-                    <div class="row">
-                         <div class="col-xl-4 d-none">
-                              <div class="card">
-                                   <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h4 class="card-title">Recent Transactions</h4>
-                                        <div>
-                                             <a href="#!" class="btn btn-sm btn-primary">
-                                                  <i class="bx bx-plus me-1"></i>Add
-                                             </a>
-                                        </div>
-                                   </div> <!-- end card-header-->
-                                   <div class="card-body p-0">
-                                        <div class="px-3" data-simplebar style="max-height: 398px;">
-                                             <table class="table table-hover mb-0 table-centered">
-                                                  <tbody>
-                                                       <tr>
-                                                            <td>24 April, 2024</td>
-                                                            <td>$120.55</td>
-                                                            <td><span class="badge bg-success">Cr</span></td>
-                                                            <td>Commisions </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>24 April, 2024</td>
-                                                            <td>$9.68</td>
-                                                            <td><span class="badge bg-success">Cr</span></td>
-                                                            <td>Affiliates </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>20 April, 2024</td>
-                                                            <td>$105.22</td>
-                                                            <td><span class="badge bg-danger">Dr</span></td>
-                                                            <td>Grocery </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>18 April, 2024</td>
-                                                            <td>$80.59</td>
-                                                            <td><span class="badge bg-success">Cr</span></td>
-                                                            <td>Refunds </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>18 April, 2024</td>
-                                                            <td>$750.95</td>
-                                                            <td><span class="badge bg-danger">Dr</span></td>
-                                                            <td>Bill Payments </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>17 April, 2024</td>
-                                                            <td>$455.62</td>
-                                                            <td><span class="badge bg-danger">Dr</span></td>
-                                                            <td>Electricity </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>17 April, 2024</td>
-                                                            <td>$102.77</td>
-                                                            <td><span class="badge bg-success">Cr</span></td>
-                                                            <td>Interest </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>16 April, 2024</td>
-                                                            <td>$79.49</td>
-                                                            <td><span class="badge bg-success">Cr</span></td>
-                                                            <td>Refunds </td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td>05 April, 2024</td>
-                                                            <td>$980.00</td>
-                                                            <td><span class="badge bg-danger">Dr</span></td>
-                                                            <td>Shopping</td>
-                                                       </tr>
-                                                  </tbody>
-                                             </table>
-                                        </div>
-                                   </div> <!-- end card body -->
-                              </div> <!-- end card-->
-                         </div> <!-- end col-->
-                    </div> <!-- end row -->
-
-                    <div class="row">
-                         <div class="col">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                             <h4 class="card-title">
-                                                  Recent Orders
-                                             </h4>
-
-                                             <a href="#!" class="btn btn-sm btn-soft-primary">
-                                                  <i class="bx bx-plus me-1"></i>Create Order
-                                             </a>
-                                        </div>
-                                   </div>
-                                   <!-- end card body -->
-                                   <div class="table-responsive table-centered">
-                                        <table class="table mb-0">
-                                             <thead class="bg-light bg-opacity-50">
-                                                  <tr>
-                                                       <th class="ps-3">
-                                                            Order ID.
-                                                       </th>
-                                                       <th>
-                                                            Date
-                                                       </th>
-                                                       <th>
-                                                            Product
-                                                       </th>
-                                                       <th>
-                                                            Customer Name
-                                                       </th>
-                                                       <th>
-                                                            Email ID
-                                                       </th>
-                                                       <th>
-                                                            Phone No.
-                                                       </th>
-                                                       <th>
-                                                            Address
-                                                       </th>
-                                                       <th>
-                                                            Payment Type
-                                                       </th>
-                                                       <th>
-                                                            Status
-                                                       </th>
-                                                  </tr>
-                                             </thead>
-                                             <!-- end thead-->
-                                             <tbody>
-                                                  <tr>
-                                                       <td class="ps-3">
-                                                            <a href="order-detail.html">#RB5625</a>
-                                                       </td>
-                                                       <td>29 April 2024</td>
-                                                       <td>
-                                                            <img src="/assets/images/products/product-1(1).png" alt="product-1(1)" class="img-fluid avatar-sm">
-                                                       </td>
-                                                       <td>
-                                                            <a href="#!">Anna M. Hines</a>
-                                                       </td>
-                                                       <td>anna.hines@mail.com</td>
-                                                       <td>(+1)-555-1564-261</td>
-                                                       <td>Burr Ridge/Illinois</td>
-                                                       <td>Credit Card</td>
-                                                       <td>
-                                                            <i class="bx bxs-circle text-success me-1"></i>Completed
-                                                       </td>
-                                                  </tr>
-                                                  <tr>
-                                                       <td class="ps-3">
-                                                            <a href="order-detail.html">#RB9652</a>
-                                                       </td>
-                                                       <td>25 April 2024</td>
-                                                       <td>
-                                                            <img src="/assets/images/products/product-4.png" alt="product-4" class="img-fluid avatar-sm">
-                                                       </td>
-                                                       <td>
-                                                            <a href="#!">Judith H. Fritsche</a>
-                                                       </td>
-                                                       <td>judith.fritsche.com</td>
-                                                       <td>(+57)-305-5579-759</td>
-                                                       <td>SULLIVAN/Kentucky</td>
-                                                       <td>Credit Card</td>
-                                                       <td>
-                                                            <i class="bx bxs-circle text-success me-1"></i>Completed
-                                                       </td>
-                                                  </tr>
-                                                  <tr>
-                                                       <td class="ps-3">
-                                                            <a href="order-detail.html">#RB5984</a>
-                                                       </td>
-                                                       <td>25 April 2024</td>
-                                                       <td>
-                                                            <img src="/assets/images/products/product-5.png" alt="product-5" class="img-fluid avatar-sm">
-                                                       </td>
-                                                       <td>
-                                                            <a href="#!">Peter T. Smith</a>
-                                                       </td>
-                                                       <td>peter.smith@mail.com</td>
-                                                       <td>(+33)-655-5187-93</td>
-                                                       <td>Yreka/California</td>
-                                                       <td>Pay Pal</td>
-                                                       <td>
-                                                            <i class="bx bxs-circle text-success me-1"></i>Completed
-                                                       </td>
-                                                  </tr>
-                                                  <tr>
-                                                       <td class="ps-3">
-                                                            <a href="order-detail.html">#RB3625</a>
-                                                       </td>
-                                                       <td>21 April 2024</td>
-                                                       <td>
-                                                            <img src="/assets/images/products/product-6.png" alt="product-6" class="img-fluid avatar-sm">
-                                                       </td>
-                                                       <td>
-                                                            <a href="#!">Emmanuel J. Delcid</a>
-                                                       </td>
-                                                       <td>
-                                                            emmanuel.delicid@mail.com
-                                                       </td>
-                                                       <td>(+30)-693-5553-637</td>
-                                                       <td>Atlanta/Georgia</td>
-                                                       <td>Pay Pal</td>
-                                                       <td>
-                                                            <i class="bx bxs-circle text-primary me-1"></i>Processing
-                                                       </td>
-                                                  </tr>
-                                                  <tr>
-                                                       <td class="ps-3">
-                                                            <a href="order-detail.html">#RB8652</a>
-                                                       </td>
-                                                       <td>18 April 2024</td>
-                                                       <td>
-                                                            <img src="/assets/images/products/product-1(2).png" alt="product-1(2)" class="img-fluid avatar-sm">
-                                                       </td>
-                                                       <td>
-                                                            <a href="#!">William J. Cook</a>
-                                                       </td>
-                                                       <td>william.cook@mail.com</td>
-                                                       <td>(+91)-855-5446-150</td>
-                                                       <td>Rosenberg/Texas</td>
-                                                       <td>Credit Card</td>
-                                                       <td>
-                                                            <i class="bx bxs-circle text-primary me-1"></i>Processing
-                                                       </td>
-                                                  </tr>
-                                             </tbody>
-                                             <!-- end tbody -->
-                                        </table>
-                                        <!-- end table -->
-                                   </div>
-                                   <!-- table responsive -->
-
-                                   <div class="card-footer border-top">
-                                        <div class="row g-3">
-                                             <div class="col-sm">
-                                                  <div class="text-muted">
-                                                       Showing
-                                                       <span class="fw-semibold">5</span>
-                                                       of
-                                                       <span class="fw-semibold">90,521</span>
-                                                       orders
-                                                  </div>
+                                             <div>
+                                                 <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                                     <i class="fas fa-shopping-cart fs-32 text-primary avatar-title"></i>
+                                                 </div>
                                              </div>
-
-                                             <div class="col-sm-auto">
-                                                  <ul class="pagination m-0">
-                                                       <li class="page-item">
-                                                            <a href="#" class="page-link"><i class="bx bx-left-arrow-alt"></i></a>
-                                                       </li>
-                                                       <li class="page-item active">
-                                                            <a href="#" class="page-link">1</a>
-                                                       </li>
-                                                       <li class="page-item">
-                                                            <a href="#" class="page-link">2</a>
-                                                       </li>
-                                                       <li class="page-item">
-                                                            <a href="#" class="page-link">3</a>
-                                                       </li>
-                                                       <li class="page-item">
-                                                            <a href="#" class="page-link"><i class="bx bx-right-arrow-alt"></i></a>
-                                                       </li>
-                                                  </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="col-md-6 col-xl-3">
+                                 <div class="card">
+                                     <div class="card-body">
+                                         <div class="d-flex align-items-center justify-content-between">
+                                             <div>
+                                                 <h4 class="card-title mb-2">Order Cancel</h4>
+                                                 <p class="text-muted fw-medium fs-22 mb-0">0</p>
                                              </div>
-                                        </div>
-                                   </div>
-                              </div>
-                              <!-- end card -->
+                                             <div>
+                                                 <div class="avatar-md bg-danger bg-opacity-10 rounded">
+                                                     <i class="fas fa-times-circle fs-32 text-danger avatar-title"></i>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="col-md-6 col-xl-3">
+                                 <div class="card">
+                                     <div class="card-body">
+                                         <div class="d-flex align-items-center justify-content-between">
+                                             <div>
+                                                 <h4 class="card-title mb-2">Order Pending</h4>
+                                                 <p class="text-muted fw-medium fs-22 mb-0">0</p>
+                                             </div>
+                                             <div>
+                                                 <div class="avatar-md bg-warning bg-opacity-10 rounded">
+                                                     <i class="fas fa-clock fs-32 text-warning avatar-title"></i>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="col-md-6 col-xl-3">
+                                 <div class="card">
+                                     <div class="card-body">
+                                         <div class="d-flex align-items-center justify-content-between">
+                                             <div>
+                                                 <h4 class="card-title mb-2">Revenue</h4>
+                                                 <p class="text-muted fw-medium fs-22 mb-0" id="totalRevenue">$0</p>
+                                             </div>
+                                             <div>
+                                                 <div class="avatar-md bg-success bg-opacity-10 rounded">
+                                                     <i class="fas fa-dollar-sign fs-32 text-success avatar-title"></i>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
                          </div>
-                         <!-- end col -->
-                    </div> <!-- end row -->
-
-               </div>
+                         
+                         <!-- Charts Row -->
+                         <div class="row">
+                             <!-- Sales Report by Rate -->
+                             <div class="col-lg-7 mb-4">
+                                 <div class="card h-100">
+                                     <div class="card-header d-flex justify-content-between align-items-center">
+                                         <h4 class="card-title">Sales Report by Rate</h4>
+                                         <div class="btn-group">
+                                             <button type="button" class="btn btn-sm btn-outline-primary" id="all-btn">ALL</button>
+                                             <button type="button" class="btn btn-sm btn-outline-primary" id="month-btn">1M</button>
+                                             <button type="button" class="btn btn-sm btn-outline-primary" id="sixmonth-btn">6M</button>
+                                             <button type="button" class="btn btn-sm btn-outline-primary active" id="year-btn">1Y</button>
+                                         </div>
+                                     </div>
+                                     <div class="card-body">
+                                         <div id="sales-rate-chart" class="chart-container"></div>
+                                     </div>
+                                 </div>
+                             </div>
+                             
+                             <!-- Best Selling Products and Brands -->
+                             <!-- Best Selling Section -->
+<div class="card bg-dark text-white mb-4">
+     <div class="card-header d-flex justify-content-between align-items-center">
+       <h4 class="card-title mb-0" id="chart-title">Best Selling Products</h4>
+       <div class="d-flex gap-2">
+         <button id="products-tab" class="btn btn-sm btn-outline-warning active">Products</button>
+         <button id="brands-tab" class="btn btn-sm btn-outline-warning">Brands</button>
+         <button id="categories-tab" class="btn btn-sm btn-outline-warning">Categories</button>
+       </div>
+     </div>
+     <div class="card-body">
+       <!-- Date Filter Section -->
+       <div class="row mb-3">
+         <div class="col-12">
+           <div class="d-flex align-items-center gap-2 flex-wrap">
+             <div class="input-group" style="max-width: 200px;">
+               <span class="input-group-text bg-dark text-light border-secondary">From</span>
+               <input type="date" class="form-control bg-dark text-light border-secondary" id="startDate">
+             </div>
+             
+             <div class="input-group" style="max-width: 200px;">
+               <span class="input-group-text bg-dark text-light border-secondary">To</span>
+               <input type="date" class="form-control bg-dark text-light border-secondary" id="endDate">
+             </div>
+             
+             <button type="button" class="btn btn-warning" id="filterBtn">
+               <i class="fas fa-filter me-1"></i>
+               Filter
+             </button>
+             
+             <button type="button" class="btn btn-outline-warning period-btn" id="weekly-btn">Weekly</button>
+             <button type="button" class="btn btn-outline-warning period-btn" id="monthly-btn">Monthly</button>
+             <button type="button" class="btn btn-outline-warning period-btn active" id="yearly-btn">Yearly</button>
+           </div>
+         </div>
+       </div>
+       
+       <!-- Total Units Counter -->
+       <div class="mb-3 d-flex justify-content-end">
+         <div class="badge bg-warning text-dark p-2">
+           <span class="fs-6">Total Units: <span id="total-units" class="fw-bold">0</span></span>
+         </div>
+       </div>
+       
+       <!-- Chart Container -->
+       <div class="position-relative">
+         <div id="best-selling-chart" style="min-height: 400px;"></div>
+         
+         <!-- Loading Spinner -->
+         <div id="chart-loading" class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background-color: rgba(30, 30, 45, 0.7); z-index: 10; display: none;">
+           <div class="spinner-border text-warning" role="status">
+             <span class="visually-hidden">Loading...</span>
+           </div>
+         </div>
+         
+         <!-- Error Message -->
+         <div id="chart-error" class="alert alert-danger mt-3" style="display: none;"></div>
+       </div>
+     </div>
+   </div>
+                         </div>
+                     </div>
                <!-- End Container Fluid -->
 
                <!-- ========== Footer Start ========== -->
@@ -860,9 +772,370 @@
                 <script src="/assets/vendor/jsvectormap/maps/world-merc.js"></script>
                 <script src="/assets/vendor/jsvectormap/maps/world.js"></script>
                 
+                <script>
+// Function to initialize all charts when the document is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize charts
+  createBestSellingChart();
+  
+  // Add event listeners for chart type toggling
+  document.getElementById('products-tab').addEventListener('click', function() {
+    document.getElementById('products-tab').classList.add('active');
+    document.getElementById('brands-tab').classList.remove('active');
+    document.getElementById('categories-tab').classList.remove('active');
+    createBestSellingChart('products');
+  });
+  
+  document.getElementById('brands-tab').addEventListener('click', function() {
+    document.getElementById('brands-tab').classList.add('active');
+    document.getElementById('products-tab').classList.remove('active');
+    document.getElementById('categories-tab').classList.remove('active');
+    createBestSellingChart('brands');
+  });
+  
+  document.getElementById('categories-tab').addEventListener('click', function() {
+    document.getElementById('categories-tab').classList.add('active');
+    document.getElementById('products-tab').classList.remove('active');
+    document.getElementById('brands-tab').classList.remove('active');
+    createBestSellingChart('categories');
+  });
+  
+  // Initialize date filters
+  initDateFilters();
+});
+
+// Initialize date pickers and filter button
+function initDateFilters() {
+  // Set default date range (last 30 days)
+  const today = new Date();
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(today.getDate() - 30);
+  
+  document.getElementById('startDate').valueAsDate = thirtyDaysAgo;
+  document.getElementById('endDate').valueAsDate = today;
+  
+  // Add event listener to filter button
+  document.getElementById('filterBtn').addEventListener('click', function() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    // Get active chart type
+    let chartType = 'products';
+    if (document.getElementById('brands-tab').classList.contains('active')) {
+      chartType = 'brands';
+    } else if (document.getElementById('categories-tab').classList.contains('active')) {
+      chartType = 'categories';
+    }
+    
+    createBestSellingChart(chartType, startDate, endDate);
+  });
+  
+  // Add event listeners for preset periods
+  document.getElementById('weekly-btn').addEventListener('click', function() {
+    resetPeriodButtons();
+    this.classList.add('active');
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 7);
+    
+    document.getElementById('startDate').valueAsDate = sevenDaysAgo;
+    document.getElementById('endDate').valueAsDate = today;
+    
+    // Trigger filter click
+    document.getElementById('filterBtn').click();
+  });
+  
+  document.getElementById('monthly-btn').addEventListener('click', function() {
+    resetPeriodButtons();
+    this.classList.add('active');
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    document.getElementById('startDate').valueAsDate = thirtyDaysAgo;
+    document.getElementById('endDate').valueAsDate = today;
+    
+    // Trigger filter click
+    document.getElementById('filterBtn').click();
+  });
+  
+  document.getElementById('yearly-btn').addEventListener('click', function() {
+    resetPeriodButtons();
+    this.classList.add('active');
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(today.getFullYear() - 1);
+    
+    document.getElementById('startDate').valueAsDate = oneYearAgo;
+    document.getElementById('endDate').valueAsDate = today;
+    
+    // Trigger filter click
+    document.getElementById('filterBtn').click();
+  });
+}
+
+// Reset period buttons (remove active class)
+function resetPeriodButtons() {
+  const buttons = document.querySelectorAll('.period-btn');
+  buttons.forEach(button => {
+    button.classList.remove('active');
+  });
+}
+
+// Main function to create best selling chart
+function createBestSellingChart(type = 'products', startDate = null, endDate = null) {
+  // Show loading spinner
+  document.getElementById('chart-loading').style.display = 'flex';
+  document.getElementById('best-selling-chart').style.opacity = '0.5';
+  
+  // Build URL with filters
+  let url = `/admin/best-selling?type=${type}`;
+  
+  if (startDate && endDate) {
+    url += `&startDate=${startDate}&endDate=${endDate}`;
+  }
+  
+  // Fetch data from the server
+  fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        renderBestSellingChart(data.data, type);
+      } else {
+        showError('Failed to load data: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching best selling data:', error);
+      showError('Failed to load data. Please try again later.');
+    })
+    .finally(() => {
+      // Hide loading spinner
+      document.getElementById('chart-loading').style.display = 'none';
+      document.getElementById('best-selling-chart').style.opacity = '1';
+    });
+}
+
+// Render the chart with ApexCharts
+function renderBestSellingChart(data, type) {
+  // Format the data for the chart
+  let labels = [];
+  let values = [];
+  let colors = [
+    '#FF9F43', '#1E88E5', '#43A047', '#E53935', '#5E35B1', 
+    '#D81B60', '#FB8C00', '#039BE5', '#00897B', '#7CB342'
+  ];
+  
+  if (type === 'products') {
+    labels = data.map(item => truncateText(item.productName, 20));
+    values = data.map(item => item.totalQuantity);
+    document.getElementById('chart-title').textContent = 'Best Selling Products';
+  } else if (type === 'brands') {
+    labels = data.map(item => truncateText(item.brandName, 20));
+    values = data.map(item => item.totalQuantity);
+    document.getElementById('chart-title').textContent = 'Best Selling Brands';
+  } else if (type === 'categories') {
+    labels = data.map(item => truncateText(item.categoryName, 20));
+    values = data.map(item => item.totalQuantity);
+    document.getElementById('chart-title').textContent = 'Best Selling Categories';
+  }
+  
+  // Update total units display
+  const totalUnits = values.reduce((sum, current) => sum + current, 0);
+  document.getElementById('total-units').textContent = totalUnits.toLocaleString();
+  
+  // Get the chart element
+  const chartElement = document.getElementById('best-selling-chart');
+  
+  // Destroy existing chart if it exists
+  if (window.bestSellingChart) {
+    window.bestSellingChart.destroy();
+  }
+  
+  // Create chart options
+  const options = {
+    series: [{
+      name: 'Units Sold',
+      data: values
+    }],
+    chart: {
+      type: 'bar',
+      height: 430,
+      background: '#1e1e2d',
+      foreColor: '#fff',
+      toolbar: {
+        show: false
+      },
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800
+      }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        borderRadius: 6,
+        dataLabels: {
+          position: 'top'
+        },
+        distributed: true
+      }
+    },
+    colors: colors,
+    dataLabels: {
+      enabled: true,
+      formatter: function(val) {
+        return val.toLocaleString();
+      },
+      offsetX: 20,
+      style: {
+        fontSize: '12px',
+        colors: ['#fff'],
+        fontWeight: 500
+      }
+    },
+    xaxis: {
+      categories: labels,
+      labels: {
+        style: {
+          colors: Array(10).fill('#fff'),
+          fontSize: '12px'
+        }
+      },
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: false
+      }
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: ['#fff']
+        }
+      }
+    },
+    grid: {
+      borderColor: '#2b2b40',
+      xaxis: {
+        lines: {
+          show: true
+        }
+      },
+      yaxis: {
+        lines: {
+          show: false
+        }
+      },
+      padding: {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 10
+      }
+    },
+    tooltip: {
+      theme: 'dark',
+      y: {
+        formatter: function(value) {
+          return value.toLocaleString() + ' units';
+        }
+      }
+    },
+    legend: {
+      show: false
+    }
+  };
+
+  // Render the chart
+  window.bestSellingChart = new ApexCharts(chartElement, options);
+  window.bestSellingChart.render();
+}
+
+// Helper function to truncate text
+function truncateText(text, maxLength) {
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + '...';
+  }
+  return text;
+}
+
+// Show error message
+function showError(message) {
+  const errorDiv = document.getElementById('chart-error');
+  errorDiv.textContent = message;
+  errorDiv.style.display = 'block';
+  
+  // Hide after 5 seconds
+  setTimeout(() => {
+    errorDiv.style.display = 'none';
+  }, 5000);
+}
+
+// Modify the backend API to include category data
+// This is a client-side implementation, so we're adding this as a reference for how
+// the server-side should be updated to support category data retrieval
+/*
+// Server-side code (for reference)
+const getBestSellingCategories = async (dateQuery) => {
+  return await Order.aggregate([
+    { $match: dateQuery },
+    { $unwind: "$products" },
+    {
+      $lookup: {
+        from: "products",
+        localField: "products.productId",
+        foreignField: "_id",
+        as: "productDetails"
+      }
+    },
+    { $unwind: "$productDetails" },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "productDetails.category",
+        foreignField: "_id",
+        as: "categoryDetails"
+      }
+    },
+    { $unwind: "$categoryDetails" },
+    {
+      $group: {
+        _id: "$categoryDetails._id",
+        categoryName: { $first: "$categoryDetails.name" },
+        totalQuantity: { $sum: "$products.quantity" },
+        totalRevenue: { $sum: "$products.totalPrice" }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        categoryId: "$_id",
+        categoryName: 1,
+        totalQuantity: 1,
+        totalRevenue: 1
+      }
+    },
+    { $sort: { totalQuantity: -1 } },
+    { $limit: 10 }
+  ]);
+};
+*/
+                </script>
                 <!-- Dashboard Js -->
                 <script src="/assets/js/pages/dashboard.js"></script>
-                
+
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+                <!-- ApexCharts JS -->
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.0/apexcharts.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.0/apexcharts.min.js"></script>
                 </body>
                 
                 
