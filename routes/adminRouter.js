@@ -13,6 +13,7 @@ const couponController = require("../controllers/admin/counponController")
 const offerController = require("../controllers/admin/offerController")
 const saleReportController = require("../controllers/admin/saleReportController")
 const walletController = require("../controllers/admin/walletController")
+const dashBoardController = require("../controllers/admin/dashBoardController")
 
 // router.get("/pageerror",adminController.pageerror)
 router.get("/login",adminController.loadLogin)
@@ -95,4 +96,8 @@ router.get('/saleReportPdf', adminAuth,saleReportController.generatePdfReport);
 // Wallet Transaction
 router.get("/getWalletListingPage",adminAuth,walletController.getWalletList)
 router.get("/viewDetails/:id",adminAuth,walletController.viewDetails)
+// DashBoard
+router.get("/report",adminAuth,dashBoardController.getSalesReport)
+
+
 module.exports = router
