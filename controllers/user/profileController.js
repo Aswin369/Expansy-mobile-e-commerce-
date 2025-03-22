@@ -10,6 +10,8 @@ const Wallet = require("../../models/walletSchema")
 const Product = require("../../models/productSchema")
 const Transaction = require("../../models/walletTransaction")
 const PDFDocument = require('pdfkit');
+const razorpay = require("../../config/razorpay")
+const crypto = require("crypto")
 
 const getProfilePage = async (req, res) => {
     try {
@@ -877,6 +879,63 @@ function wrapText(doc, text, width) {
     return lines.length > 0 ? lines : [''];
 }
 
+
+const orderDetailRazorpay = async (req,res)=>{
+    try {
+        const options = {
+            amount: req.body.amount,
+            currency: 'INR',
+            receipt: 'receipt_' + Math.random().toString(36).substring(7),
+        };
+
+        console.log("skajdfhkasjdfhkashdfklh", options)
+
+        const order = await razorpay.orders.create(options);
+        console.log(order)
+        res.status(200).json(order);
+    } catch (err) {
+        console.log("This error occured in razorpayOrder",err)
+        res.redirect("/pageerror")
+     }
+
+}
+
+const orderVerifyPayment = async (req,res)=>{
+    try {
+           const { razorpayOrderId, paymentId, signature, orderId } = req.body;
+
+             console.log(req.body)
+    
+            
+    
+            if (!razorpayOrderId || !paymentId || !signature) {
+                return res.status(400).json({ error: "Missing payment information" });
+            }
+    
+            const sign = razorpayOrderId + '|' + paymentId;
+            const expectedSign = crypto.createHmac('sha256', "7FaXYkyBxYgWdzIHBWr7ntSa")
+                .update(sign.toString())
+                .digest('hex');
+    
+            if (signature === expectedSign) {
+                const orderData = await Order.findById(orderId);
+                if (!orderData) {
+                    return res.status(404).json({ error: 'Order not found' });
+                }
+    
+                orderData.paymentStatus = "success";
+                await orderData.save();
+    
+                res.status(200).json({success: true, message: 'Payment verified successfully', orderId});
+            } else {
+                res.status(400).json({ error: 'Invalid payment signature' });
+            }
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: err.message });
+        }
+}
+
 module.exports = {
     getProfilePage,
     editUserProfile,
@@ -896,5 +955,7 @@ module.exports = {
     cancelOrder,
     returnRequest,
     profilePageChangePassword,
-    generateInvoice
+    generateInvoice,
+    orderDetailRazorpay,
+    orderVerifyPayment
 }

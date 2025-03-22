@@ -9,7 +9,7 @@ const getSalesReport = async (req, res) => {
     let labels = [];
     let salesValues = [];
 
-    // Filter Logic
+    
     if (filter === 'custom') {
         if (!startDate || !endDate) {
             return res.status(400).json({ error: 'Please provide a valid date range.' });
@@ -19,19 +19,19 @@ const getSalesReport = async (req, res) => {
             $lte: new Date(endDate)
         };
 
-        // Generate Full Date Range (Ensure All Dates Appear)
+        
         const start = new Date(startDate);
         const end = new Date(endDate);
         while (start <= end) {
             labels.push(`${start.getDate()}-${start.getMonth() + 1}-${start.getFullYear()}`);
-            salesValues.push(0); // Default 0 for missing data
+            salesValues.push(0); 
             start.setDate(start.getDate() + 1);
         }
 
     } else if (filter === 'weekly') {
         const today = new Date();
         const pastWeek = new Date(today);
-        pastWeek.setDate(today.getDate() - 6); // Show 7 days including today
+        pastWeek.setDate(today.getDate() - 6); 
 
         matchCondition.createdAt = {
             $gte: pastWeek,
@@ -53,21 +53,20 @@ const getSalesReport = async (req, res) => {
             $lte: new Date(`${thisYear}-12-31`)
         };
 
-        // Generate All 12 Months (Ensure All Months Appear)
+        
         labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        salesValues = new Array(12).fill(0); // Default 0 for missing data
-
+        salesValues = new Array(12).fill(0); 
     } else if (filter === 'yearly') {
         const thisYear = new Date().getFullYear();
         matchCondition.createdAt = {
-            $gte: new Date(`${thisYear - 5}-01-01`),  // Start 5 years back
+            $gte: new Date(`${thisYear - 5}-01-01`),  
             $lte: new Date(`${thisYear}-12-31`)
         };
 
-        // Generate Last 6 Years (Ensure All Years Appear)
+        
         for (let i = 5; i >= 0; i--) {
             labels.push(`${thisYear - i}`);
-            salesValues.push(0); // Default 0 for missing data
+            salesValues.push(0);
         }
     }
 
@@ -77,9 +76,9 @@ const getSalesReport = async (req, res) => {
             {
                 $group: {
                     _id: filter === 'yearly'
-                        ? { year: { $year: "$createdAt" } } // Yearly format
+                        ? { year: { $year: "$createdAt" } } 
                         : filter === 'monthly'
-                        ? { month: { $month: "$createdAt" } } // Monthly format
+                        ? { month: { $month: "$createdAt" } } 
                         : filter === 'weekly' || filter === 'custom'
                         ? { day: { $dayOfMonth: "$createdAt" }, month: { $month: "$createdAt" } }
                         : { day: { $dayOfMonth: "$createdAt" }, month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
@@ -89,7 +88,7 @@ const getSalesReport = async (req, res) => {
         ]);
 
         console.log("filterdata",salesData)
-        // Map Aggregated Sales Data to Labels
+        
         salesData.forEach(item => {
             if (filter === 'yearly') {
                 const index = labels.indexOf(`${item._id.year}`);
@@ -117,6 +116,117 @@ const getSalesReport = async (req, res) => {
 };
 
 
+const getTopthings = async (req, res)=>{
+    try {
+        const { filter } = req.query;
+
+        if (filter === "products") {
+            const topProducts = await Order.aggregate([
+                { $unwind: "$products" },
+                {
+                    $group: {
+                        _id: "$products.productId",
+                        count: { $sum: "$products.quantity" }
+                    }
+                },
+                { $sort: { count: -1 } },
+                { $limit: 10 },
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "_id",
+                        foreignField: "_id",
+                        as: "productDetails"
+                    }
+                },
+                { $unwind: "$productDetails" },
+                {
+                    $project: {
+                        name: "$productDetails.productName",
+                        count: 1
+                    }
+                }
+            ]);
+            return res.json(topProducts);
+        }
+
+        if (filter === "categories") {
+            const topCategories = await Order.aggregate([
+                { $unwind: "$products" },
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "products.productId",
+                        foreignField: "_id",
+                        as: "productDetails"
+                    }
+                },
+                { $unwind: "$productDetails" },
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "productDetails.category",
+                        foreignField: "_id",
+                        as: "categoryDetails"
+                    }
+                },
+                { $unwind: "$categoryDetails" },
+                {
+                    $group: {
+                        _id: "$categoryDetails._id",
+                        name: { $first: "$categoryDetails.name" },
+                        count: { $sum: "$products.quantity" }
+                    }
+                },
+                { $sort: { count: -1 } },
+                { $limit: 10 }
+            ]);
+            return res.json(topCategories);
+        }
+
+        if (filter === "brands") {
+            const topBrands = await Order.aggregate([
+                { $unwind: "$products" },
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "products.productId",
+                        foreignField: "_id",
+                        as: "productDetails"
+                    }
+                },
+                { $unwind: "$productDetails" },
+                {
+                    $lookup: {
+                        from: "brands",
+                        localField: "productDetails.brand",
+                        foreignField: "_id",
+                        as: "brandDetails"
+                    }
+                },
+                { $unwind: "$brandDetails" },
+                {
+                    $group: {
+                        _id: "$brandDetails._id",
+                        name: { $first: "$brandDetails.brandName" },
+                        count: { $sum: "$products.quantity" }
+                    }
+                },
+                { $sort: { count: -1 } },
+                { $limit: 10 }
+            ]);
+            return res.json(topBrands);
+        }
+
+        return res.status(400).json({ message: "Invalid filter parameter" });
+    } catch (error) {
+        console.error("Error fetching top-selling data:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+
 module.exports = {
-    getSalesReport
+    getSalesReport,
+    getTopthings
 }

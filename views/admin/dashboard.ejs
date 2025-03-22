@@ -660,68 +660,61 @@
                     salesChart.update();
                     }
 
-
-
-
-
-                
-                    // BAR CHART DATA
-                    // const chartData = {
-                    //     products: {
-                    //         labels: ['Product 1', 'Product 2', 'Product 3', 'Product 4', 'Product 5', 'Product 6', 'Product 7', 'Product 8', 'Product 9', 'Product 10'],
-                    //         data: [350000, 300000, 270000, 250000, 240000, 230000, 220000, 210000, 200000, 190000]
-                    //     },
-                    //     categories: {
-                    //         labels: ['Category A', 'Category B', 'Category C', 'Category D', 'Category E', 'Category F', 'Category G', 'Category H', 'Category I', 'Category J'],
-                    //         data: [400000, 380000, 360000, 340000, 320000, 310000, 300000, 290000, 270000, 250000]
-                    //     },
-                    //     brands: {
-                    //         labels: ['Brand X', 'Brand Y', 'Brand Z', 'Brand A', 'Brand B', 'Brand C', 'Brand D', 'Brand E', 'Brand F', 'Brand G'],
-                    //         data: [320000, 310000, 290000, 280000, 270000, 260000, 250000, 240000, 230000, 220000]
-                    //     }
-                    // };
-                
-                    // // FUNCTION TO UPDATE BAR CHART BASED ON DROPDOWN SELECTION
-                    // const ctx2 = document.getElementById('barChart').getContext('2d');
-                    // let barChart = new Chart(ctx2, {
-                    //     type: 'bar',
-                    //     data: {
-                    //         labels: chartData.products.labels,
-                    //         datasets: [{
-                    //             label: 'Top 10 Best-Selling Products',
-                    //             data: chartData.products.data,
-                    //             backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                    //             borderColor: 'rgba(54, 162, 235, 1)',
-                    //             borderWidth: 1
-                    //         }]
-                    //     },
-                    //     options: {
-                    //         scales: {
-                    //             y: {
-                    //                 beginAtZero: true,
-                    //                 max: 400000,
-                    //                 ticks: {
-                    //                     callback: function(value) {
-                    //                         return '₹' + value.toLocaleString();
-                    //                     }
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    // });
-                
-                    // // DROPDOWN CHANGE EVENT
-                    // document.getElementById('chartFilter').addEventListener('change', function () {
-                    //     const selectedValue = this.value;
-                
-                    //     barChart.data.labels = chartData[selectedValue].labels;
-                    //     barChart.data.datasets[0].data = chartData[selectedValue].data;
-                    //     barChart.data.datasets[0].label = `Top 10 Best-Selling ${selectedValue.charAt(0).toUpperCase() + selectedValue.slice(1)}`;
-                    //     barChart.update();
-                    // });
-
                 </script>
                 
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const chartFilter = document.getElementById("chartFilter");
+                        const ctx = document.getElementById("barChart").getContext("2d");
+                        let barChart;
+                
+                        async function fetchChartData(filter) {
+                            try {
+                                const response = await fetch(`/admin/topselling?filter=${filter}`);
+                                const data = await response.json();
+                                updateChart(data, filter);
+                            } catch (error) {
+                                console.error("Error fetching data:", error);
+                            }
+                        }
+                
+                        function updateChart(data, filter) {
+                            const labels = data.map(item => item.name);
+                            const values = data.map(item => item.count);
+                
+                            if (barChart) {
+                                barChart.destroy();
+                            }
+                
+                            barChart = new Chart(ctx, {
+                                type: "bar",
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: `Top 10 Best-Selling ${filter.charAt(0).toUpperCase() + filter.slice(1)}`,
+                                        data: values,
+                                        backgroundColor: "rgba(54, 162, 235, 0.7)",
+                                        borderColor: "rgba(54, 162, 235, 1)",
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                
+                        chartFilter.addEventListener("change", function () {
+                            fetchChartData(this.value);
+                        });
+                
+                        fetchChartData(chartFilter.value);
+                    });
+                </script>
                 
 
                 <!-- Mirrored from techzaa.in/larkon/admin/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:42:46 GMT -->

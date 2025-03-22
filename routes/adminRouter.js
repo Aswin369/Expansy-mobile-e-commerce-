@@ -98,6 +98,6 @@ router.get("/getWalletListingPage",adminAuth,walletController.getWalletList)
 router.get("/viewDetails/:id",adminAuth,walletController.viewDetails)
 // DashBoard
 router.get("/report",adminAuth,dashBoardController.getSalesReport)
-
+router.get("/topselling",adminAuth,dashBoardController.getTopthings)
 
 module.exports = router

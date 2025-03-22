@@ -51,6 +51,8 @@ router.get("/deleteOrder",userAuth,profileController.deleteOrder)
 router.post("/cancelOrder",userAuth,profileController.cancelOrder)
 router.get("/returnRequest",userAuth,profileController.returnRequest)
 router.get('/invoice/:orderId',userAuth, profileController.generateInvoice)
+router.post("/orderDetailPageRazopay",userAuth,profileController.orderDetailRazorpay)
+router.post("/orderVerifyPayment",userAuth, profileController.orderVerifyPayment)
 // shopping cart management
 router.get('/shoppingCart',userAuth,shoppingCartController.getShoppingCart)
 router.post("/addToCart",shoppingCartController.productAddToCart)

@@ -390,10 +390,14 @@
 				
     
                 <!-- Payment Alert -->
-                <div class="payment-alert p-3 m-3 d-flex align-items-center">
-                    <i class="bi bi-exclamation-circle text-primary me-2"></i>
-                    <span>continue payment</span>
-                </div>
+				
+                <button class="payment-alert p-3 m-3 d-flex align-items-center border border-primary rounded"
+				
+					onclick="continuePayment('<%= orderData._id %>', '<%= orderData.payableAmount %>')"
+					<%= orderData.paymentStatus === 'pending' ? '' : 'disabled' %>>
+					<i class="bi bi-exclamation-circle text-primary me-2"></i>
+					<span>Continue Payment</span>
+				</button>
 				
                 <!-- Order Info -->
                 <div class="p-4 bg-white">
@@ -679,6 +683,10 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 			<i class="zmdi zmdi-chevron-up"></i>
 		</span>
 	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <!--===============================================================================================-->	
 	<script src="/vendor/jquery/jquery-3.2.1.min.js"></script>
@@ -1005,6 +1013,75 @@ function cancelOrder1(orderId, reason, totalAmountPrice ) {
     }
 });
 </script>
-	
+
+<script>
+    function continuePayment(orderId, amount) {
+
+        fetch("/orderDetailPageRazopay", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId, amount }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            var options = {
+                key: "rzp_test_Ar7OJGh05M40uW", // Replace with your Razorpay API key
+                amount: data.amount, // Amount in paisa
+                currency: "INR",
+                name: "E-Commerce",
+                description: "Continue your payment",
+                order_id: data.id, // Order ID from backend
+                handler: function (response) {
+                    // Call backend to verify payment
+                  console.log('ivide ethi')
+					console.log(response)
+                    fetch("/orderVerifyPayment", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ 
+                            orderId: orderId, 
+                            paymentId: response.razorpay_payment_id, 
+                            razorpayOrderId: response.razorpay_order_id,
+                            signature: response.razorpay_signature
+                        }),
+                    })
+                    .then(res => res.json())
+                    .then(result => {
+						console.log(result)
+                        if (result.success) {
+                        Swal.fire({
+                            title: "Payment Successful!",
+                            text: "Your order has been processed successfully.",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then(() => {
+                            window.location.reload(); // Refresh the page
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Payment Failed!",
+                            text: "There was an issue processing your payment. Please try again.",
+                            icon: "error",
+                            confirmButtonText: "Try Again"
+                        });
+                    }
+                    });
+                },
+                prefill: {
+                    name: "Aswin", // You can replace with user name
+                    email: "user@example.com",
+                    contact: "9876543210",
+                },
+                theme: { color: "#3399cc" },
+            };
+			console.log("sdfghjk")
+            const razorpayCheckout = new Razorpay(options);
+      		razorpayCheckout.open();
+        });
+    }
+</script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 </body>
 </html>
