@@ -115,55 +115,66 @@ async function sendVerificationEmail(email,otp,name){
     }
 }
 
-const signup = async (req,res)=>{
-    try{
-        const {name, phone, email, password, cpassword, referalcode} = req.body
-        
-        console.log("thsisdf req.body",req.body)
-
-        let referredBy = null 
-
-        if(referalcode){
-            const referrer = await User.findOne({referralCode:referalcode})
-            if(referrer){
-                referredBy  = referalcode
-                referrer.wallet += 50
-                await referrer.save()
-            }else{
-                return res.status(400).json({ message:"Invalid referral code"})
-            }
+const signup = async (req, res) => {
+    try {
+      const { name, phone, email, password, cpassword, referalcode } = req.body;
+      
+      console.log("this is req.body", req.body);
+  
+      let referredBy = null;
+  
+      if (referalcode) {
+        const referrer = await User.findOne({ referralCode: referalcode });
+        if (referrer) {
+          referredBy = referalcode;
+          referrer.wallet += 50;
+          await referrer.save();
+        } else {
+          return res.status(400).json({ success: false, message: "Invalid referral code" });
         }
-
-        if(password !== cpassword){
-            return res.render("signup",{message: "Password is not matching"})
-        }
-        const findUser = await User.findOne({email})
-        if(findUser){
-            return res.render("signup",{message: "User already exists"})
-        }
-
-        const otp = generateOtp()
-        const otpExpiry = Date.now() + 1 * 60 * 1000;
-        
-        const emailSent = await sendVerificationEmail(email,otp, name)
-
-        if(!emailSent){
-            return res.json("email-error")
-        }
-
-        req.session.userOtp = {otp, otpExpiry}
-        
-        req.session.userData = {name, phone, email, password}
-        console.log("This is userdata from signup", req.session.userData)
-        console.log("This is userOtp from signup", req.session.userOtp)
-        res.render("otpverification")
-        console.log("Otp sent",otp)
-
-    }catch(error){
-        console.error("signup error",error)
-        res.redirect("/pageNotFound")
+      }
+  
+      if (password !== cpassword) {
+        return res.status(400).json({ success: false, message: "Password is not matching" });
+      }
+      
+      const findUser = await User.findOne({ email });
+      console.log("dskf",findUser)
+      if (findUser) {
+        return res.status(400).json({ success: false, message: "User already exists" });
+      }
+  
+      const otp = generateOtp();
+      const otpExpiry = Date.now() + 1 * 60 * 1000;
+      
+      const emailSent = await sendVerificationEmail(email, otp, name);
+  
+      if (!emailSent) {
+        return res.status(500).json({ success: false, message: "Failed to send verification email" });
+      }
+  
+      req.session.userOtp = { otp, otpExpiry };
+      req.session.userData = { name, phone, email, password, referredBy };
+      
+      console.log("This is userdata from signup", req.session.userData);
+      console.log("This is userOtp from signup", req.session.userOtp);
+      console.log("Otp sent", otp);
+      
+      
+      return res.status(200).json({ 
+        success: true, 
+        message: "OTP sent successfully", 
+        redirectUrl: "/otpverification" 
+      });
+  
+    } catch (error) {
+      console.error("signup error", error);
+      return res.status(500).json({ 
+        success: false, 
+        message: "An unexpected error occurred" 
+      });
     }
-}
+  };
 
 const securePassword = async (password)=>{
     try{
