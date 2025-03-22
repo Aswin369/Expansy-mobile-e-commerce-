@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt")
 const env = require("dotenv").config()
 const productSchema = require("../../models/productSchema")
 const Wallet = require("../../models/walletSchema")
+const Transaction = require("../../models/walletTransaction")
 
 const loadHomepage = async (req, res) => {
     try {
@@ -126,9 +127,29 @@ const signup = async (req, res) => {
       if (referalcode) {
         const referrer = await User.findOne({ referralCode: referalcode });
         if (referrer) {
-          referredBy = referalcode;
-          referrer.wallet += 50;
-          await referrer.save();
+         referredBy = referalcode
+         let wallet = await Wallet.findOne({userId:referrer._id})
+
+            if(!wallet){
+                wallet = new Wallet({
+                    userId: referrer._id,
+                    balance:0
+                })
+            }
+
+            wallet.balance += 50
+            await wallet.save()
+
+            const transaction = new Transaction({
+                walletId: wallet._id,
+                userId: referrer._id,
+                type:"credit",
+                amount: 50,
+                status: "success"
+            })
+
+            await transaction.save()
+
         } else {
           return res.status(400).json({ success: false, message: "Invalid referral code" });
         }
