@@ -10,7 +10,7 @@ const userAuth = (req,res,next)=>{
                 next()
                 console.log(2)
             }else{
-                console.log("skdjfhkas")
+                
                 res.redirect("/login")
             }
         })

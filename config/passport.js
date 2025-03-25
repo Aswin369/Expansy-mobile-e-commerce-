@@ -21,7 +21,11 @@ passport.use(
                 }
 
                 let user = await User.findOne({ googleId: profile.id });
+                console.log("User found in googleid", user)
                 if (user) {
+                    if (user.isBlocked) {
+                        return done(null, false, { message: "Your account is blocked. Contact support." });
+                    }
                     return done(null, user);
                 } else {
                     user = new User({

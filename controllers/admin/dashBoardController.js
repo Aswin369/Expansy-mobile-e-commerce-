@@ -3,11 +3,15 @@ const Product = require("../../models/productSchema")
 const Order = require("../../models/orderSchema")
 
 const getSalesReport = async (req, res) => {
-    const { filter, startDate, endDate } = req.query;
+    const { filter, startDate, endDate } = req.query
+
+
+
+    console.log("thsdf", req.query)
 
     let matchCondition = {};
     let labels = [];
-    let salesValues = [];
+    let  salesValues= [];
 
     
     if (filter === 'custom') {
@@ -19,9 +23,11 @@ const getSalesReport = async (req, res) => {
             $lte: new Date(endDate)
         };
 
-        
+        console.log("condition object", matchCondition)
         const start = new Date(startDate);
         const end = new Date(endDate);
+        console.log("This start date",start)
+        console.log("This end date",end)
         while (start <= end) {
             labels.push(`${start.getDate()}-${start.getMonth() + 1}-${start.getFullYear()}`);
             salesValues.push(0); 
@@ -38,12 +44,12 @@ const getSalesReport = async (req, res) => {
             $lte: today
         };
 
-        // Generate Full Week Range (Ensure All Dates Appear)
+        
         for (let i = 6; i >= 0; i--) {
             const date = new Date();
             date.setDate(today.getDate() - i);
             labels.push(`${date.getDate()}-${date.getMonth() + 1}`);
-            salesValues.push(0); // Default 0 for missing data
+            salesValues.push(0); 
         }
 
     } else if (filter === 'monthly') {
@@ -100,6 +106,7 @@ const getSalesReport = async (req, res) => {
                 const label = filter === 'custom'
                 ? `${item._id.day}-${item._id.month}-${new Date().getFullYear()}`
                 : `${item._id.day}-${item._id.month}`;
+                console.log("label",label)
                 const index = labels.indexOf(label);
                 if (index !== -1) salesValues[index] = item.totalSales;
             }
@@ -113,7 +120,7 @@ const getSalesReport = async (req, res) => {
         console.error("Error fetching sales report:", error);
         res.status(500).json({ error: "Internal server error" });
     }
-};
+}
 
 
 const getTopthings = async (req, res)=>{
