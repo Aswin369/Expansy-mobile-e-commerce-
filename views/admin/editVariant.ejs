@@ -2,11 +2,11 @@
 <html lang="en">
 
 
-<!-- Mirrored from techzaa.in/larkon/admin/order-detail.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:17 GMT -->
+<!-- Mirrored from techzaa.in/larkon/admin/attributes-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:21 GMT -->
 <head>
      <!-- Title Meta -->
      <meta charset="utf-8" />
-     <title>Order Details | Larkon - Responsive Admin Dashboard Template</title>
+     <title>Edit Variant | Larkon - Responsive Admin Dashboard Template</title>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <meta name="description" content="A fully responsive premium admin dashboard template" />
      <meta name="author" content="Techzaa" />
@@ -46,9 +46,7 @@
                               </div>
 
                               <!-- Menu Toggle Button -->
-                              <div class="topbar-item">
-                                   <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Order Details</h4>
-                              </div>
+                              
                          </div>
 
                          <div class="d-flex align-items-center gap-1">
@@ -462,228 +460,207 @@
           <!-- ==================================================== -->
           <!-- Start right Content here -->
           <!-- ==================================================== -->
+          <div>
 
-          <div class="page-content">
+               <div class="page-content">
 
-               <!-- Start Container -->
-               <div class="container-xxl">
+                    <!-- Start Container Fluid -->
+                    <div class="container-xxl">
 
-                <div class="row">
-                    <div class="col-xl-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Product</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                   <table class="table align-middle mb-0 table-hover table-centered">
-                                        <thead class="bg-light-subtle border-bottom">
-                                             <tr>
-                                                  <th>Product Image</th> 
-                                                  <th>Product Name & Size</th>
-                                                  <th>Status</th>
-                                                  <th>Quantity</th>
-                                                  <th>Price</th>
-                                                  <th>Reason</th>
-                                                  <th>Amount</th>
-                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                             <% TransactionData.associatedOrder?.products.forEach((data) => { %>
-                                                  <% if (data.status === "Cancelled") { %>
-                                                      <tr>
-                                                          <td>
-                                                              <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                                  <img src="<%= data.productId?.productImage?.[0] || '/images/default-image.jpg' %>" 
-                                                                       alt="Product Image" 
-                                                                       class="avatar-md">
-                                                              </div>
-                                                          </td>
-                                                          <td><%= data.productId?.productName || 'N/A' %> (Size: M)</td>
-                                                          <td>
-                                                              <span class="badge bg-danger-subtle text-danger px-2 py-1 fs-13">
-                                                                  Cancelled
-                                                              </span>
-                                                          </td>
-                                                          <td><%= data?.quantity || 0 %></td>
-                                                          <td>₹<%= data?.price?.toFixed(2) || '0.00' %></td>
-                                                          <td><%= data?.reason || 'N/A' %></td>
-                                                          <td>₹<%= data?.totalPrice?.toFixed(2) || '0.00' %></td>
-                                                      </tr>
-                                                  <% } %>
-                                              <% }) %>
-                                              
-                                        </tbody>
-                                    </table>
-                                    
+                         <div class="row">
+                              <div class="col-lg-12">
+                                   <div class="card">
+                                        <div class="card-header">
+                                             <h4 class="card-title">Edit Variant</h4>
+                                        </div>
+                                        <div class="card-body">
+                                             <div class="row">
+                                                <div class="col-lg-6">
+                                                    <form id="addVariant" action="/admin/editVariantStocks" method="POST">
+                                                        <h3 class="mb-4">Edit Variant</h3>
+                                                        
+                                                        <input type="hidden" id="productId" value="<%=product._id%>">
+                                                        <div class="mb-3">
+                                                            <label for="variant-ram" class="form-label">RAM</label>
+                                                            <select class="form-control" id="variant-ram" name="ram">
+                                                                <option value="<%= spec.ram._id%>"><%= spec.ram.value%></option>
+                                                                    <% for(let i=0; i<ram.length; i++){ %>
+                                                                        <option value="<%= ram[i]._id %>"><%= ram[i].value %></option>
+                                                                    <% } %>
+                                                            </select>
+                                                        </div>
+                                                    
+                                                        <div class="mb-3">
+                                                            <label for="variant-storage" class="form-label">Internal Storage</label>
+                                                            <select class="form-control" id="variant-storage" name="storage">
+                                                                <option value="<%= spec.storage._id%>"><%= spec.storage.value%></option>
+                                                                <% for(let i=0; i<storage.length; i++){%>
+                                                                <option value="<%= storage[i]._id%>"><%= storage[i].value%></option>
+                                                                <%}%>
+                                                            </select>
+                                                        </div>
+                                                    
+                                                        <div class="mb-3">
+                                                            <label for="variant-color" class="form-label">Color</label>
+                                                            <select class="form-control" id="variant-color" name="color">
+                                                                
+                                                                <option value="<%=spec.color._id%>"><%=spec.color.value%></option>
+                                                                    <% for(let i=0; i<color.length; i++){%>
+                                                                    <option value="<%= color[i]._id%>"><%= color[i].value%></option>
+                                                                    <%}%>
+                                                            </select>
+                                                        </div>
+                                                    
+                                                        <div class="mb-3">
+                                                            <label for="variant-quantity" class="form-label">Stock Quantity</label>
+                                                            <input type="number" class="form-control" id="variant-quantity" name="quantity" value="<%= spec.quantity%>" min="0" placeholder="Enter stock quantity">
+                                                        </div>
+                                                    
+                                                        <div class="mb-3">
+                                                            <label for="variant-RegularPrice" class="form-label">Regular Price</label>
+                                                            <input type="number" class="form-control" id="variant-RegularPrice" name="regularPrice" value="<%= spec.regularPrice%>" min="0" placeholder="Enter regular price">
+                                                        </div>
+                                                    
+                                                        <div class="mb-3">
+                                                            <label for="variant-SalePrice" class="form-label">Sale Price</label>
+                                                            <input type="number" class="form-control" id="variant-SalePrice" name="salePrice" min="0" value="<%= spec.salePrice%>" placeholder="Enter sale price">
+                                                        </div>
+                                                        
+                                                        <input type="hidden" id="index" value="<%= index%>">
+                                                        <input type="hidden" id="specId" value="<%= product.specification[index]._id%>%>">
+                                                        <button type="submit" class="btn btn-primary">Edit Variant</button>
+                                                        <a href="/admin/editProduct/<%=product._id%>" class="btn btn-secondary">Cancel</a>
+                                                    </form>
+                                                    
+                                   </div>
+                              </div>
+                         </div>
+
+                    </div>
+                    <!-- End Container Fluid -->
+
+                    <!-- ========== Footer Start ========== -->
+                    <footer class="footer">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
+                                        href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            
-                <div class="row mt-3">
-                    <!-- Customer Details -->
-                    <div class="col-lg-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Customer Details</h4>
-                            </div>
-                            <div class="card-body">
-                              <p class="mb-1"><%= TransactionData?.userId?.name || 'N/A' %></p>
-                              <a href="#" class="link-primary fw-medium">
-                                  <%= TransactionData?.userId?.email || 'N/A' %>
-                              </a>
-                              <p class="mb-1"><%= TransactionData?.userId?.phone || 'N/A' %></p>
-                          
-                              <h4 class="card-title">Address:</h4>
-                              <p class="mb-1" style="padding-top: 10px;">
-                                  <%= TransactionData?.associatedOrder?.deliveryAddress?.addressType || 'N/A' %>
-                              </p>
-                              <p class="mb-1"><%= TransactionData?.associatedOrder?.deliveryAddress?.city || 'N/A' %></p>
-                              <p class="mb-1"><%= TransactionData?.associatedOrder?.deliveryAddress?.landMark || 'N/A' %></p>
-                              <p class="mb-1"><%= TransactionData?.associatedOrder?.deliveryAddress?.state || 'N/A' %></p>
-                              <p><%= TransactionData?.associatedOrder?.deliveryAddress?.pincode || 'N/A' %></p>
-                          </div>
-                          
-                        </div>
-                    </div>
-            
-                    <!-- Payment Information -->
-                    <div class="col-lg-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Payment Information</h4>
-                            </div>
-                            <div class="card-body">
-                              <p class="text-dark mb-1 fw-medium">
-                                  Transaction ID : 
-                                  <span class="text-muted fw-normal fs-13">
-                                      <%= TransactionData?._id || 'N/A' %>
-                                  </span>
-                              </p>
-                          
-                              <p class="text-dark mb-1 fw-medium">
-                                  Payment Method : 
-                                  <span class="text-muted fw-normal fs-13">
-                                      <%= TransactionData?.associatedOrder?.paymentMethod || 'N/A' %>
-                                  </span>
-                              </p>
-                          
-                              <p class="text-dark mb-1 fw-medium">
-                                  Order ID : 
-                                  <span class="text-muted fw-normal fs-13">
-                                      <%= TransactionData?.associatedOrder?.orderId || 'N/A' %>
-                                  </span>
-                              </p>
-                          
-                              <p class="text-dark mb-1 fw-medium">
-                                  Payment Status : 
-                                  <span class="text-muted fw-normal fs-13">
-                                      <%= TransactionData?.associatedOrder?.paymentStatus || 'N/A' %>
-                                  </span>
-                              </p>
-                          
-                              <p class="text-dark mb-1 fw-medium">
-                                  Transaction Type : 
-                                  <span class="text-muted fw-normal fs-13">
-                                      <%= TransactionData?.type || 'N/A' %>
-                                  </span>
-                              </p>
-                          
-                              <p class="text-dark mb-1 fw-medium">
-                                  Date : 
-                                  <span class="text-muted fw-normal fs-13">
-                                      <%= TransactionData?.createdAt?.toLocaleDateString() || 'N/A' %>
-                                  </span>
-                              </p>
-                          
-                              <p class="text-dark mb-1 fw-medium">
-                                  Amount : 
-                                  <span class="text-muted fw-normal fs-13">
-                                      ₹<%= TransactionData?.amount?.toFixed(2) || '0.00' %>
-                                  </span>
-                              </p>
-                          
-                              <p class="text-dark mb-1 fw-medium">
-                                  Customer Name : 
-                                  <span class="text-muted fw-normal fs-13">
-                                      <%= TransactionData?.userId?.name || 'N/A' %>
-                                  </span>
-                              </p>
-                          </div>
-                          
-                        </div>
-                    </div>
-            
-                    <!-- Order Summary -->
-                    <!-- <div class="col-lg-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Order Summary</h4>
-                            </div>
-                            <div class="card-body">
-                                <table class="table mb-0">
-                                    <tbody>
-                                        <tr>
-                                            <td>Sub Total :</td>
-                                            <td class="text-end">$777.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Discount :</td>
-                                            <td class="text-end">-$60.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Delivery Charge :</td>
-                                            <td class="text-end">$0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Estimated Tax (15.5%) :</td>
-                                            <td class="text-end">$20.00</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="card-footer d-flex align-items-center justify-content-between bg-light-subtle">
-                                <p class="fw-medium text-dark mb-0">Total Amount</p>
-                                <p class="fw-medium text-dark mb-0">$737.00</p>
-                            </div>
-                        </div>
-                    </div> -->
-                </div>
-            </div>
-            
-          <!-- End Container Fluid -->
+                    </footer>
+                    <!-- ========== Footer End ========== -->
 
-          <!-- ========== Footer Start ========== -->
-          <footer class="footer">
-              <div class="container-fluid">
-                  <div class="row">
-                      <div class="col-12 text-center">
-                          <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                              href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
-                      </div>
-                  </div>
-              </div>
-          </footer>
-          <!-- ========== Footer End ========== -->
+               </div>
+               <!-- ==================================================== -->
+               <!-- End Page Content -->
+               <!-- ==================================================== -->
 
-     </div>
-     <!-- ==================================================== -->
-     <!-- End Page Content -->
-     <!-- ==================================================== -->
+          </div>
 
      </div>
      <!-- END Wrapper -->
 
      <!-- Vendor Javascript (Require in all Page) -->
      <script src="/assets/js/vendor.js"></script>
-
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
      <!-- App Javascript (Require in all Page) -->
      <script src="/assets/js/app.js"></script>
+     
+     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("addVariant");
+            const quantityInput = document.getElementById("variant-quantity");
+            const regularPriceInput = document.getElementById("variant-RegularPrice");
+            const salePriceInput = document.getElementById("variant-SalePrice");
+    
+            // Prevent negative and 'e' in number inputs
+            function validateNumberInput(event) {
+                if (event.key === "e" || event.key === "-" || event.key === "+") {
+                    event.preventDefault();
+                }
+            }
+    
+            quantityInput.addEventListener("keydown", validateNumberInput);
+            regularPriceInput.addEventListener("keydown", validateNumberInput);
+            salePriceInput.addEventListener("keydown", validateNumberInput);
+    
+            // Form Submit Handling
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent default form submission
+    
+                // Get values from form
+                const ram = document.getElementById("variant-ram").value;
+                const storage = document.getElementById("variant-storage").value;
+                const color = document.getElementById("variant-color").value;
+                const quantity = quantityInput.value.trim();
+                const regularPrice = regularPriceInput.value.trim();
+                const salePrice = salePriceInput.value.trim();
+                const index = document.getElementById("index").value;
+                const productId = document.getElementById("productId").value
+                const specId = document.getElementById("specId").value
+    
+                // Convert to numbers for validation
+                const regPrice = Number(regularPrice);
+                const saleP = Number(salePrice);
+    
+                // Validation checks
+                if (!quantity || regPrice <= 0 || saleP < 0) {
+                    Swal.fire("Invalid Input", "Please enter valid numbers", "error");
+                    return;
+                }
+    
+                if (saleP > regPrice) {
+                    Swal.fire("Error", "Sale price cannot be greater than regular price", "error");
+                    return;
+                }
+    
+                // Prepare data to send
+                const formData = {
+                    ram,
+                    storage,
+                    color,
+                    quantity: Number(quantity),
+                    regularPrice: regPrice,
+                    salePrice: saleP,
+                    index,
+                    productId,
+                    specId
+                };
+    
 
+                console.log("lsdjfaskjdfj",formData)
+
+                try {
+                    const response = await fetch("/admin/editVariantStocks", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(formData)
+                    });
+    
+                    const result = await response.json();
+    
+                    if (response.ok) {
+                        Swal.fire("Success", result.message || "Variant updated successfully", "success")
+                            .then(() => {
+                                window.location.href = `/admin/editProduct/<%= product._id %>`;
+                            });
+                    } else {
+                        Swal.fire("Error", result.message || "Something went wrong", "error");
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    Swal.fire("Error", "Server error. Please try again.", "error");
+                }
+            });
+        });
+    </script>
+    
 </body>
 
 
-<!-- Mirrored from techzaa.in/larkon/admin/order-detail.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:17 GMT -->
+<!-- Mirrored from techzaa.in/larkon/admin/attributes-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:21 GMT -->
 </html>

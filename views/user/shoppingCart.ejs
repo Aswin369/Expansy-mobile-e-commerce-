@@ -531,7 +531,7 @@
 								
 								<td class="column-2"><%= item.productId?.productName || 'N/A' %></td>
 								<td class="column-3">₹<%= item.unitPrice?.toLocaleString() %></td>
-								<input type="hidden" id="totalStockOfThisVariant" value="<%= item.specification.quantity %>">
+								<input type="hidden" id="totalStockOfThisVariant" value="<%= item?.specification?.quantity %>">
 								<input type="hidden" id="userSelectedQuatity" value="<%= item.quantity%>">
 								<input type="hidden" id="cartId" value="<%= cartData._id%>">
 								<input type="hidden" id="productCartId" value="<%= item.productId._id%>">

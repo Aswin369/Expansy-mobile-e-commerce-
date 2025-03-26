@@ -643,32 +643,43 @@
                                                      </tr>
                                                  </thead>
                                                  <tbody>
-                                                     <% if (product.specification.length > 0) { %>
-                                                         <% product.specification.forEach(variant => { %>
-                                                             <tr>
-                                                                 <td><%= variant.ram.value %></td>
-                                                                 <td><%= variant.storage.value %></td>
-                                                                 <td><%= variant.color.value %></td>
-                                                                 <td><%= variant.quantity %></td>
-                                                                 <td><%= variant.regularPrice %></td>
-                                                                 <td><%= variant.salePrice %></td>
-                                                                 <td>
-                                                                      <button class="btn btn-danger btn-sm delete-variant" data-product-id="<%= product._id %>">
-                                                                           <a href="/admin/deleteVariantFromEditProduct/<%= variant._id%>" style="text-decoration: none; color: white;">Delete</a>
-                                                                       </button>
-                                                                 </td>
-                                                             </tr>
-                                                         <% }) %>
-                                                     <% } else { %>
-                                                         <tr>
-                                                             <td colspan="7" class="text-center">No variants added yet</td>
-                                                         </tr>
-                                                     <% } %>
-                                                 </tbody>
+                                                  <% if (product.specification.length > 0) { %>
+                                                      <% product.specification.forEach((variant, index) => { %>
+                                                          <tr>
+                                                              <td><%= variant.ram.value %></td>
+                                                              <td><%= variant.storage.value %></td>
+                                                              <td><%= variant.color.value %></td>
+                                                              <td><%= variant.quantity %></td>
+                                                              <td><%= variant.regularPrice %></td>
+                                                              <td><%= variant.salePrice %></td>
+                                                              <td>
+                                                                  <button class="btn btn-danger btn-sm delete-variant" data-product-id="<%= product._id %>">
+                                                                      <a href="/admin/deleteVariantFromEditProduct/<%= variant._id%>" style="text-decoration: none; color: white;">Delete</a>
+                                                                  </button>
+                                                                  
+                                                                  <button type="button" class="btn btn-primary" >
+                                                                      <a href="/admin/getEditVariant?variantID=<%= variant._id%>&productId=<%= product._id %>&index=<%= index%>" style="text-decoration: none; color: white;">Edit</a> 
+                                                                 </button>
+                                                              </td>
+                                                          </tr>
+                                                      <% }) %>
+                                                  <% } else { %>
+                                                      <tr>
+                                                          <td colspan="7" class="text-center">No variants added yet</td>
+                                                      </tr>
+                                                  <% } %>
+                                              </tbody>
+                                              
                                              </table>
                                          </div>
                                          
                                      </div>
+
+
+                                     <!-- modal for edit variant -->
+
+                                     
+
                                    <!-- Product Images -->
                                                                       <!-- Image Section 1 -->
                                    <div class="image-section mb-4" id="image-section-1">
@@ -770,6 +781,9 @@
                 </div>
             </div>
 
+            
+           
+           
 
             <!-- modal for add stocks -->
           <form id="addVariant" action="/admin/updateVariantStocks">
@@ -1293,6 +1307,7 @@ document.querySelectorAll('.delete-variant').forEach(button => {
 
 </script>
     
+
 
 </body>
 <!-- Mirrored from techzaa.in/larkon/admin/product-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:17 GMT -->

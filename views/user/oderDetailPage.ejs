@@ -446,7 +446,7 @@
 											'<%= product.totalPrice %>', 
 											'<%= orderData.userId %>'
 										  )" 
-										  <%= product.status === "Cancelled" || product.status === "Return Requested" ? "disabled" : "" || product.status === "Return Approved" ? "disabled" : "" || orderData.status === "Delivered" ? "disabled" : "" || orderData.status === "Cancelled" ? "disabled" : ""%>
+										  <%= product.status === "Cancelled" || product.status === "Return Requested" ? "disabled" : "" || product.status === "Return Approved" ? "disabled" : "" || orderData.status === "Delivered" ? "disabled" : "" || orderData.status === "Cancelled" ? "disabled" : "" || orderData.paymentStatus === "pending" ? "disabled" : ""%>
 										>
 										  Cancel
 										</button>
@@ -1016,14 +1016,19 @@ function cancelOrder1(orderId, reason, totalAmountPrice ) {
 
 <script>
     function continuePayment(orderId, amount) {
+		
+		console.log("amount",amount)
+		const amountInPaise = Math.round(amount * 100);
+
 
         fetch("/orderDetailPageRazopay", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ orderId, amount }),
+            body: JSON.stringify({ orderId, amount : amountInPaise }),
         })
         .then(response => response.json())
         .then(data => {
+			console.log("kjsdhf", data)
             var options = {
                 key: "rzp_test_Ar7OJGh05M40uW", // Replace with your Razorpay API key
                 amount: data.amount, // Amount in paisa
@@ -1033,7 +1038,7 @@ function cancelOrder1(orderId, reason, totalAmountPrice ) {
                 order_id: data.id, // Order ID from backend
                 handler: function (response) {
                     // Call backend to verify payment
-                  console.log('ivide ethi')
+                  console.log('ivide ethi', options)
 					console.log(response)
                     fetch("/orderVerifyPayment", {
                         method: "POST",

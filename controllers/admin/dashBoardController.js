@@ -56,7 +56,7 @@ const getSalesReport = async (req, res) => {
         const thisYear = new Date().getFullYear();
         matchCondition.createdAt = {
             $gte: new Date(`${thisYear}-01-01`),
-            $lte: new Date(`${thisYear}-12-31`)
+            $lte: new Date(`${thisYear}-12-31`)                                                                                                                                                                                                                                  
         };
 
         
