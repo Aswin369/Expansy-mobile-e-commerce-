@@ -188,5 +188,5 @@ module.exports = {
     deleteStorage,
     deleteColor,
     unBlockColor,
-    blockColor
+    blockColor  
 }
