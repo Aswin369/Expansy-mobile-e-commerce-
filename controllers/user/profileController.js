@@ -12,7 +12,7 @@ const Transaction = require("../../models/walletTransaction")
 const PDFDocument = require('pdfkit');
 
 const getProfilePage = async (req, res) => {
-    try {
+    try {   
         const id = req.session.user;
         const page = parseInt(req.query.page) || 1;
         const addressPage = parseInt(req.query.addressPage) || 1; 
