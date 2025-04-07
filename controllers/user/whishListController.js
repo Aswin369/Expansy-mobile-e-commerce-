@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Whishlist = require("../../models/whishlistSchema")
 const Cart = require("../../models/cartSchema")
 
@@ -72,38 +73,42 @@ const deleteWhishlist = async (req,res)=>{
     }
 }
 
-const mongoose = require("mongoose");
 
 const addToCartFromWhishlist = async (req, res) => {
     try {
         const userId = req.session.user;
         const { productId, specificationId, wishlistId, quantity, price } = req.body;
 
-        console.log("wishlistId", wishlistId);
+        console.log("wishlistId", req.body);
 
         const newCartDetail = {
             productId: productId,
             specId: specificationId,
             quantity: 1,
-            price: price,
+            unitPrice: price,
             totalPrice: price
         };
 
-        const cartDetail = await Cart.findOne({ userId: userId });
+        let cartDetail = await Cart.findOne({ userId: userId });
+        
+        
+        console.log("Jhdf",cartDetail)
 
-        if(cartDetail){
+        if (cartDetail) {
             const existingItem = cartDetail.items.find(item => item.productId.toString() === productId);
-            if(existingItem){
+            console.log("exist in cart", existingItem);
+            if (existingItem) {
                 return res.status(400).json({ success: false, message: "Product already in cart" });
             }
-            const saveCartDetail = new Cart({
-                userId: userId,
-                items: [newCartDetail] 
-            });
-            await saveCartDetail.save();
-        }else{
-
+            // Push new item into the existing cart
             cartDetail.items.push(newCartDetail);
+            await cartDetail.save();
+        } else {
+            // Create a new cart if none exists
+            cartDetail = new Cart({
+                userId: userId,
+                items: [newCartDetail]
+            });
             await cartDetail.save();
         }
      

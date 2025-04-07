@@ -2,11 +2,11 @@
 <html lang="en">
 
 
-<!-- Mirrored from techzaa.in/larkon/admin/orders-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:17 GMT -->
+<!-- Mirrored from techzaa.in/larkon/admin/attributes-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:21 GMT -->
 <head>
      <!-- Title Meta -->
      <meta charset="utf-8" />
-     <title>Orders List | Larkon - Responsive Admin Dashboard Template</title>
+     <title>Edit Variant | Larkon - Responsive Admin Dashboard Template</title>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <meta name="description" content="A fully responsive premium admin dashboard template" />
      <meta name="author" content="Techzaa" />
@@ -46,9 +46,7 @@
                               </div>
 
                               <!-- Menu Toggle Button -->
-                              <div class="topbar-item">
-                                   <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Orders List</h4>
-                              </div>
+                              
                          </div>
 
                          <div class="d-flex align-items-center gap-1">
@@ -468,195 +466,76 @@
 
                     <!-- Start Container Fluid -->
                     <div class="container-xxl">
-                        <!-- Date filter and download controls -->
-                        
-                    
-                        <div class="row">
-                            <div class="col-md-6 col-xl-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div>
-                                                <h4 class="card-title mb-2">Total Order</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0"><%= Math.floor(totalOrders)%></p>
-                                            </div>
-                                            <div>
-                                                <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                    <iconify-icon icon="solar:chat-round-money-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xl-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div>
-                                                <h4 class="card-title mb-2">Order Cancel</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0"><%= totalCancelled%></p>
-                                            </div>
-                                            <div>
-                                                <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                    <iconify-icon icon="solar:cart-cross-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xl-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div>
-                                                <h4 class="card-title mb-2">Order Pending</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0"><%= totalPending%></p>
-                                            </div>
-                                            <div>
-                                                <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                    <iconify-icon icon="solar:clock-circle-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xl-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div>
-                                                <h4 class="card-title mb-2">Order Success</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0"><%= totalSuccess%></p>
-                                            </div>
-                                            <div>
-                                                <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                    <iconify-icon icon="solar:clipboard-check-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xl-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div>
-                                                <h4 class="card-title mb-2">Total Sales</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0"><%= Math.floor(totalSale)%></p>
-                                            </div>
-                                            <div>
-                                                <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                    <iconify-icon icon="solar:clipboard-check-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-xl-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div>
-                                                <h4 class="card-title mb-2">Total Discounts</h4>
-                                                <p class="text-muted fw-medium fs-22 mb-0"><%= Math.floor(totalDiscount)%></p>
-                                            </div>
-                                            <div>
-                                                <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                    <iconify-icon icon="solar:clipboard-check-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="row mb-3">
-                         <div class="col-xl-12">
-                             <div class="card">
-                                 <div class="card-body">
-                                     <div class="row align-items-center">
-                                         <!-- Date filters and time range buttons -->
-                                         <div class="col-md-8">
-                                             <div class="d-flex flex-wrap gap-2 align-items-center">
-                                                 <div class="input-group" style="max-width: 200px;">
-                                                     <span class="input-group-text">From</span>
-                                                     <input type="date" class="form-control" id="startDate">
-                                                 </div>
-                                                 <div class="input-group" style="max-width: 200px;">
-                                                     <span class="input-group-text">To</span>
-                                                     <input type="date" class="form-control" id="endDate">
-                                                     
-                                                 </div>
-                                                 <button type="button" class="btn btn-primary" id="filterBtn">
-                                                  <iconify-icon icon="solar:filter-broken" class="me-1"></iconify-icon>
-                                                  Filter
-                                              </button>
-                                                 <div class="d-flex gap-4" style="margin-left: 90px;">
-                                                     
-                                                     <button type="button" class="btn btn-outline-primary" id="oneDayBtn">Today</button>
-                                                     <button type="button" class="btn btn-outline-primary" id="oneWeekBtn">1 Week</button>
-                                                     <button type="button" class="btn btn-outline-primary" id="oneMonthBtn">1 Month</button>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                         <!-- Download buttons -->
-                                         <div class="col-md-4">
-                                             <div class="d-flex justify-content-md-end gap-2">
-                                                 <button type="button" class="btn btn-soft-success" id="downloadExcel">
-                                                     <iconify-icon icon="solar:file-download-broken" class="me-1"></iconify-icon>
-                                                     Export Excel
-                                                 </button>
-                                                 <button type="button" class="btn btn-soft-danger" id="downloadPdf">
-                                                     <iconify-icon icon="solar:file-download-broken" class="me-1"></iconify-icon>
-                                                     Export PDF
-                                                 </button>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
+                         <div class="row">
+                              <div class="col-lg-12">
+                                   <div class="card">
+                                        <div class="card-header">
+                                             <h4 class="card-title">Edit Variant</h4>
+                                        </div>
+                                        <div class="card-body">
+                                             <div class="row">
+                                                <div class="col-lg-6">
+                                                    <form id="addVariant" action="/admin/editVariantStocks" method="POST">
+                                                        <h3 class="mb-4">Edit Variant</h3>
+                                                        
+                                                        <input type="hidden" id="productId" value="<%=product._id%>">
+                                                        <div class="mb-3">
+                                                            <label for="variant-ram" class="form-label">RAM</label>
+                                                            <select class="form-control" id="variant-ram" name="ram">
+                                                                <option value="<%= spec.ram._id%>"><%= spec.ram.value%></option>
+                                                                    <% for(let i=0; i<ram.length; i++){ %>
+                                                                        <option value="<%= ram[i]._id %>"><%= ram[i].value %></option>
+                                                                    <% } %>
+                                                            </select>
+                                                        </div>
+                                                    
+                                                        <div class="mb-3">
+                                                            <label for="variant-storage" class="form-label">Internal Storage</label>
+                                                            <select class="form-control" id="variant-storage" name="storage">
+                                                                <option value="<%= spec.storage._id%>"><%= spec.storage.value%></option>
+                                                                <% for(let i=0; i<storage.length; i++){%>
+                                                                <option value="<%= storage[i]._id%>"><%= storage[i].value%></option>
+                                                                <%}%>
+                                                            </select>
+                                                        </div>
+                                                    
+                                                        <div class="mb-3">
+                                                            <label for="variant-color" class="form-label">Color</label>
+                                                            <select class="form-control" id="variant-color" name="color">
+                                                                
+                                                                <option value="<%=spec.color._id%>"><%=spec.color.value%></option>
+                                                                    <% for(let i=0; i<color.length; i++){%>
+                                                                    <option value="<%= color[i]._id%>"><%= color[i].value%></option>
+                                                                    <%}%>
+                                                            </select>
+                                                        </div>
+                                                    
+                                                        <div class="mb-3">
+                                                            <label for="variant-quantity" class="form-label">Stock Quantity</label>
+                                                            <input type="number" class="form-control" id="variant-quantity" name="quantity" value="<%= spec.quantity%>" min="0" placeholder="Enter stock quantity">
+                                                        </div>
+                                                    
+                                                        <div class="mb-3">
+                                                            <label for="variant-RegularPrice" class="form-label">Regular Price</label>
+                                                            <input type="number" class="form-control" id="variant-RegularPrice" name="regularPrice" value="<%= spec.regularPrice%>" min="0" placeholder="Enter regular price">
+                                                        </div>
+                                                    
+                                                        <div class="mb-3">
+                                                            <label for="variant-SalePrice" class="form-label">Sale Price</label>
+                                                            <input type="number" class="form-control" id="variant-SalePrice" name="salePrice" min="0" value="<%= spec.salePrice%>" placeholder="Enter sale price">
+                                                        </div>
+                                                        
+                                                        <input type="hidden" id="index" value="<%= index%>">
+                                                        <input type="hidden" id="specId" value="<%= product.specification[index]._id%>%>">
+                                                        <button type="submit" class="btn btn-primary">Edit Variant</button>
+                                                        <a href="/admin/editProduct/<%=product._id%>" class="btn btn-secondary">Cancel</a>
+                                                    </form>
+                                                    
+                                   </div>
+                              </div>
                          </div>
-                     </div>
-                     
 
-                    
-                        <div class="row">
-                            <div class="col-xl-12">
-                                <div class="card">
-                                    <div class="d-flex card-header justify-content-between align-items-center">
-                                        <div>
-                                            <h4 class="card-title">All Order List</h4>
-                                        </div>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive">
-                                            <table class="table align-middle mb-0 table-hover table-centered">
-                                                <thead class="bg-light-subtle">
-                                                    <tr>
-                                                        <th>Order ID</th>
-                                                        <th>Customer</th>
-                                                        <th>Created at</th>
-                                                        <th>Total</th>
-                                                        <th>Payment Status</th>
-                                                        <th>Order Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                   
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <!-- end table-responsive -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <!-- End Container Fluid -->
 
@@ -678,7 +557,6 @@
                <!-- End Page Content -->
                <!-- ==================================================== -->
 
-
           </div>
 
      </div>
@@ -686,363 +564,103 @@
 
      <!-- Vendor Javascript (Require in all Page) -->
      <script src="/assets/js/vendor.js"></script>
-
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
      <!-- App Javascript (Require in all Page) -->
      <script src="/assets/js/app.js"></script>
-     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+     
      <script>
-      document.addEventListener('DOMContentLoaded', function() {
-    // Get references to the DOM elements
-    const startDateInput = document.getElementById('startDate');
-    const endDateInput = document.getElementById('endDate');
-    const filterBtn = document.getElementById('filterBtn');
-    const downloadExcelBtn = document.getElementById('downloadExcel');
-    const downloadPdfBtn = document.getElementById('downloadPdf');
-    const oneDayBtn = document.getElementById('oneDayBtn');
-    const oneWeekBtn = document.getElementById('oneWeekBtn');
-    const oneMonthBtn = document.getElementById('oneMonthBtn');
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("addVariant");
+            const quantityInput = document.getElementById("variant-quantity");
+            const regularPriceInput = document.getElementById("variant-RegularPrice");
+            const salePriceInput = document.getElementById("variant-SalePrice");
     
-    // Add event listener to the filter button
-    filterBtn.addEventListener('click', function() {
-        // Get the selected date values
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
-        
-        // Validate dates
-        if (!startDate || !endDate) {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Please select both start and end dates',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        // Check if start date is before end date
-        if (new Date(startDate) > new Date(endDate)) {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Start date cannot be after end date',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        // Prepare data to send to backend
-        const filterData = {
-            startDate: startDate,
-            endDate: endDate,
-            paymentStatus: ['paid', 'success'] // Only include successful payments
-        };
-        
-        // Send data to backend using fetch API
-        sendFilterToBackend(filterData);
-    });
-    
-    // Add event listeners for time range buttons
-    oneDayBtn.addEventListener('click', function() {
-        setDateRange('today');
-    });
-    
-    oneWeekBtn.addEventListener('click', function() {
-        setDateRange('week');
-    });
-    
-    oneMonthBtn.addEventListener('click', function() {
-        setDateRange('month');
-    });
-    
-    // Function to set date range based on button clicked
-    function setDateRange(range) {
-        const today = new Date();
-        let startDate = new Date();
-        
-        // Calculate start date based on selected range
-        switch(range) {
-            case 'today':
-                // Set start date to beginning of today
-                startDate.setHours(0, 0, 0, 0);
-                break;
-            case 'week':
-                // Set start date to 7 days ago
-                startDate.setDate(today.getDate() - 7);
-                break;
-            case 'month':
-                // Set start date to 30 days ago
-                startDate.setDate(today.getDate() - 30);
-                break;
-        }
-        
-        // Format dates for input fields (YYYY-MM-DD)
-        const formattedStartDate = startDate.toISOString().split('T')[0];
-        const formattedEndDate = today.toISOString().split('T')[0];
-        
-        // Update input fields
-        startDateInput.value = formattedStartDate;
-        endDateInput.value = formattedEndDate;
-        
-        // Prepare filter data
-        const filterData = {
-            startDate: formattedStartDate,
-            endDate: formattedEndDate,
-            paymentStatus: ['paid', 'success'] // Include both paid and success statuses
-        };
-        
-        // Apply the filter
-        sendFilterToBackend(filterData);
-    }
-    
-    // Function to send filter data to backend
-    function sendFilterToBackend(filterData) {
-        console.log('Sending filter data to backend:', filterData);
-        
-        // Show loading message
-        Swal.fire({
-            title: 'Filtering...',
-            text: 'Please wait while we process your request',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
+            // Prevent negative and 'e' in number inputs
+            function validateNumberInput(event) {
+                if (event.key === "e" || event.key === "-" || event.key === "+") {
+                    event.preventDefault();
+                }
             }
-        });
-        
-        // Use the correct endpoint
-        fetch('/admin/saleReportFilter', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(filterData)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Success:', data);
-            
-            // Check if the response was successful
-            if (data.success) {
-                // Close loading message and show success
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Filter applied successfully',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-                
-                // Update the UI with filtered data - pass orders array from response
-                updateDataTable(data.orders);
-            } else {
-                throw new Error(data.message || 'Failed to get order data');
-            }
-        })
-        .catch(error => {
-            console.error('Error sending filter data:', error);
-            Swal.fire({
-                title: 'Error!',
-                text: 'Error applying filter. Please try again.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        });
-    }
     
-    // Function to update the data table with filtered results
-    function updateDataTable(orders) {
-        const tableBody = document.querySelector('.table tbody');
-        
-        // Clear existing table rows
-        tableBody.innerHTML = '';
-        
-        // Check if we have data to display
-        if (!orders || orders.length === 0) {
-            // Add a "no data" row
-            const noDataRow = document.createElement('tr');
-            noDataRow.innerHTML = `
-                <td colspan="6" class="text-center">No orders found for the selected date range</td>
-            `;
-            tableBody.appendChild(noDataRow);
-            return;
-        }
-        
-        // Format date function
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return date.toLocaleDateString('en-US', options);
-        }
-        
-        // Get payment status badge
-        function getPaymentStatusBadge(status) {
-            let badgeClass = '';
-            switch(status.toLowerCase()) {
-                case 'paid':
-                case 'success':
-                    badgeClass = 'bg-success';
-                    break;
-                case 'pending':
-                    badgeClass = 'bg-light text-dark';
-                    break;
-                case 'failed':
-                    badgeClass = 'bg-danger';
-                    break;
-                default:
-                    badgeClass = 'bg-light text-dark';
-            }
-            return `<span class="badge ${badgeClass} px-2 py-1 fs-13">${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
-        }
-        
-        // Get order status badge
-        function getOrderStatusBadge(status) {
-            let badgeClass = '';
-            switch(status.toLowerCase()) {
-                case 'delivered':
-                    badgeClass = 'border-success text-success';
-                    break;
-                case 'shipped':
-                    badgeClass = 'border-info text-info';
-                    break;
-                case 'pending':
-                case 'ordered':
-                    badgeClass = 'border-warning text-warning';
-                    break;
-                case 'cancelled':
-                    badgeClass = 'border-danger text-danger';
-                    break;
-                case 'return requested':
-                    badgeClass = 'border-info text-info';
-                    break;
-                case 'return approved':
-                    badgeClass = 'border-success text-success';
-                    break;
-                case 'return rejected':
-                    badgeClass = 'border-danger text-danger';
-                    break;
-                default:
-                    badgeClass = 'border-secondary text-secondary';
-            }
-            return `<span class="badge border ${badgeClass} px-2 py-1 fs-13">${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
-        }
-        
-        // Loop through orders and add them to the table
-        orders.forEach(order => {
-            const row = document.createElement('tr');
-            
-            // Format the currency
-            const formattedAmount = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'INR'
-            }).format(order.payableAmount);
-            
-            row.innerHTML = `
-                <td>${order.orderId}</td>
-                <td><a href="#!" class="link-primary fw-medium">${order.userId ? order.userId.name : 'Unknown'}</a></td>
-                <td>${formatDate(order.createdAt)}</td>
-                <td>${formattedAmount}</td>
-                <td>${getPaymentStatusBadge(order.paymentStatus)}</td>
-                <td>${getOrderStatusBadge(order.status)}</td>
-            `;
-            
-            tableBody.appendChild(row);
-        });
-    }
+            quantityInput.addEventListener("keydown", validateNumberInput);
+            regularPriceInput.addEventListener("keydown", validateNumberInput);
+            salePriceInput.addEventListener("keydown", validateNumberInput);
     
-    // Event listener for Excel download button
-    downloadExcelBtn.addEventListener('click', function() {
-        downloadExcel();
-    });
+            // Form Submit Handling
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent default form submission
     
-    // Event listener for PDF download button
-    downloadPdfBtn.addEventListener('click', function() {
-        downloadPdf();
-    });
+                // Get values from form
+                const ram = document.getElementById("variant-ram").value;
+                const storage = document.getElementById("variant-storage").value;
+                const color = document.getElementById("variant-color").value;
+                const quantity = quantityInput.value.trim();
+                const regularPrice = regularPriceInput.value.trim();
+                const salePrice = salePriceInput.value.trim();
+                const index = document.getElementById("index").value;
+                const productId = document.getElementById("productId").value
+                const specId = document.getElementById("specId").value
     
-    // Function to handle Excel download with current filter params
-    function downloadExcel() {
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
-        
-        // Validate dates for download
-        if (!startDate || !endDate) {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Please select both start and end dates before exporting',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        // Build query parameters
-        let queryParams = `?startDate=${startDate}&endDate=${endDate}&paymentStatus=paid,success`;
-        
-        // Show loading message
-        Swal.fire({
-            title: 'Generating Excel...',
-            text: 'Please wait while we prepare your download',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        
-        // Redirect to download endpoint
-        window.location.href = `/admin/saleReportExcel${queryParams}`;
-        
-        // Close the loading dialog after a short delay
-        setTimeout(() => {
-            Swal.close();
-        }, 2000);
-    }
+                // Convert to numbers for validation
+                const regPrice = Number(regularPrice);
+                const saleP = Number(salePrice);
     
-    // Function to handle PDF download with current filter params
-    function downloadPdf() {
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
-        
-        // Validate dates for download
-        if (!startDate || !endDate) {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Please select both start and end dates before exporting',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        // Build query parameters
-        let queryParams = `?startDate=${startDate}&endDate=${endDate}&paymentStatus=paid,success`;
-        
-        // Show loading message
-        Swal.fire({
-            title: 'Generating PDF...',
-            text: 'Please wait while we prepare your download',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        
-        // Redirect to download endpoint
-        window.location.href = `/admin/saleReportPdf${queryParams}`;
-        
-        // Close the loading dialog after a short delay
-        setTimeout(() => {
-            Swal.close();
-        }, 2000);
-    }
-});
-     </script>
+                // Validation checks
+                if (!quantity || regPrice <= 0 || saleP < 0) {
+                    Swal.fire("Invalid Input", "Please enter valid numbers", "error");
+                    return;
+                }
+    
+                if (saleP > regPrice) {
+                    Swal.fire("Error", "Sale price cannot be greater than regular price", "error");
+                    return;
+                }
+    
+                // Prepare data to send
+                const formData = {
+                    ram,
+                    storage,
+                    color,
+                    quantity: Number(quantity),
+                    regularPrice: regPrice,
+                    salePrice: saleP,
+                    index,
+                    productId,
+                    specId
+                };
+    
 
+                console.log("lsdjfaskjdfj",formData)
+
+                try {
+                    const response = await fetch("/admin/editVariantStocks", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(formData)
+                    });
+    
+                    const result = await response.json();
+    
+                    if (response.ok) {
+                        Swal.fire("Success", result.message || "Variant updated successfully", "success")
+                            .then(() => {
+                                window.location.href = `/admin/editProduct/<%= product._id %>`;
+                            });
+                    } else {
+                        Swal.fire("Error", result.message || "Something went wrong", "error");
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    Swal.fire("Error", "Server error. Please try again.", "error");
+                }
+            });
+        });
+    </script>
+    
 </body>
 
 
-<!-- Mirrored from techzaa.in/larkon/admin/orders-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:17 GMT -->
+<!-- Mirrored from techzaa.in/larkon/admin/attributes-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:43:21 GMT -->
 </html>

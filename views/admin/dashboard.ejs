@@ -31,103 +31,8 @@
 
      <!-- Theme Config js (Require in all Page) -->
      <script src="/assets/js/config.js"></script>
-     <style>
-          .card {
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-            border: none;
-            border-radius: 0.5rem;
-        }
-        .avatar-md {
-            width: 56px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .chart-container {
-            min-height: 300px;
-            width: 100%;
-        }
-        .btn-outline-primary.active {
-            background-color: #4e73df;
-            color: white;
-        }
-        .form-select.dropdown-selector {
-            max-width: 150px;
-        }
-          :root {
-              --primary-color: #22c55e;
-              --secondary-color: #ff6c2f;
-              --light-bg: #f8f9fa;
-              --border-color: #e9ecef;
-          }
-          
-          body {
-              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-              background-color: #232427;
-          }
-          
-          .dashboard-title {
-              color: #22282e;
-              margin-bottom: 20px;
-              font-weight: 600;
-          }
-          
-          .card {
-              border-radius: 10px;
-              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-              margin-bottom: 25px;
-              border: none;
-          }
-          
-          .card-header {
-              background-color: #22282e;
-              border-bottom: 1px solid var(--border-color);
-              padding: 18px 20px;
-              border-radius: 10px 10px 0 0 !important;
-          }
-          
-          .card-title {
-              font-size: 18px;
-              font-weight: 600;
-              color: #eeeeee;
-              margin-bottom: 0;
-          }
-          
-          .card-body {
-              padding: 20px;
-          }
-          
-          .btn-outline-light {
-              color: #6c757d;
-              border-color: #dee2e6;
-          }
-          
-          
-          .chart-container {
-              min-height: 350px;
-          }
-          
-          .dropdown-selector {
-              max-width: 200px;
-          }
-          
-          .highlight {
-              color: var(--secondary-color);
-              font-weight: bold;
-          }
-          
-          @media (max-width: 767px) {
-              .card-header {
-                  flex-direction: column;
-                  align-items: flex-start !important;
-              }
-              
-              .card-header .btn-group {
-                  margin-top: 10px;
-              }
-          }
-      </style>
+    
+      
 </head>
 
 <body>
@@ -580,162 +485,64 @@
                                  </div>
                              </div>
                          </div>
-                         
-                         <!-- Stats Cards -->
-                         <div class="row mb-4">
-                             <div class="col-md-6 col-xl-3">
-                                 <div class="card">
-                                     <div class="card-body">
-                                         <div class="d-flex align-items-center justify-content-between">
-                                             <div>
-                                                 <h4 class="card-title mb-2">Total Order</h4>
-                                                 <p class="text-muted fw-medium fs-22 mb-0">0</p>
-                                             </div>
-                                             <div>
-                                                 <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                     <i class="fas fa-shopping-cart fs-32 text-primary avatar-title"></i>
-                                                 </div>
-                                             </div>
+                     </div>
+                     <div class="col-md-6 col-xl-3">
+                         <div class="card">
+                             <div class="card-body">
+                                 <div class="d-flex align-items-center justify-content-between">
+                                     <div>
+                                         <h4 class="card-title mb-2">Order Cancel</h4>
+                                         <p class="text-muted fw-medium fs-22 mb-0">45</p>
+                                     </div>
+                                     <div>
+                                         <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                             <iconify-icon icon="solar:cart-cross-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
                                          </div>
                                      </div>
                                  </div>
                              </div>
-                             <div class="col-md-6 col-xl-3">
-                                 <div class="card">
-                                     <div class="card-body">
-                                         <div class="d-flex align-items-center justify-content-between">
-                                             <div>
-                                                 <h4 class="card-title mb-2">Order Cancel</h4>
-                                                 <p class="text-muted fw-medium fs-22 mb-0">0</p>
-                                             </div>
-                                             <div>
-                                                 <div class="avatar-md bg-danger bg-opacity-10 rounded">
-                                                     <i class="fas fa-times-circle fs-32 text-danger avatar-title"></i>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                             <div class="col-md-6 col-xl-3">
-                                 <div class="card">
-                                     <div class="card-body">
-                                         <div class="d-flex align-items-center justify-content-between">
-                                             <div>
-                                                 <h4 class="card-title mb-2">Order Pending</h4>
-                                                 <p class="text-muted fw-medium fs-22 mb-0">0</p>
-                                             </div>
-                                             <div>
-                                                 <div class="avatar-md bg-warning bg-opacity-10 rounded">
-                                                     <i class="fas fa-clock fs-32 text-warning avatar-title"></i>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                             <div class="col-md-6 col-xl-3">
-                                 <div class="card">
-                                     <div class="card-body">
-                                         <div class="d-flex align-items-center justify-content-between">
-                                             <div>
-                                                 <h4 class="card-title mb-2">Revenue</h4>
-                                                 <p class="text-muted fw-medium fs-22 mb-0" id="totalRevenue">$0</p>
-                                             </div>
-                                             <div>
-                                                 <div class="avatar-md bg-success bg-opacity-10 rounded">
-                                                     <i class="fas fa-dollar-sign fs-32 text-success avatar-title"></i>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                         
-                         <!-- Charts Row -->
-                         <div class="row">
-                             <!-- Sales Report by Rate -->
-                             <div class="col-lg-7 mb-4">
-                                 <div class="card h-100">
-                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                         <h4 class="card-title">Sales Report by Rate</h4>
-                                         <div class="btn-group">
-                                             <button type="button" class="btn btn-sm btn-outline-primary" id="all-btn">ALL</button>
-                                             <button type="button" class="btn btn-sm btn-outline-primary" id="month-btn">1M</button>
-                                             <button type="button" class="btn btn-sm btn-outline-primary" id="sixmonth-btn">6M</button>
-                                             <button type="button" class="btn btn-sm btn-outline-primary active" id="year-btn">1Y</button>
-                                         </div>
-                                     </div>
-                                     <div class="card-body">
-                                         <div id="sales-rate-chart" class="chart-container"></div>
-                                     </div>
-                                 </div>
-                             </div>
-                             
-                             <!-- Best Selling Products and Brands -->
-                             <!-- Best Selling Section -->
-<div class="card bg-dark text-white mb-4">
-     <div class="card-header d-flex justify-content-between align-items-center">
-       <h4 class="card-title mb-0" id="chart-title">Best Selling Products</h4>
-       <div class="d-flex gap-2">
-         <button id="products-tab" class="btn btn-sm btn-outline-warning active">Products</button>
-         <button id="brands-tab" class="btn btn-sm btn-outline-warning">Brands</button>
-         <button id="categories-tab" class="btn btn-sm btn-outline-warning">Categories</button>
-       </div>
-     </div>
-     <div class="card-body">
-       <!-- Date Filter Section -->
-       <div class="row mb-3">
-         <div class="col-12">
-           <div class="d-flex align-items-center gap-2 flex-wrap">
-             <div class="input-group" style="max-width: 200px;">
-               <span class="input-group-text bg-dark text-light border-secondary">From</span>
-               <input type="date" class="form-control bg-dark text-light border-secondary" id="startDate">
-             </div>
-             
-             <div class="input-group" style="max-width: 200px;">
-               <span class="input-group-text bg-dark text-light border-secondary">To</span>
-               <input type="date" class="form-control bg-dark text-light border-secondary" id="endDate">
-             </div>
-             
-             <button type="button" class="btn btn-warning" id="filterBtn">
-               <i class="fas fa-filter me-1"></i>
-               Filter
-             </button>
-             
-             <button type="button" class="btn btn-outline-warning period-btn" id="weekly-btn">Weekly</button>
-             <button type="button" class="btn btn-outline-warning period-btn" id="monthly-btn">Monthly</button>
-             <button type="button" class="btn btn-outline-warning period-btn active" id="yearly-btn">Yearly</button>
-           </div>
-         </div>
-       </div>
-       
-       <!-- Total Units Counter -->
-       <div class="mb-3 d-flex justify-content-end">
-         <div class="badge bg-warning text-dark p-2">
-           <span class="fs-6">Total Units: <span id="total-units" class="fw-bold">0</span></span>
-         </div>
-       </div>
-       
-       <!-- Chart Container -->
-       <div class="position-relative">
-         <div id="best-selling-chart" style="min-height: 400px;"></div>
-         
-         <!-- Loading Spinner -->
-         <div id="chart-loading" class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="background-color: rgba(30, 30, 45, 0.7); z-index: 10; display: none;">
-           <div class="spinner-border text-warning" role="status">
-             <span class="visually-hidden">Loading...</span>
-           </div>
-         </div>
-         
-         <!-- Error Message -->
-         <div id="chart-error" class="alert alert-danger mt-3" style="display: none;"></div>
-       </div>
-     </div>
-   </div>
                          </div>
                      </div>
+                     <div class="col-md-6 col-xl-3">
+                         <div class="card">
+                             <div class="card-body">
+                                 <div class="d-flex align-items-center justify-content-between">
+                                     <div>
+                                         <h4 class="card-title mb-2">Order Pending</h4>
+                                         <p class="text-muted fw-medium fs-22 mb-0">45</p>
+                                     </div>
+                                     <div>
+                                         <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                             <iconify-icon icon="solar:clock-circle-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+               </div>
+
+
+               <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <label for="chartFilter" class="form-label">View Data For:</label>
+                            <select id="chartFilter" class="form-select" style="max-width: 200px;">
+                                <option value="products">Top 10 Best-Selling Products</option>
+                                <option value="categories">Top 10 Best-Selling Categories</option>
+                                <option value="brands">Top 10 Best-Selling Brands</option>
+                            </select>
+                        </div>
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+                
+                
+
                <!-- End Container Fluid -->
 
                <!-- ========== Footer Start ========== -->
@@ -1138,6 +945,127 @@ const getBestSellingCategories = async (dateQuery) => {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.0/apexcharts.min.js"></script>
                 </body>
                 
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+                <script>
+                    // DAILY SALES LINE CHART
+                    const ctx1 = document.getElementById('salesChart').getContext('2d');
+                    const salesChart = new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                         labels: [],  // Will be filled dynamically
+                         datasets: [{
+                              label: 'Sales Report',
+                              data: [],
+                              borderColor: 'orange',
+                              backgroundColor: 'rgba(255, 165, 0, 0.2)',
+                              tension: 0.4,
+                              fill: true,
+                              pointRadius: 4,
+                              pointHoverRadius: 6
+                         }]
+                    },
+                    options: {
+                         scales: {
+                              y: {
+                                   beginAtZero: true,
+                                   max: 400000,
+                                   ticks: {
+                                        callback: function(value) {
+                                        return '₹' + value.toLocaleString();
+                                        }
+                                   }
+                              }
+                         },
+                         plugins: {
+                              legend: {
+                                   labels: {
+                                        color: 'white'
+                                   }
+                              }
+                         }
+                    }
+                    });
+
+
+
+                    document.getElementById('filterBtn').addEventListener('click', () => fetchData('custom'));
+                    document.getElementById('oneDayBtn').addEventListener('click', () => fetchData('weekly'));
+                    document.getElementById('oneWeekBtn').addEventListener('click', () => fetchData('monthly'));
+                    document.getElementById('oneMonthBtn').addEventListener('click', () => fetchData('yearly'));
+
+                    async function fetchData(filterType) {
+                    const startDate = document.getElementById('startDate').value;
+                    const endDate = document.getElementById('endDate').value;
+
+                    const response = await fetch(`/admin/report?filter=${filterType}&startDate=${startDate}&endDate=${endDate}`);
+                    const data = await response.json();
+
+                    updateChart(data.labels, data.salesData);
+                    }
+
+                    function updateChart(labels, salesData) {
+                    salesChart.data.labels = labels;
+                    salesChart.data.datasets[0].data = salesData;
+                    salesChart.update();
+                    }
+
+                </script>
                 
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const chartFilter = document.getElementById("chartFilter");
+                        const ctx = document.getElementById("barChart").getContext("2d");
+                        let barChart;
+                
+                        async function fetchChartData(filter) {
+                            try {
+                                const response = await fetch(`/admin/topselling?filter=${filter}`);
+                                const data = await response.json();
+                                updateChart(data, filter);
+                            } catch (error) {
+                                console.error("Error fetching data:", error);
+                            }
+                        }
+                
+                        function updateChart(data, filter) {
+                            const labels = data.map(item => item.name);
+                            const values = data.map(item => item.count);
+                
+                            if (barChart) {
+                                barChart.destroy();
+                            }
+                
+                            barChart = new Chart(ctx, {
+                                type: "bar",
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: `Top 10 Best-Selling ${filter.charAt(0).toUpperCase() + filter.slice(1)}`,
+                                        data: values,
+                                        backgroundColor: "rgba(54, 162, 235, 0.7)",
+                                        borderColor: "rgba(54, 162, 235, 1)",
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                
+                        chartFilter.addEventListener("change", function () {
+                            fetchChartData(this.value);
+                        });
+                
+                        fetchChartData(chartFilter.value);
+                    });
+                </script>
+                
+
                 <!-- Mirrored from techzaa.in/larkon/admin/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:42:46 GMT -->
                 </html>

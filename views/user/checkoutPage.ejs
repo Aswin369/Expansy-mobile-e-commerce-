@@ -895,14 +895,16 @@
 
   // ========== UTILITY FUNCTIONS ==========
   // Show SweetAlert
-  function showAlert(title, text, icon, buttonText) {
-    return Swal.fire({
-      title: title,
-      text: text,
-      icon: icon,
-      confirmButtonText: buttonText || "OK",
-    });
-  }
+  function showAlert(title, errors, icon, buttonText) {
+  let message = Array.isArray(errors) ? errors.join("\n") : errors;  // Join errors with new lines
+     console.log("error message",message)
+  return Swal.fire({
+    title: title,
+    text: message,
+    icon: icon,
+    confirmButtonText: buttonText || "OK",
+  });
+}
 
   // ========== CALCULATE TOTALS FUNCTION ==========
   // Modify the calculateTotals function to properly handle discounts

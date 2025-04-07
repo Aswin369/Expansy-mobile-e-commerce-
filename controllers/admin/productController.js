@@ -8,6 +8,7 @@ const {handleUpload } = require("../../config/cloudinary")
 const streamifier = require("streamifier");
 const { json } = require("body-parser")
 
+
 const getProductAddPage = async (req,res)=>{
     try {
         const category = await Category.find({isListed:true})
@@ -32,6 +33,8 @@ const addProducts = async (req, res) => {
     try {
         const {productName, description, processor, brand, productCategories, battery, displaySize, variants} = req.body;
         
+        console.log("hgfhgfhgf",req.body)
+
         const brandId = await Brand.findOne({
             brand:brand._id
         })
@@ -305,17 +308,35 @@ const viewProduct = async (req, res) => {
         if (!id) {
             return res.redirect("/admin/products");
         }
-        const productDetails = await Product.findById(id);
+        const productDetails = await Product.findById(id)
+            .populate('brand', 'brandName')
+            .populate('category', 'name')
+            .populate('productOffer')
+            .populate('specification.ram', 'value')
+            .populate('specification.storage', 'value')
+            .populate('specification.color', 'value');
         if (!productDetails) {
             return res.redirect("/pageerror"); 
         }
         const brandcategory = await Product.findById(id)
             .populate('brand', 'brandName')
-            .populate('category', 'name');
-        
+            .populate('category', 'name')
+            
+            
+
+        const ram = await Variant.find({category:"Ram", isBlocked:false})
+        const storage = await Variant.find({category:"Storage",isBlocked:false})
+        const color = await Variant.find({category:"Color", isBlocked:false})
+
+
+            
+
         res.render("product-details", {
             productDetails,
-            brandcategory
+            brandcategory,
+            ram,
+            storage,
+            color
         });
 
     } catch (error) {
@@ -369,6 +390,85 @@ const deleteVariantEditProduct = async (req,res)=>{
     }
 }
 
+const getEditVariant = async(req,res)=>{
+    try {
+        console.log("dfasdf",req.query)
+        const {variantID, productId, index} = req.query
+        const ram = await Variant.find({category:"Ram", isBlocked:false})
+        const storage = await Variant.find({category:"Storage",isBlocked:false})
+        const color = await Variant.find({category:"Color", isBlocked:false})
+        const product = await Product.findOne({_id:productId})
+        .populate({path:"specification.ram", 
+            model: "Variant"
+        })
+        .populate({path:"specification.storage", 
+            model: "Variant"
+        })
+        .populate({path:"specification.color", 
+            model: "Variant"
+        })
+        console.log("product", product)
+
+        let spec = product.specification[index]
+
+        console.log("ghfgh",spec);
+        
+       
+
+        res.render("editVariant", {
+            product,
+            spec,
+            ram,
+            storage,
+            color,
+            index
+        })
+    } catch (error) {
+        console.error("This error occured in getEditVariant",error)
+        res.redirect("/pageerror")
+    }
+}
+
+const editVariant = async(req,res)=>{
+    try {
+        console.log("ksdjf",req.body)
+        const {ram, storage, color, quantity, regularPrice, salePrice, index, productId,specId} = req.body
+        const product = await Product.findOne({_id:productId})
+
+        if(!product){
+            return res.status(400).json({success:false, message: "Product not found"})
+        }
+
+        let specIndex = -1
+        if(specId){
+             specIndex = product.specification.findIndex(spec => spec._id.toString() === specId)
+            console.log("ertfe",specIndex)
+        }else if(index !== undefined){
+            specIndex = index
+        }
+        console.log("product.specification.length", product.specification.length)
+        console.log("sperdid",specIndex)
+        if(specIndex === -1 ||  specIndex >= product.specification.length ){
+            return res.status(400).json({success: false, message: "Specification is not found"})
+        }
+
+        if (ram) product.specification[specIndex].ram = ram;
+        if (storage) product.specification[specIndex].storage = storage;
+        if (color) product.specification[specIndex].color = color;
+        if (quantity !== undefined) product.specification[specIndex].quantity = quantity;
+        if (regularPrice !== undefined) product.specification[specIndex].regularPrice = regularPrice;
+        if (salePrice !== undefined) product.specification[specIndex].salePrice = salePrice;
+
+        await product.save()
+
+        return res.status(200).json({success:true, message: "Variant updated successfully"})
+
+    } catch (error) {
+        console.error("This error found in Editvariant",error)
+        res.redirect("/pageerror")
+    }
+}
+
 module.exports = {
     getProductAddPage,
     addProducts,
@@ -380,5 +480,7 @@ module.exports = {
     viewProduct,
     updateForm,
     updateStocks,
-    deleteVariantEditProduct
+    deleteVariantEditProduct,
+    getEditVariant,
+    editVariant
 }

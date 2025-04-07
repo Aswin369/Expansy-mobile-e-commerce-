@@ -13,6 +13,8 @@
   min-height: 1.25rem;
 }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   </head>
   <body>
     <div class="container">
@@ -79,13 +81,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-      const nameid = document.getElementById("fullname");
+     const nameid = document.getElementById("fullname");
 const emailid = document.getElementById("email");
 const phoneid = document.getElementById("phone");
 const passid = document.getElementById("password");
 const cpassid = document.getElementById("confirm-password");
 const signupform = document.getElementById("signupform");
-const referalcode = document.getElementById("referalcode")
+const referalcode = document.getElementById("referalcode");
 
 const togglePasswordButton = document.getElementById("toggle-password");
 const toggleConfirmPasswordButton = document.getElementById("toggle-confirm-password");
@@ -99,6 +101,13 @@ const emailError = document.getElementById("error2");
 const phoneError = document.getElementById("error3");
 const passwordError = document.getElementById("error4");
 const confirmPasswordError = document.getElementById("error5");
+
+// Prevent copy and paste on all input fields
+const preventCopyPaste = (element) => {
+  element.addEventListener("copy", (e) => e.preventDefault());
+  element.addEventListener("paste", (e) => e.preventDefault());
+  element.addEventListener("cut", (e) => e.preventDefault());
+};
 
 function nameValidateChecking() {
   const nameVal = nameid.value;
@@ -170,6 +179,14 @@ function passValidateChecking() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Apply copy/paste prevention to all input fields
+  preventCopyPaste(nameid);
+  preventCopyPaste(emailid);
+  preventCopyPaste(phoneid);
+  preventCopyPaste(passid);
+  preventCopyPaste(cpassid);
+  preventCopyPaste(referalcode);
+
   // Clear error messages when user starts typing
   nameid.addEventListener("input", () => nameError.textContent = "");
   emailid.addEventListener("input", () => emailError.textContent = "");
@@ -199,11 +216,79 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Submit form only if all validations pass
     if (isNameValid && isEmailValid && isPhoneValid && isPasswordValid) {
-      signupform.submit();
+      // Create JSON object from form fields
+      const formData = {
+        name: nameid.value,
+        email: emailid.value,
+        phone: phoneid.value,
+        password: passid.value,
+        cpassword: cpassid.value,
+        referalcode: referalcode.value
+      };
+      
+      console.log("Form data:", formData);
+      
+      fetch('/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => {
+        // Check if response is JSON
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          return response.json().then(data => {
+            if (!response.ok) {
+              throw new Error(data.message || 'Unknown error occurred');
+            }
+            return data;
+          });
+        } else {
+          // Handle non-JSON response (could be redirect)
+          if (response.ok) {
+            window.location.href = response.url;
+            return null;
+          } else {
+            throw new Error('Server returned an error with no details');
+          }
+        }
+      })
+      .then(data => {
+        // Only process if we have JSON data (not a redirect)
+        if (data) {
+          window.location.href = data.redirectUrl || '/login';
+        }
+      })
+      .catch(error => {
+        // Check if the error is "User already exists"
+        console.log("sdfh",error.message)
+        if (error.message.includes('User already exists')) {
+          console.log("sdkfjk")
+          swal.fire({
+            title: "Account Exists",
+            text: "This user already exists. Please try logging in instead.",
+            icon: "warning",
+            button: "OK",
+          }).then(() => {
+            window.location.href = "/login"; // Redirects to login page after alert
+          });
+        } else {
+          // For other errors, display error message (could use swal here too)
+          console.error('Error:', error.message);
+          swal({
+            title: "Error",
+            text: error.message,
+            icon: "error",
+            button: "OK",
+          });
+        }
+      });
     }
   });
 
-  // Toggle password visibility functionality remains unchanged
+  // Toggle password visibility functionality
   togglePasswordButton.addEventListener("click", () => {
     const type = passid.type === "password" ? "text" : "password";
     passid.type = type;

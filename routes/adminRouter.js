@@ -13,7 +13,8 @@ const couponController = require("../controllers/admin/counponController")
 const offerController = require("../controllers/admin/offerController")
 const saleReportController = require("../controllers/admin/saleReportController")
 const walletController = require("../controllers/admin/walletController")
-const salesController = require("../controllers/admin/dashBoardController")
+const dashBoardController = require("../controllers/admin/dashBoardController")
+
 // router.get("/pageerror",adminController.pageerror)
 router.get("/login",adminController.loadLogin)
 router.post("/login",adminController.login)
@@ -52,6 +53,8 @@ router.get("/viewProducts/:id",adminAuth,productController.viewProduct)
 router.put("/updateForm/:productId",adminAuth,productController.updateForm)
 router.put("/updateVariantStocks/:productId",adminAuth,productController.updateStocks)
 router.delete("/deleteVariantFromEditProduct",adminAuth,productController.deleteVariantEditProduct)
+router.get("/getEditVariant",adminAuth,productController.getEditVariant)
+router.post("/editVariantStocks",adminAuth,productController.editVariant)
 // Variant Management
 router.get("/getVariant",adminAuth,variantController.getVariantList)
 router.get("/getAddVariant",adminAuth,variantController.getAddVariant)
@@ -95,13 +98,8 @@ router.get('/saleReportPdf', adminAuth,saleReportController.generatePdfReport);
 // Wallet Transaction
 router.get("/getWalletListingPage",adminAuth,walletController.getWalletList)
 router.get("/viewDetails/:id",adminAuth,walletController.viewDetails)
+// DashBoard
+router.get("/report",adminAuth,dashBoardController.getSalesReport)
+router.get("/topselling",adminAuth,dashBoardController.getTopthings)
 
-
-router.get('/stats', adminAuth, salesController.getDashboardStats);
-
-// Sales report data
-router.get('/sales-report', adminAuth, salesController.getSalesReport);
-
-// Best selling products/brands
-router.get('/best-selling', adminAuth, salesController.getBestSelling);
 module.exports = router

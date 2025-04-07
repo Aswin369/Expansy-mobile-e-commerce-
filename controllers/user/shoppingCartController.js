@@ -246,71 +246,89 @@ const loadCheckOutPage = async(req,res)=>{
 const addOrderDetails = async (req, res) => {
     try {
         const userId = req.session.user;
-        const {deliveryAddressId,totalAmount,payableAmount,totalDiscount,couponId,couponCode,paymentMethod,items,shippingCharge} = req.body;
+        const { deliveryAddressId, totalAmount, payableAmount, totalDiscount, couponId, couponCode, paymentMethod, items, shippingCharge } = req.body;
 
-        console.log("khsdfkjs",req.body)
+        console.log("Request Body:", req.body);
 
-        const addressData = await Address.findOne({userId:new mongoose.Types.ObjectId(userId),"address._id": new mongoose.Types.ObjectId(deliveryAddressId)},{"address.$":1})
+        // Fetch delivery address
+        const addressData = await Address.findOne(
+            { userId: new mongoose.Types.ObjectId(userId), "address._id": new mongoose.Types.ObjectId(deliveryAddressId) },
+            { "address.$": 1 }
+        );
 
+        if (!addressData) {
+            return res.status(400).json({ success: false, message: "Invalid delivery address" });
+        }
+
+        const deliveryAddress = { ...addressData.address[0] };
+
+        // Check coupon validity
         if (couponCode) {
-            const coupon = await Coupon.findOne({_id: couponId,code:couponCode, 
-                isActive: true
-            });
-        
+            const coupon = await Coupon.findOne({ _id: couponId, code: couponCode, isActive: true });
             if (!coupon) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: "Invalid or inactive coupon." 
-                });
+                return res.status(400).json({ success: false, message: "Invalid or inactive coupon." });
             }
-        
-      
+
             if (coupon.maxUsage <= 0) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: "Coupon usage limit has been reached." 
-                });
-            }
-        
-  
-            await Coupon.findByIdAndUpdate(
-                coupon._id,
-                { $inc: { currentUsage: 1, maxUsage: -1 } }
-            );
-        }
-        
-
-        const deliveryAddress = {...addressData.address[0]}
-        
-
-        
-        const cartDetails = await Cart.findOne({userId})
-        if (!cartDetails || !cartDetails.items){
-            return res.status(400).json({success:false,message:"Cart is empty"});
-        }
-
-        const orderProducts = items.map((item, index)=>{
-            const cartItem = cartDetails.items.find(cart => cart.productId.toString() === item.productId);
-            if (!cartItem || !cartItem.specId) {
-                throw new Error(`Missing specId for product at index ${index}`);
+                return res.status(400).json({ success: false, message: "Coupon usage limit has been reached." });
             }
 
-            return {
-                productId: new mongoose.Types.ObjectId(item.productId),
-                specId: new mongoose.Types.ObjectId(cartItem.specId),
-                quantity: item.quantity,
-                price: item.price, 
-                totalPrice: item.totalPrice || (item.price * item.quantity),
-            }
-        })
-        const hasUndefinedPrice = orderProducts.some(product => product.price === undefined);
-        if (hasUndefinedPrice) {
-            return res.status(400).json({ success: false, message: "Some products have an undefined price" });
+            await Coupon.findByIdAndUpdate(coupon._id, { $inc: { currentUsage: 1, maxUsage: -1 } });
         }
 
-        
+        // Get cart details
+        const cartDetails = await Cart.findOne({ userId });
+        if (!cartDetails || !cartDetails.items) {
+            return res.status(400).json({ success: false, message: "Cart is empty" });
+        }
 
+        let outOfStockProducts = [];
 
+        // Validate stock availability
+        const orderProducts = await Promise.all(
+            items.map(async (item, index) => {
+                const cartItem = cartDetails.items.find(cart => cart.productId.toString() === item.productId);
+                if (!cartItem || !cartItem.specId) {
+                    throw new Error(`Missing specId for product at index ${index}`);
+                }
+
+                const product = await Product.findOne(
+                    { _id: item.productId, "specification._id": cartItem.specId },
+                    { "name": 1, "specification.$": 1 }
+                );
+
+                console.log("proedud", product)
+
+                if (!product) {
+                    throw new Error(`Product not found for ID ${item.productId}`);
+                }
+
+                const spec = product.specification[0];
+
+                if (spec.quantity < item.quantity) {
+                    outOfStockProducts.push({ name: item.productName, availableStock: spec.quantity });
+                }
+
+                return {
+                    productId: new mongoose.Types.ObjectId(item.productId),
+                    specId: new mongoose.Types.ObjectId(cartItem.specId),
+                    quantity: item.quantity,
+                    price: item.price,
+                    totalPrice: item.totalPrice || item.price * item.quantity,
+                };
+            })
+        );
+
+        console.log("error", outOfStockProducts)
+        if (outOfStockProducts.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Some products are out of stock",
+                outOfStockProducts
+            });
+        }
+
+        // Create new order
         const newOrder = new Order({
             userId,
             products: orderProducts,
@@ -324,39 +342,33 @@ const addOrderDetails = async (req, res) => {
             shippingCharge: shippingCharge
         });
 
-       
-
         await newOrder.save();
-        
 
         res.status(200).json({
             success: true,
             message: "Order placed successfully",
             orderId: newOrder.orderId,
-            id:newOrder._id
+            id: newOrder._id
         });
 
-        
+        // Deduct stock after order is confirmed
         for (const item of orderProducts) {
-            const { productId, specId, quantity } = item;
-            const product = await Product.findOneAndUpdate(
-                { _id: productId, "specification._id": specId },
-                { $inc: { "specification.$.quantity": -quantity } },
+            await Product.findOneAndUpdate(
+                { _id: item.productId, "specification._id": item.specId },
+                { $inc: { "specification.$.quantity": -item.quantity } },
                 { new: true, runValidators: true }
             );
-
-            if (!product) {
-                throw new Error(`Product with ID ${productId} or specification ${specId} not found`);
-            }
         }
 
-        await Cart.deleteOne({userId:userId})
-        // console.log("kasjdfhkashdfkhask")
+        // Clear the cart after order placement
+        await Cart.deleteOne({ userId });
+
     } catch (error) {
-        console.error("This error occurred in addOrderDetails", error);
+        console.error("This error occurred in addOrderDetails:", error);
         res.status(500).json({ success: false, message: error.message });
     }
-}
+};
+
 
 const loadSuccessPage = async(req,res)=>{
     try {

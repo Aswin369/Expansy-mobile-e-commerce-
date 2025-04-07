@@ -492,7 +492,7 @@
                                </div>
                             
                                 <!-- Price and Discount -->
-                                <h2 class="fw-medium my-3">$<%= productDetails.salePrice%> <span class="fs-16 text-decoration-line-through">$<%= productDetails.regularPrice%></span><small class="text-danger ms-2">(30% Off)</small></h2>
+                                
                             
                                 <!-- Quantity -->
                                 <div class="quantity mt-4">
@@ -514,24 +514,18 @@
                             
                                 <!-- Specifications -->
                                 <h4 class="text-dark fw-medium mt-4">Specifications :</h4>
-                                <div class="row">
-                                    <div class="col-lg-3">
-                                        <h5 class="text-dark fw-medium">RAM : </h5>
-                                        <p class="text-muted"><%= productDetails.ram%></p>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <h5 class="text-dark fw-medium">Storage : </h5>
-                                        <p class="text-muted"><%= productDetails.storage%></p>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <h5 class="text-dark fw-medium">Processor :</h5>
-                                        <p class="text-muted"><%= productDetails.processor%></p>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <h5 class="text-dark fw-medium">Color :</h5>
-                                        <p class="text-muted"><%= productDetails.color%></p>
-                                    </div>
-                                </div>
+                                <% productDetails.specification.forEach((data) => { %>
+                                   <div class="row d-flex flex-wrap">
+                                       <div class="col-lg-2 col-md-4 col-6"><h5 class="text-dark fw-medium">RAM:</h5><p class="text-muted"><%= data.ram.value %></p></div>
+                                       <div class="col-lg-2 col-md-4 col-6"><h5 class="text-dark fw-medium">Storage:</h5><p class="text-muted"><%= data.storage.value %></p></div>
+                                       <div class="col-lg-2 col-md-4 col-6"><h5 class="text-dark fw-medium">Color:</h5><p class="text-muted"><%= data.color.value %></p></div>
+                                       <div class="col-lg-2 col-md-4 col-6"><h5 class="text-dark fw-medium">Quantity:</h5><p class="text-muted"><%= data.quantity %></p></div>
+                                       <div class="col-lg-2 col-md-4 col-6"><h5 class="text-dark fw-medium">Regular Price:</h5><p class="text-muted"><%= data.regularPrice %></p></div>
+                                       <div class="col-lg-2 col-md-4 col-6"><h5 class="text-dark fw-medium">Sale Price:</h5><p class="text-muted"><%= data.salePrice %></p></div>
+                                   </div>
+                               <% }) %>
+                               
+                               
                             </div>
                             
                           </div>
