@@ -29,9 +29,9 @@ const login = async (req, res) => {
         }
         const passwordMatch = await bcrypt.compare(password, admin.password)
         if (passwordMatch) {
-            console.log("Login successful")
+            console.log("Login successful");
             req.session.admin = true;
-            return res.render("dashboard")
+            return res.status(200).json({ success: true, redirectUrl: "/admin/dashboard" });
         } else {
             console.log("Password not matching")
             return res.status(401).json({ message: "Invalid admin credentials" })

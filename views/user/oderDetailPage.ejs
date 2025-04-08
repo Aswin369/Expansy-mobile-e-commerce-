@@ -391,13 +391,14 @@
     
                 <!-- Payment Alert -->
 				
-                <button class="payment-alert p-3 m-3 d-flex align-items-center border border-primary rounded"
-				
-					onclick="continuePayment('<%= orderData._id %>', '<%= orderData.payableAmount %>')"
-					<%= orderData.paymentStatus === 'pending' ? '' : 'disabled' %>>
-					<i class="bi bi-exclamation-circle text-primary me-2"></i>
-					<span>Continue Payment</span>
-				</button>
+                <% if (orderData.paymentStatus === 'pending') { %>
+					<button class="payment-alert p-3 m-3 d-flex align-items-center border border-primary rounded"
+					  onclick="continuePayment('<%= orderData._id %>', '<%= orderData.payableAmount %>')">
+					  <i class="bi bi-exclamation-circle text-primary me-2"></i>
+					  <span>Continue Payment</span>
+					</button>
+				  <% } %>
+				  
 				
                 <!-- Order Info -->
                 <div class="p-4 bg-white">

@@ -7,6 +7,8 @@ const mongoose = require("mongoose")
 const razorpay = require("../../config/razorpay")
 const crypto = require("crypto")
 const Coupon = require("../../models/couponSchema")
+const Wallet = require('../../models/walletSchema');
+const Transaction = require('../../models/walletTransaction');
 
 const getShoppingCart = async (req, res) => {
     try {
@@ -246,13 +248,26 @@ const loadCheckOutPage = async(req,res)=>{
 const addOrderDetails = async (req, res) => {
     try {
         const userId = req.session.user;
-        const { deliveryAddressId, totalAmount, payableAmount, totalDiscount, couponId, couponCode, paymentMethod, items, shippingCharge } = req.body;
+        const {
+            deliveryAddressId,
+            totalAmount,
+            payableAmount,
+            totalDiscount,
+            couponId,
+            couponCode,
+            paymentMethod,
+            items,
+            shippingCharge
+        } = req.body;
 
         console.log("Request Body:", req.body);
 
         // Fetch delivery address
         const addressData = await Address.findOne(
-            { userId: new mongoose.Types.ObjectId(userId), "address._id": new mongoose.Types.ObjectId(deliveryAddressId) },
+            {
+                userId: new mongoose.Types.ObjectId(userId),
+                "address._id": new mongoose.Types.ObjectId(deliveryAddressId)
+            },
             { "address.$": 1 }
         );
 
@@ -292,18 +307,19 @@ const addOrderDetails = async (req, res) => {
                     throw new Error(`Missing specId for product at index ${index}`);
                 }
 
-                const product = await Product.findOne(
-                    { _id: item.productId, "specification._id": cartItem.specId },
-                    { "name": 1, "specification.$": 1 }
-                );
-
-                console.log("proedud", product)
+                const product = await Product.findOne({ _id: item.productId });
 
                 if (!product) {
                     throw new Error(`Product not found for ID ${item.productId}`);
                 }
 
-                const spec = product.specification[0];
+                const spec = product.specification.find(
+                    s => s._id.toString() === cartItem.specId.toString()
+                );
+
+                if (!spec) {
+                    throw new Error(`Specification not found for product ID ${item.productId}`);
+                }
 
                 if (spec.quantity < item.quantity) {
                     outOfStockProducts.push({ name: item.productName, availableStock: spec.quantity });
@@ -319,13 +335,44 @@ const addOrderDetails = async (req, res) => {
             })
         );
 
-        console.log("error", outOfStockProducts)
         if (outOfStockProducts.length > 0) {
             return res.status(400).json({
                 success: false,
                 message: "Some products are out of stock",
                 outOfStockProducts
             });
+        }
+
+        // Handle wallet payment
+        let paymentStatus = 'pending';
+        let finalPaymentMethod = paymentMethod === "ONLINE" ? "razorpay" : paymentMethod;
+
+        if (paymentMethod === "WALLET") {
+            const wallet = await Wallet.findOne({ userId });
+
+            if (!wallet || wallet.balance < payableAmount) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Insufficient wallet balance"
+                });
+            }
+
+            // Deduct balance
+            wallet.balance -= payableAmount;
+            await wallet.save();
+
+            paymentStatus = 'paid';
+
+            // Save transaction (linked after order creation)
+            var walletTransaction = new Transaction({
+                walletId: wallet._id,
+                userId,
+                type: 'debit',
+                amount: payableAmount,
+                status: 'success'
+            });
+
+            await walletTransaction.save();
         }
 
         // Create new order
@@ -335,7 +382,8 @@ const addOrderDetails = async (req, res) => {
             deliveryAddress,
             totalAmount,
             payableAmount,
-            paymentMethod: paymentMethod === "ONLINE" ? "razorpay" : paymentMethod,
+            paymentMethod: finalPaymentMethod,
+            paymentStatus,
             offerAndCouponAmount: totalDiscount || 0,
             couponId: couponId ? new mongoose.Types.ObjectId(couponId) : null,
             couponCode: couponCode || null,
@@ -344,24 +392,52 @@ const addOrderDetails = async (req, res) => {
 
         await newOrder.save();
 
+        // Link wallet transaction with order
+        if (paymentMethod === "Wallet" && walletTransaction) {
+            walletTransaction.associatedOrder = newOrder._id;
+            await walletTransaction.save();
+        }
+
+        // Update product stock
+        for (const item of orderProducts) {
+            const product = await Product.findById(item.productId);
+
+            if (!product) {
+                console.log("Product not found for ID:", item.productId);
+                continue;
+            }
+
+            const specIndex = product.specification.findIndex(
+                spec => spec._id.toString() === item.specId.toString()
+            );
+
+            if (specIndex === -1) {
+                console.log("Specification not found for ID:", item.specId);
+                continue;
+            }
+
+            product.specification[specIndex].quantity -= item.quantity;
+            if (product.specification[specIndex].quantity < 0) {
+                product.specification[specIndex].quantity = 0;
+            }
+
+            await product.save();
+
+            console.log(
+                `Updated quantity for spec ${item.specId}:`,
+                product.specification[specIndex].quantity
+            );
+        }
+
+        
+        // await Cart.deleteOne({ userId });
+
         res.status(200).json({
             success: true,
             message: "Order placed successfully",
             orderId: newOrder.orderId,
             id: newOrder._id
         });
-
-        // Deduct stock after order is confirmed
-        for (const item of orderProducts) {
-            await Product.findOneAndUpdate(
-                { _id: item.productId, "specification._id": item.specId },
-                { $inc: { "specification.$.quantity": -item.quantity } },
-                { new: true, runValidators: true }
-            );
-        }
-
-        // Clear the cart after order placement
-        await Cart.deleteOne({ userId });
 
     } catch (error) {
         console.error("This error occurred in addOrderDetails:", error);

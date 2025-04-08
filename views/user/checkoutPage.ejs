@@ -660,6 +660,20 @@
                     </div>
                   </div>
 
+                  <div class="p-b-10">
+                    <div class="size-204 flex-w flex-m">
+                      <input
+                        class="checkbox-round"
+                        id="payment3"
+                        type="radio"
+                        name="payment"
+                      />
+                      <label for="payment3" class="stext-104 cl2 p-l-10">
+                        Wallet Payment
+                      </label>
+                    </div>
+                  </div>
+
                   
                 </div>
               </div>
@@ -1205,8 +1219,15 @@ function calculateTotals() {
         return;
       }
 
-      const paymentMethod =
-        paymentMethodRadio.id === "payment1" ? "COD" : "ONLINE";
+      let paymentMethod;
+
+if (paymentMethodRadio.id === "payment1") {
+  paymentMethod = "COD";
+} else if (paymentMethodRadio.id === "payment2") {
+  paymentMethod = "ONLINE";
+} else if (paymentMethodRadio.id === "payment3") {
+  paymentMethod = "WALLET";
+}
 
       // Force online payment for orders over ₹5,000
       if (payTotalAmount > 5000 && paymentMethod === "COD") {
@@ -1270,7 +1291,9 @@ function calculateTotals() {
       let id = data.id
       if (paymentMethod === "ONLINE") {
         handleOnlinePayment(payTotalAmount, orderId, id);
-      } else {
+      }else if(paymentMethod === "WALLET"){
+        WalletPayment(payTotalAmount, orderId, id)
+      }else {
         window.location.href = `/ordersuccess?order=${orderId}&id=${id}`;
       }
     })
@@ -1283,6 +1306,19 @@ function calculateTotals() {
       console.error("Error:", error);
     });
   }
+
+
+  function WalletPayment(amount, orderId, id) {
+  Swal.fire({
+    title: "Payment Successful",
+    text: `₹${amount} deducted from your wallet. Order ID: ${orderId}`,
+    icon: "success",
+    confirmButtonText: "View Order",
+  }).then(() => {
+    window.location.href = `/ordersuccess?order=${orderId}&id=${id}`;
+  });
+}
+
 
   // ========== HANDLE ONLINE PAYMENT ==========
   // Inside the handleOnlinePayment function, modify it like this:

@@ -18,7 +18,7 @@ const dashBoardController = require("../controllers/admin/dashBoardController")
 // router.get("/pageerror",adminController.pageerror)
 router.get("/login",adminController.loadLogin)
 router.post("/login",adminController.login)
-router.get("/",adminAuth,adminController.loadDashboard)
+router.get("/dashboard",adminAuth,adminController.loadDashboard)
 router.get("/logout", adminController.logout)
 // Customer mangement
 router.get("/users",adminAuth,customerController.customerInfo)
@@ -28,8 +28,8 @@ router.get("/customerdetails",adminAuth,customerController.customerdetail)
 router.get("/admin/customerdetails", adminAuth, customerController.customerdetail);
 // Category management
 router.get("/category",adminAuth,categoryController.categoryInfo)
-router.post("/addCategory", upload.single('file'),adminAuth, categoryController.addCategory);
 router.get("/addCategory", adminAuth,categoryController.loadAddCategory)
+router.post("/addCategory", upload.single('image'),adminAuth, categoryController.addCategory);
 router.get('/listCategory', adminAuth,categoryController.getListCategory);
 router.get('/unlistCategory', adminAuth, categoryController.getUnlistCategory);
 router.get("/editCategory/:id", adminAuth, categoryController.getEditCategory)

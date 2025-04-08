@@ -537,15 +537,16 @@
                                                             <button class="btn  btn-primary"  title="Edit">
                                                                 <a href="/admin/editProduct/<%= data[i]._id%>" class="text-white" style="text-decoration: none;">Edit</a>
                                                             </button>
-                                                            <%if(!data[i].isBlocked){%>
-                                                            <button class="btn  btn-danger" title="Block">
-                                                               <a href="/admin/blockProduct/<%= data[i]._id %>" class="text-white" style="text-decoration: none;">Block</a>
-                                                            </button>
-                                                            <%}else{%>
-                                                            <button class="btn  btn-success" title="UnBlock">
-                                                                 <a href="/admin/UnBlockProduct/<%= data[i]._id %>" class="text-white" style="text-decoration: none;">UnBlock</a>
-                                                            </button>
-                                                            <%}%>
+                                                            <% if (!data[i].isBlocked) { %>
+                                                                 <button class="btn btn-danger" title="Block" onclick="confirmAction('/admin/blockProduct/<%= data[i]._id %>', 'block this product?')">
+                                                                   Block
+                                                                 </button>
+                                                               <% } else { %>
+                                                                 <button class="btn btn-success" title="Unblock" onclick="confirmAction('/admin/UnBlockProduct/<%= data[i]._id %>', 'unblock this product?')">
+                                                                   Unblock
+                                                                 </button>
+                                                               <% } %>
+                                                               
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -612,10 +613,7 @@
                <footer class="footer">
                    <div class="container-fluid">
                        <div class="row">
-                           <div class="col-12 text-center">
-                               <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                                   href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
-                           </div>
+                           
                        </div>
                    </div>
                </footer>
@@ -638,6 +636,25 @@
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+     function confirmAction(url, actionText) {
+       Swal.fire({
+         title: 'Are you sure?',
+         text: `Do you really want to ${actionText}`,
+         icon: 'warning',
+         showCancelButton: true,
+         confirmButtonColor: '#3085d6',
+         cancelButtonColor: '#d33',
+         confirmButtonText: 'Yes, do it!'
+       }).then((result) => {
+         if (result.isConfirmed) {
+           window.location.href = url;
+         }
+       });
+     }
+   </script>
+   
 
 <% if (message) { %>
     <script>

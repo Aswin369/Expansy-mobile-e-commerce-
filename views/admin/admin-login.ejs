@@ -64,6 +64,7 @@
 
     const name = document.getElementById("email").value;
     const password = document.getElementById("password").value;
+
     if (!name || !password) {
         Swal.fire({
             icon: "error",
@@ -82,15 +83,14 @@
             body: JSON.stringify({ name, password }),
         });
 
-        
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("text/html")) {
-
-            document.documentElement.innerHTML = await response.text();
-            return;
-        }
         const result = await response.json();
-        throw new Error(result.message);
+
+        if (response.ok) {
+            // Redirect to dashboard
+            window.location.href = result.redirectUrl;
+        } else {
+            throw new Error(result.message);
+        }
 
     } catch (error) {
         Swal.fire({
@@ -100,6 +100,7 @@
         });
     }
 });
+
   </script>
 </body>
 </html>

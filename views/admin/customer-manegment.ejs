@@ -472,20 +472,25 @@
                                                 <td><%= data[i].email %></td>
                                                 <td><%= new Date(data[i].date).toLocaleDateString() %></td> 
                                                 <td>
-                                                    <% if (data[i].isBlocked === false) { %>
-                                                        <div class="d-flex gap-2">
-                                                            <a href="/admin/blockCustomer?id=<%= data[i].id %>" 
-                                                               class="btn btn-danger text-white" 
-                                                               style="text-decoration: none;">
+                                                  <% if (data[i].isBlocked === false) { %>
+                                                       <div class="d-flex gap-2">
+                                                           <span 
+                                                               class="btn btn-danger text-white swal-confirm" 
+                                                               data-href="/admin/blockCustomer?id=<%= data[i].id %>" 
+                                                               data-action="block"
+                                                               style="text-decoration: none; cursor: pointer;">
                                                                Block
-                                                            </a>
-                                                    <% } else { %>
-                                                            <a href="/admin/unblockCustomer?id=<%= data[i].id %>" 
-                                                               class="btn btn-success text-white" 
-                                                               style="text-decoration: none;">
+                                                           </span>
+                                                   <% } else { %>
+                                                           <span 
+                                                               class="btn btn-success text-white swal-confirm" 
+                                                               data-href="/admin/unblockCustomer?id=<%= data[i].id %>" 
+                                                               data-action="unblock"
+                                                               style="text-decoration: none; cursor: pointer;">
                                                                Unblock
-                                                            </a>
-                                                            <% } %>
+                                                           </span>
+                                                   <% } %>
+                                                   
 
                                                             <button type="button" class="btn btn-warning">
                                                                  <a href="/admin/customerdetails?id=<%= data[i].id %>" 
@@ -556,6 +561,36 @@
            
            <!-- Dashboard Js -->
            <script src="/assets/js/pages/dashboard.js"></script>
+
+           <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.swal-confirm');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', function () {
+        const url = this.getAttribute('data-href');
+        const action = this.getAttribute('data-action');
+        const actionText = action === 'block' ? 'Block this customer?' : 'Unblock this customer?';
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: actionText,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, proceed!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = url;
+          }
+        });
+      });
+    });
+  });
+</script>
+
            
            </body>
            

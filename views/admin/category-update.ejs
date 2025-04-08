@@ -13,7 +13,7 @@
      <meta name="author" content="Techzaa" />
      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-     <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 
      <!-- App favicon -->
      <link rel="shortcut icon" href="/assets/images/favicon.ico">
@@ -685,12 +685,113 @@
 
                </div>
 
-               <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+               <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
                <script>
-                    // Handle form submission
-                    function handleFormSubmit(event) {
+            // Image cropper initialization with improved workflow
+document.addEventListener("DOMContentLoaded", function () {
+    const imageInput = document.getElementById("imageInput");
+    const imagePreview = document.getElementById("imagePreview");
+    const cropContainer = document.getElementById("cropContainer");
+    const cropButton = document.getElementById("cropButton");
+    const croppedImageData = document.getElementById("croppedImageData");
+    let cropper;
+    let imageAlreadyCropped = false;
+
+    // Check if there's already a cropped/saved image
+    if (croppedImageData.value && croppedImageData.value.startsWith('data:image')) {
+        imageAlreadyCropped = true;
+        cropContainer.style.display = "block";
+    }
+    
+    // Only initialize cropper for a new image upload, not for an existing cropped image
+    if (imagePreview.src && !imagePreview.src.endsWith('#') && !imageAlreadyCropped) {
+        cropContainer.style.display = "block";
+        // Wait for image to load before initializing cropper
+        imagePreview.onload = function() {
+            cropper = new Cropper(imagePreview, {
+                aspectRatio: 1,
+                viewMode: 2,
+                scalable: true,
+                zoomable: true,
+            });
+        };
+        // Trigger onload if image is already loaded
+        if (imagePreview.complete) {
+            imagePreview.onload();
+        }
+    }
+
+    imageInput.addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Reset any existing cropped data when new image is selected
+        imageAlreadyCropped = false;
+        croppedImageData.value = "";
+        
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            // Destroy existing cropper if any
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            
+            imagePreview.src = e.target.result;
+            cropContainer.style.display = "block";
+            cropButton.style.display = "block"; // Show crop button
+
+            // Initialize new cropper
+            cropper = new Cropper(imagePreview, {
+                aspectRatio: 1,
+                viewMode: 2,
+                scalable: true,
+                zoomable: true,
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+
+    cropButton.addEventListener("click", function () {
+        if (cropper) {
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300,
+            });
+
+            if (canvas) {
+                // Store cropped image data in the hidden input
+                croppedImageData.value = canvas.toDataURL("image/jpeg");
+                
+                // Update preview with cropped image
+                imagePreview.src = croppedImageData.value;
+                
+                // Destroy cropper but keep the container visible to show cropped result
+                cropper.destroy();
+                cropper = null;
+                
+                // Mark as cropped
+                imageAlreadyCropped = true;
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Image Cropped',
+                    text: 'Image has been cropped successfully. Click Save to update the category.'
+                });
+            }
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Image',
+                text: 'Please select an image to crop first.'
+            });
+        }
+    });
+});
+
+function handleFormSubmit(event) {
     event.preventDefault();
     
     const form = event.target;
@@ -723,10 +824,6 @@
     formData.append("name", name);
     formData.append("description", description);
 
-console.log("name",name)
-console.log("description",description);
-
-
     // Handle image data
     if (croppedImageData && croppedImageData.startsWith('data:image')) {
         // Convert base64 to blob
@@ -736,7 +833,8 @@ console.log("description",description);
                 formData.append("image", blob, "cropped-image.jpg");
                 submitForm(formData, categoryId);
             })
-            .catch(() => {
+            .catch((error) => {
+                console.error("Error processing image:", error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -744,11 +842,20 @@ console.log("description",description);
                 });
             });
     } else {
+        // No cropped image, check if there's a file selected
         const imageInput = document.getElementById("imageInput");
         if (imageInput.files.length > 0) {
-            formData.append("image", imageInput.files[0]);
+            // Show warning that image needs to be cropped first
+            Swal.fire({
+                icon: 'warning',
+                title: 'Image Not Cropped',
+                text: 'Please crop the image before saving.'
+            });
+            return false;
+        } else {
+            // No new image, proceed with form submission
+            submitForm(formData, categoryId);
         }
-        submitForm(formData, categoryId);
     }
 }
 
@@ -778,7 +885,7 @@ async function submitForm(formData, categoryId) {
         Swal.fire({
             icon: 'success',
             title: 'Success',
-            text: data.message
+            text: data.message || 'Category updated successfully'
         }).then(() => {
             window.location.href = '/admin/category';
         });
@@ -791,60 +898,6 @@ async function submitForm(formData, categoryId) {
         });
     }
 }
-
-
-// Image cropper initialization
-document.addEventListener("DOMContentLoaded", function () {
-    const imageInput = document.getElementById("imageInput");
-    const imagePreview = document.getElementById("imagePreview");
-    const cropContainer = document.getElementById("cropContainer");
-    const cropButton = document.getElementById("cropButton");
-    const croppedImageData = document.getElementById("croppedImageData");
-    let cropper;
-
-    imageInput.addEventListener("change", function (event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            imagePreview.src = e.target.result;
-            cropContainer.style.display = "block";
-
-            if (cropper) {
-                cropper.destroy();
-            }
-
-            cropper = new Cropper(imagePreview, {
-                aspectRatio: 1,
-                viewMode: 2,
-                scalable: true,
-                zoomable: true,
-            });
-        };
-        reader.readAsDataURL(file);
-    });
-
-    cropButton.addEventListener("click", function () {
-        if (cropper) {
-            const canvas = cropper.getCroppedCanvas({
-                width: 300,
-                height: 300,
-            });
-
-            croppedImageData.value = canvas.toDataURL("image/jpeg");
-            imagePreview.src = croppedImageData.value;
-            cropper.destroy();
-            cropper = null;
-            
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Image cropped successfully'
-            });
-        }
-    });
-});
                </script>
 
 

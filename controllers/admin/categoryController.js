@@ -47,6 +47,7 @@ const categoryInfo = async (req, res) => {
 const addCategory = async (req, res) => {
     const { name, description, croppedImage } = req.body; 
     
+    console.log("sdkfkasj", req.body)
 
     try {
         

@@ -450,77 +450,83 @@
                <div class="container-fluid">
 
                     <!-- Start here.... -->
-                    
-                         
+                
                     <div class="container-fluid p-4">
-                         <h1 class="h3 mb-4 text-gray-800">Sales Analytics Dashboard</h1>
-                         
-                         <!-- Date Filters Section -->
-                         <div class="row mb-3">
-                             <div class="col-xl-12">
-                                 <div class="card">
-                                     <div class="card-body">
-                                         <div class="d-flex align-items-center gap-2 flex-wrap">
-                                             <!-- Date Filters -->
-                                             <div class="input-group" style="max-width: 200px;">
-                                                 <span class="input-group-text">From</span>
-                                                 <input type="date" class="form-control" id="startDate">
-                                             </div>
-                                 
-                                             <div class="input-group" style="max-width: 200px;">
-                                                 <span class="input-group-text">To</span>
-                                                 <input type="date" class="form-control" id="endDate">
-                                             </div>
-                                 
-                                             <!-- Buttons -->
-                                             <button type="button" class="btn btn-primary" id="filterBtn">
-                                                 <i class="fas fa-filter me-1"></i>
-                                                 Filter
-                                             </button>
-                                             <button type="button" class="btn btn-outline-primary" id="oneDayBtn">Weekly</button>
-                                             <button type="button" class="btn btn-outline-primary" id="oneWeekBtn">Monthly</button>
-                                             <button type="button" class="btn btn-outline-primary active" id="oneMonthBtn">Yearly</button>
+                        <h1 class="h3 mb-4 text-gray-800">Sales Analytics Dashboard</h1>
+                
+                        <!-- Date Filters Section -->
+                        <div class="row mb-3">
+                            <div class="col-xl-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <!-- Date Filters -->
+                                            <div class="input-group" style="max-width: 200px;">
+                                             <span class="input-group-text">From</span>
+                                             <input type="date" class="form-control" id="startDate">
                                          </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                     <div class="col-md-6 col-xl-3">
-                         <div class="card">
-                             <div class="card-body">
-                                 <div class="d-flex align-items-center justify-content-between">
-                                     <div>
-                                         <h4 class="card-title mb-2">Order Cancel</h4>
-                                         <p class="text-muted fw-medium fs-22 mb-0">45</p>
-                                     </div>
-                                     <div>
-                                         <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                             <iconify-icon icon="solar:cart-cross-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                                         
+                                         <div class="input-group" style="max-width: 200px;">
+                                             <span class="input-group-text">To</span>
+                                             <input type="date" class="form-control" id="endDate">
                                          </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                     <div class="col-md-6 col-xl-3">
-                         <div class="card">
-                             <div class="card-body">
-                                 <div class="d-flex align-items-center justify-content-between">
-                                     <div>
-                                         <h4 class="card-title mb-2">Order Pending</h4>
-                                         <p class="text-muted fw-medium fs-22 mb-0">45</p>
-                                     </div>
-                                     <div>
-                                         <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                             <iconify-icon icon="solar:clock-circle-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-               </div>
+                
+                                            <!-- Buttons -->
+                                            <button type="button" class="btn btn-primary" id="filterBtn">
+                                                <i class="fas fa-filter me-1"></i>
+                                                Filter
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary" id="oneDayBtn">Weekly</button>
+                                            <button type="button" class="btn btn-outline-primary" id="oneWeekBtn">Monthly</button>
+                                            <button type="button" class="btn btn-outline-primary active" id="oneMonthBtn">Yearly</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- Status Cards Row -->
+                        <div class="row">
+                            <div class="col-md-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h4 class="card-title mb-2">Order Cancel</h4>
+                                                <p class="fw-medium fs-22 mb-0" >45</p>
+                                            </div>
+                                            <div>
+                                                <div class="avatar-md rounded">
+                                                    <iconify-icon icon="solar:cart-cross-broken" class="fs-32" ></iconify-icon>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <div class="col-md-6 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h4 class="card-title mb-2">Order Pending</h4>
+                                                <p class="fw-medium fs-22 mb-0" >45</p>
+                                            </div>
+                                            <div>
+                                                <div class="avatar-md rounded" >
+                                                    <iconify-icon icon="solar:clock-circle-broken" class="fs-32" ></iconify-icon>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                    </div>
+                </div>
+                
 
 
                <div class="row">
@@ -1005,10 +1011,23 @@ const getBestSellingCategories = async (dateQuery) => {
                     }
 
                     function updateChart(labels, salesData) {
-                    salesChart.data.labels = labels;
-                    salesChart.data.datasets[0].data = salesData;
-                    salesChart.update();
-                    }
+    // Find the highest value in the sales data
+    const maxValue = Math.max(...salesData);
+
+    // Round up to the nearest 50000 or 100000 for cleaner y-axis
+    const dynamicMax = Math.ceil(maxValue / 50000) * 50000;
+
+    // Update chart data
+    salesChart.data.labels = labels;
+    salesChart.data.datasets[0].data = salesData;
+
+    // Dynamically set the y-axis max value
+    salesChart.options.scales.y.max = dynamicMax;
+
+    // Update the chart
+    salesChart.update();
+}
+
 
                 </script>
                 
@@ -1065,7 +1084,14 @@ const getBestSellingCategories = async (dateQuery) => {
                         fetchChartData(chartFilter.value);
                     });
                 </script>
+                <script>
+                    // Get today's date in YYYY-MM-DD format
+                    const today = new Date().toISOString().split('T')[0];
                 
+                    // Set max attribute to today for both date inputs
+                    document.getElementById('startDate').max = today;
+                    document.getElementById('endDate').max = today;
+                </script>
 
                 <!-- Mirrored from techzaa.in/larkon/admin/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 03 Dec 2024 05:42:46 GMT -->
                 </html>

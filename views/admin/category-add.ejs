@@ -13,7 +13,7 @@
      <meta name="author" content="Techzaa" />
      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-     <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 
      <!-- App favicon -->
      <link rel="shortcut icon" href="/assets/images/favicon.ico">
@@ -579,7 +579,7 @@
 
                                         <div class="card-body">
                                              <!-- File Upload -->
-                                             <form method="post" action="/admin/addCategory"
+                                             <form method="post" 
                                                   onsubmit="return handleFormSubmit(event)"
                                                   enctype="multipart/form-data">
                                                   <div class="fallback">
@@ -679,176 +679,263 @@
 
                               </div>
 
-                              <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
-
+                              <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+                              <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                              
                               <script>
-                                   // Handle form submission
-                                   function handleFormSubmit(event) {
-                                        event.preventDefault(); // Prevent default form submission
+                                  function handleFormSubmit(event) {
+     event.preventDefault();
 
-                                        if (!validateForm()) {
-                                             return; // Stop if validation fails
-                                        }
+     if (!validateForm()) {
+          return;
+     }
 
-                                        const name = document.getElementsByName("name")[0].value.trim();
-                                        const description = document.getElementById("description").value.trim();
-                                        const imageInput = document.getElementById("imageInput"); // Changed from "image" to "imageInput"
-                                        const formData = new FormData();
+     const name = document.getElementsByName("name")[0].value.trim();
+     const description = document.getElementById("description").value.trim();
+     const imageInput = document.getElementById("imageInput");
+     console.log("djkfj",name)
+     console.log("kjhasdf",description)
+     const formData = new FormData();
+     formData.append("name", name);
+     formData.append("description", description)
 
-                                        formData.append("name", name);
-                                        formData.append("description", description);
+     for (let [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+}
 
-                                        // Append the cropped image if available
-                                        const croppedImageData = document.getElementById("croppedImageData").value;
+// If cropped file is available, send it
+console.log("sdghfsdfk", window.croppedFile)
+if (window.croppedFile) {
+     formData.append("image", window.croppedFile);
+} else if (imageInput.files.length > 0) {
+     formData.append("image", imageInput.files[0]);
+} else {
+     // No image selected - show error
+     Swal.fire({
+          icon: "error",
+          title: "Oops",
+          text: "Please select and crop an image",
+     });
+     return;
+}
 
-                                        if (croppedImageData) {
-                                             formData.append("croppedImage", croppedImageData);
-                                        } else if (imageInput.files.length > 0) {
-                                             formData.append("image", imageInput.files[0]);
-                                        }
 
-                                        console.log(name);
-                                        console.log(description);
-                                        console.log(imageInput.files[0]); // Correctly log the first file
+for (let [key, value] of formData.entries()) {
+console.log(`${key}:`, value);
+}
 
-                                        fetch("/admin/addCategory", {
-                                             method: "POST",
-                                             body: formData,
-                                        })
-                                             .then((response) => {
-                                                  if (!response.ok) {
-                                                       return response.json().then((err) => {
-                                                            throw new Error(err.error || "Category already exists");
-                                                       });
-                                                  }
-                                                  return response.json();
-                                             })
-                                             .then((data) => {
-                                                  Swal.fire({
-                                                       icon: "success",
-                                                       title: "Success",
-                                                       text: data.message,
-                                                  }).then(() => {
-                                                       location.reload(); 
-                                                  });
-                                             })
-                                             .catch((error) => {
-                                                  if (error.message === "Category already exists") {
-                                                       Swal.fire({
-                                                            icon: "error",
-                                                            title: "Oops",
-                                                            text: "Category already exists",
-                                                       });
-                                                  } else {
-                                                       Swal.fire({
-                                                            icon: "error",
-                                                            title: "Oops",
-                                                            text: error.message || "An error occurred while adding the category",
-                                                       });
-                                                  }
-                                             });
-                                   }
+     fetch("/admin/addCategory", {
+          method: "POST",
+          body: formData,
+     })
+          .then((response) => {
+               if (!response.ok) {
+                    return response.json().then((err) => {
+                         throw new Error(err.error || "Category already exists");
+                    });
+               }
+               return response.json();
+          })
+          .then((data) => {
+               Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: data.message,
+               }).then(() => {
+                    location.reload();
+               });
+          })
+          .catch((error) => {
+               if (error.message === "Category already exists") {
+                    Swal.fire({
+                         icon: "error",
+                         title: "Oops",
+                         text: "Category already exists",
+                    });
+               } else {
+                    Swal.fire({
+                         icon: "error",
+                         title: "Oops",
+                         text: error.message || "An error occurred while adding the category",
+                    });
+               }
+          });
+}
 
-                                   // Form validation
-                                   function validateForm() {
-                                        clearErrorMessage();
-                                        const name = document.getElementsByName("name")[0].value.trim();
-                                        const description = document.getElementById("description").value.trim();
-                                        let isValid = true;
+function validateForm() {
+     clearErrorMessage();
+     const name = document.getElementsByName("name")[0].value.trim();
+     const description = document.getElementById("description").value.trim();
+     let isValid = true;
 
-                                        // Validate Name
-                                        if (name === "") {
-                                             displayErrorMessage("name-error", "Please enter a name");
-                                             isValid = false;
-                                        } else if (!/^[a-zA-Z0-9\s]+$/.test(name)) {
-                                             displayErrorMessage(
-                                                  "name-error",
-                                                  "Category name should contain only alphabetic characters"
-                                             );
-                                             isValid = false;
-                                        }
+     if (name === "") {
+          displayErrorMessage("name-error", "Please enter a name");
+          isValid = false;
+     } else if (!/^[a-zA-Z0-9\s]+$/.test(name)) {
+          displayErrorMessage("name-error", "Category name should contain only alphabetic characters");
+          isValid = false;
+     }
 
-                                        // Validate Description
-                                        if (description === "") {
-                                             displayErrorMessage("description-error", "Please enter a description");
-                                             isValid = false;
-                                        }
+     if (description === "") {
+          displayErrorMessage("description-error", "Please enter a description");
+          isValid = false;
+     }
 
-                                        return isValid;
-                                   }
+     return isValid;
+}
 
-                                   // Display error message
-                                   function displayErrorMessage(elementId, message) {
-                                        const errorElement = document.getElementById(elementId);
-                                        errorElement.innerText = message;
-                                        errorElement.style.display = "block";
-                                   }
+function displayErrorMessage(elementId, message) {
+     const errorElement = document.getElementById(elementId);
+     errorElement.innerText = message;
+     errorElement.style.display = "block";
+}
 
-                                   // Clear error message
-                                   function clearErrorMessage() {
-                                        const errorElements = document.getElementsByClassName("error-message");
-                                        Array.from(errorElements).forEach((element) => {
-                                             element.innerText = "";
-                                             element.style.display = "none";
-                                        });
-                                   }
+function clearErrorMessage() {
+     const errorElements = document.getElementsByClassName("error-message");
+     Array.from(errorElements).forEach((element) => {
+          element.innerText = "";
+          element.style.display = "none";
+     });
+}
 
-                                   // Cropper.js Integration
-                                   document.addEventListener("DOMContentLoaded", function () {
-                                        const imageInput = document.getElementById("imageInput");
-                                        const imagePreview = document.getElementById("imagePreview");
-                                        const cropContainer = document.getElementById("cropContainer");
-                                        const cropButton = document.getElementById("cropButton");
-                                        const croppedImageData = document.getElementById("croppedImageData");
-                                        let cropper;
+document.addEventListener("DOMContentLoaded", function () {
+     // Properly get the form and attach the event handler
+     const form = document.querySelector("form");
+     if (form) {
+          // Remove the inline onsubmit to avoid conflicts
+          form.removeAttribute("onsubmit");
+          form.addEventListener("submit", handleFormSubmit);
+     }
 
-                                        imageInput.addEventListener("change", function (event) {
-                                             const file = event.target.files[0];
-                                             if (!file) return;
+     const imageInput = document.getElementById("imageInput");
+     const imagePreview = document.getElementById("imagePreview");
+     const cropContainer = document.getElementById("cropContainer");
+     const cropButton = document.getElementById("cropButton");
+     const croppedImageData = document.getElementById("croppedImageData");
 
-                                             const reader = new FileReader();
-                                             reader.onload = function (e) {
-                                                  imagePreview.src = e.target.result;
-                                                  cropContainer.style.display = "block";
+     // Add a container for showing the final cropped image preview
+     const previewContainer = document.createElement("div");
+     previewContainer.id = "croppedPreviewContainer";
+     previewContainer.style.display = "none";
+     previewContainer.innerHTML = `
+          <h5 class="mt-3">Cropped Image Preview:</h5>
+          <img id="finalCroppedPreview" style="max-width: 150px; max-height: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;" />
+     `;
+     cropContainer.after(previewContainer);
 
-                                                  // Destroy any existing cropper instance to avoid conflicts
-                                                  if (cropper) {
-                                                       cropper.destroy();
-                                                  }
+     let cropper = null;
 
-                                                  // Initialize the cropper instance
-                                                  cropper = new Cropper(imagePreview, {
-                                                       aspectRatio: 1,
-                                                       viewMode: 2,
-                                                       scalable: true,
-                                                       zoomable: true,
-                                                  });
-                                             };
-                                             reader.readAsDataURL(file);
-                                        });
+     // Handle image selection
+     imageInput.addEventListener("change", function (event) {
+          const file = event.target.files[0];
+          if (!file) return;
 
-                                        cropButton.addEventListener("click", function () {
-                                             if (cropper) {
-                                                  const canvas = cropper.getCroppedCanvas({
-                                                       width: 300,
-                                                       height: 300,
-                                                  });
+          // Reset the cropped file when a new image is selected
+          window.croppedFile = null;
+          document.getElementById("croppedPreviewContainer").style.display = "none";
 
-                                                  // Convert canvas to a base64 string
-                                                  croppedImageData.value = canvas.toDataURL("image/jpeg");
+          // Read the selected image and show it for cropping
+          const reader = new FileReader();
+          reader.onload = function (e) {
+               // Set the image source
+               imagePreview.src = e.target.result;
+               
+               // Display the crop container
+               cropContainer.style.display = "block";
+               
+               // Destroy existing cropper if any
+               if (cropper) {
+                    cropper.destroy();
+               }
+               
+               // Initialize the Cropper after a short delay to ensure image is loaded
+               setTimeout(() => {
+                    try {
+                         cropper = new Cropper(imagePreview, {
+                              aspectRatio: 1,
+                              viewMode: 2,
+                              scalable: true,
+                              zoomable: true,
+                              responsive: true,
+                              background: false,
+                              autoCropArea: 0.8,
+                         });
+                    } catch (err) {
+                         console.error("Cropper initialization error:", err);
+                         Swal.fire({
+                              icon: "error",
+                              title: "Cropper Error",
+                              text: "Could not initialize the image cropper. Please ensure Cropper.js is properly loaded.",
+                         });
+                    }
+               }, 200);
+          };
+          reader.readAsDataURL(file);
+     });
 
-                                                  // Hide crop container after cropping
-                                                  cropContainer.style.display = "none";
+     // Handle crop button click
+     cropButton.addEventListener("click", function () {
+          if (!cropper) {
+               Swal.fire({
+                    icon: "error",
+                    title: "Oops",
+                    text: "Please select an image first",
+               });
+               return;
+          }
 
-                                                  Swal.fire({
-                                                       icon: 'success', // Success icon for a positive message
-                                                       title: 'Success!',
-                                                       text: 'Image cropped and ready for upload!',
-                                                  });
+          try {
+               // Get the cropped canvas
+               const canvas = cropper.getCroppedCanvas({
+                    width: 300,
+                    height: 300,
+                    fillColor: '#fff',
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high',
+               });
 
-                                             }
-                                        });
-                                   });
+               if (!canvas) {
+                    throw new Error("Could not crop the image");
+               }
+
+               // Convert the canvas to blob
+               canvas.toBlob(function (blob) {
+                    // Create a new File object
+                    const file = new File([blob], "cropped-image.jpg", { type: "image/jpeg" });
+                    
+                    // Store the cropped file for form submission
+                    window.croppedFile = file;
+                    
+                    // Also set the hidden input value for fallback
+                    if (croppedImageData) {
+                         croppedImageData.value = canvas.toDataURL("image/jpeg");
+                    }
+                    
+                    // Show preview of the cropped image
+                    const finalPreview = document.getElementById("finalCroppedPreview");
+                    finalPreview.src = URL.createObjectURL(blob);
+                    document.getElementById("croppedPreviewContainer").style.display = "block";
+                    
+                    // Hide the crop container
+                    cropContainer.style.display = "none";
+
+                    // Show success message
+                    Swal.fire({
+                         icon: "success",
+                         title: "Success!",
+                         text: "Image cropped successfully!",
+                    });
+               }, "image/jpeg", 0.9);
+          } catch (err) {
+               console.error("Cropping error:", err);
+               Swal.fire({
+                    icon: "error",
+                    title: "Cropping Failed",
+                    text: "Failed to crop the image. Please try again.",
+               });
+          }
+     });
+});
                               </script>
 
 

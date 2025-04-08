@@ -280,43 +280,35 @@ const getVerifyOtpPage = async (req,res)=>{
     }
 }
 
-const forgotEmailValid = async (req,res)=>{
+const forgotEmailValid = async (req, res) => {
     try {
-        const {email} = req.body
-        console.log("Tisd email", req.body)
-        const findUser = await User.findOne({email:email})
-        console.log("This is the user",findUser)
+        const { email } = req.body;
+        const findUser = await User.findOne({ email });
 
-        if(!findUser){
-            res.status(400).json({success:false, message:"Please use valid email"})
+        if (!findUser) {
+            return res.status(400).json({ success: false, message: "User with this email does not exist" });
         }
 
-        if(findUser){
-            const otp = generateOtp()
-            const otpExpiry = Date.now() + 1 * 60 * 1000;
-            const emailSent = await sendVerificationEmail(email,otp)
-            if(emailSent){
-                req.session.userOtp = otp;
-                req.session.email = email
-                req.session.otpExpiry = otpExpiry
-                res.render("forgotpass-verfiyOtp")
-                console.log("THis is first otp", otp)
-            }else{
-                res.json({success:false, message:"Failed to send OTP. Please try agian"})
-            }
-        }else{
-            res.render("forgot-password",{
-                message:"User with this email does not exists"
-            })
+        const otp = generateOtp();
+        const otpExpiry = Date.now() + 1 * 60 * 1000;
+        const emailSent = await sendVerificationEmail(email, otp);
+
+        if (emailSent) {
+            req.session.userOtp = otp;
+            req.session.email = email;
+            req.session.otpExpiry = otpExpiry;
+            console.log("This is the otp forgot email",otp)
+            return res.status(200).json({ success: true });
+        } else {
+            return res.status(500).json({ success: false, message: "Failed to send OTP. Please try again." });
         }
 
-        console.log("This user session form verify email", req.session)
-        
     } catch (error) {
-        console.error("This is error occured in forgot password send email",error)
-        res.redirect("/pageerror")
+        console.error("Error in forgot password email sending:", error);
+        return res.status(500).json({ success: false, message: "Server error occurred." });
     }
-}
+};
+
 
 const verifyForgotPassOtp = async (req, res) => {
     try {

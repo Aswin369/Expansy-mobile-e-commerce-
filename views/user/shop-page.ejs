@@ -205,7 +205,7 @@
 				</button>
 
 				<form class="wrap-search-header flex-w p-l-15">
-					<button class="flex-c-m trans-04">
+					<button class="flex-c-m trans-04" type="button">
 						<i class="zmdi zmdi-search"></i>
 					</button>
 					<input class="plh3" type="text" name="search" placeholder="Search...">
@@ -305,7 +305,7 @@
 		<div class="container">
 			<div class="flex-w flex-sb-m p-b-52">
 				<div class="flex-w flex-l-m filter-tope-group m-tb-10">
-					<form id="filterForm" method="GET" action="/shop-page">
+					<form id="filterForm" method="GET" >
 						<input type="hidden" name="brand" id="brandInput">
 					</form>
 				
@@ -314,7 +314,7 @@
 					</button>
 				
 					<% brands.forEach(brand => { %>
-						<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 filter-btn" data-brand="<%= brand.brandName %>">
+						<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 filter-btn" data-brand="<%= brand.brandName %>" type="button">
 						  <%= brand.brandName %>
 						</button>
 					  <% }); %>
@@ -367,6 +367,16 @@
 								<li class="p-b-6">
 									<a href="#" id="newArrivals" class=" stext-106 trans-04 sortingalphapets" style="color: rgb(170, 170, 170);">
 										New arrivals
+									</a>
+								</li>
+								<li class="p-b-6">
+									<a href="#" id="High-Low" class=" stext-106 trans-04 sortingalphapets" style="color: rgb(170, 170, 170);">
+										High - Low
+									</a>
+								</li>
+								<li class="p-b-6">
+									<a href="#" id="Low-High" class=" stext-106 trans-04 sortingalphapets" style="color: rgb(170, 170, 170);">
+										Low - High
 									</a>
 								</li>
 							</ul>
@@ -487,11 +497,11 @@
 							<div class="block2-pic hov-img0">
 								<img src="<%= product.productImage[0] %>" alt="<%= product.productName %>" onclick="handleProductClick('<%= product._id%>')">
 			
-								<a href="#" 
+								<!-- <a href="#" 
 								   class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 
 								   p-lr-15 trans-04 js-show-modal1">
 									Quick View
-								</a>
+								</a> -->
 							</div>
 			
 							<div class="block2-txt flex-w flex-t p-t-14">
@@ -1008,19 +1018,21 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     // ------ BRAND FILTER ------
     const filterButtons = document.querySelectorAll('.filter-btn');
     filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
             const brand = this.getAttribute('data-brand');
             
-            // If "All Products" is clicked, remove all filters
+            // If "All Products" is clicked, remove brand filter
             if (brand === 'All') {
                 const url = new URL(window.location.href);
-                const urlParams = new URLSearchParams();
-                urlParams.set('page', '1');
+                const urlParams = new URLSearchParams(url.search);
+                urlParams.delete('brand');
                 url.search = urlParams.toString();
                 window.location.href = url.toString();
                 return;
             }
             
+            // For specific brand, set the brand parameter
             window.location.href = updateUrlWithFilters({ brand });
         });
     });
@@ -1074,6 +1086,18 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
         window.location.href = updateUrlWithFilters({ sort: 'new' });
     });
     
+    // Add High-Low price sorting
+    document.getElementById('High-Low')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = updateUrlWithFilters({ sort: 'high-low' });
+    });
+    
+    // Add Low-High price sorting
+    document.getElementById('Low-High')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = updateUrlWithFilters({ sort: 'low-high' });
+    });
+    
     // ------ SEARCH WITH DEBOUNCING ------
     const searchInput = document.querySelector('input[name="search-product"]');
     let debounceTimer;
@@ -1121,33 +1145,40 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     
     // ------ HIGHLIGHT ACTIVE FILTERS ------
     function highlightActiveFilters() {
-        // Get active filters from backend (if available)
+        // Get active filters from URL parameters
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
+        
+        // Try to get from activeFilters element if available
         const activeFiltersElement = document.getElementById('activeFilters');
-        let activeFilters = {};
+        let activeFilters = {
+            brand: params.get('brand') || 'All',
+            price: params.get('price') || '',
+            category: params.get('category') || '',
+            sort: params.get('sort') || '',
+            search: params.get('search') || ''
+        };
         
         if (activeFiltersElement) {
             try {
-                activeFilters = JSON.parse(activeFiltersElement.textContent);
+                // Try to parse from data-filters attribute first
+                const dataFilters = activeFiltersElement.getAttribute('data-filters');
+                if (dataFilters) {
+                    activeFilters = JSON.parse(dataFilters);
+                } else {
+                    // Fallback to textContent
+                    activeFilters = JSON.parse(activeFiltersElement.textContent);
+                }
             } catch (e) {
                 console.error('Error parsing active filters:', e);
+                // Keep using the URL params as fallback
             }
-        } else {
-            // Fallback: Get from URL
-            const url = new URL(window.location.href);
-            const params = new URLSearchParams(url.search);
-            
-            activeFilters = {
-                brand: params.get('brand') || 'All',
-                price: params.get('price') || '',
-                category: params.get('category') || '',
-                sort: params.get('sort') || '',
-                search: params.get('search') || ''
-            };
         }
         
         // Highlight active brand button
         filterButtons.forEach(button => {
-            if (button.getAttribute('data-brand') === activeFilters.brand) {
+            const buttonBrand = button.getAttribute('data-brand');
+            if (buttonBrand === activeFilters.brand) {
                 button.classList.add('how-active1');
             } else {
                 button.classList.remove('how-active1');
@@ -1158,7 +1189,9 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
         const sortElements = {
             'a-z': document.getElementById('a-z'),
             'z-a': document.getElementById('z-a'),
-            'new': document.getElementById('newArrivals')
+            'new': document.getElementById('newArrivals'),
+            'high-low': document.getElementById('High-Low'),
+            'low-high': document.getElementById('Low-High')
         };
         
         for (const [sortValue, element] of Object.entries(sortElements)) {
