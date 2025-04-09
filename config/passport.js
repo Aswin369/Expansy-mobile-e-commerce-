@@ -24,6 +24,7 @@ passport.use(
                 console.log("User found in googleid", user)
                 if (user) {
                     if (user.isBlocked) {
+                        console.log('user is blocked')
                         return done(null, false, { message: "Your account is blocked. Contact support." });
                     }
                     return done(null, user);

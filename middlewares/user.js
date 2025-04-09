@@ -11,10 +11,12 @@ const userAuth = async (req, res, next) => {
         const customer = await User.findOne({ _id: userId, isBlocked: true });
         if (customer) {
             req.session.user = null
+            res.locals.user = false;
             return res.redirect("/login")
         }
 
         res.locals.user = true;
+
     } else {
         res.locals.user = false;
     }

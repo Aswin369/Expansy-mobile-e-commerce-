@@ -21,9 +21,18 @@ router.post("/otpverification",userController.verifyOtp)
 router.post("/resendOtp",userController.resendOtp)
 
 router.get("/auth/google",passport.authenticate('google',{scope:["profile","email"]}))
-router.get("/auth/google/callback",passport.authenticate("google",{failureRedirect:"/signup"}), (req, res)=>{
+router.get("/auth/google/callback",passport.authenticate("google",{ failureRedirect: "/auth/google/failure"}), (req, res)=>{
     res.redirect("/")
 })
+
+router.get("/auth/google/failure", (req, res) => {
+    // Redirect to signup page with message
+    console.log('HELLO I AM here')
+    res.redirect("/signup?error=Your%20account%20is%20blocked.%20Contact%20support.");
+});
+
+
+
 router.get("/logout",userController.logout)
 router.get("/productDetailPage/:id",productController.productDetail)
 router.get("/shop",shopPageController.getShopPage)

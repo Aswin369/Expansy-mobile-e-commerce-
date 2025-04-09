@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="/css/signup.css" />
     <style>
       .error-message {
-  color: red;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  min-height: 1.25rem;
-}
+        color: red;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        min-height: 1.25rem;
+      }
     </style>
+   
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
   </head>
   <body>
     <div class="container">
@@ -45,28 +45,74 @@
           <div id="error2" class="error-message"></div>
 
           <label for="password">PASSWORD</label>
-          <div class="password-wrapper" style="position: relative;">
-            <input type="password" name="password" id="password" style="padding-right: 30px;" />
-            <span id="toggle-password" style="cursor: pointer; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
-              <img id="password-eye" src="images/hide (1).png" alt="Show Password" width="20" height="20" />
+          <div class="password-wrapper" style="position: relative">
+            <input
+              type="password"
+              name="password"
+              id="password"
+              style="padding-right: 30px"
+            />
+            <span
+              id="toggle-password"
+              style="
+                cursor: pointer;
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+              "
+            >
+              <img
+                id="password-eye"
+                src="images/hide (1).png"
+                alt="Show Password"
+                width="20"
+                height="20"
+              />
             </span>
           </div>
           <div id="error4" class="error-message"></div>
 
           <label for="confirm-password">CONFIRM PASSWORD</label>
-          <div class="password-wrapper" style="position: relative;">
-            <input type="password" name="cpassword" id="confirm-password" style="padding-right: 30px;" />
-            <span id="toggle-confirm-password" style="cursor: pointer; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
-              <img id="confirm-password-eye" src="images/hide (1).png" alt="Show Confirm Password" width="20" height="20" />
+          <div class="password-wrapper" style="position: relative">
+            <input
+              type="password"
+              name="cpassword"
+              id="confirm-password"
+              style="padding-right: 30px"
+            />
+            <span
+              id="toggle-confirm-password"
+              style="
+                cursor: pointer;
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+              "
+            >
+              <img
+                id="confirm-password-eye"
+                src="images/hide (1).png"
+                alt="Show Confirm Password"
+                width="20"
+                height="20"
+              />
             </span>
           </div>
           <div id="error5" class="error-message"></div>
 
           <label for="confirm-password">REFERAL CODE* (optional)</label>
-          <div class="password-wrapper" style="position: relative;">
-            <input type="text" name="referalcode" id="referalcode"  style="padding-right: 30px;" />
+          <div class="password-wrapper" style="position: relative">
+            <input
+              type="text"
+              name="referalcode"
+              id="referalcode"
+              style="padding-right: 30px"
+            />
           </div>
           <button type="submit" class="submit-btn">SIGNUP</button>
+          <div id="error6" class="error-message"></div>
         </form>
 
         <p class="terms">
@@ -75,232 +121,262 @@
         </p>
       </div>
       <div class="image-section">
-        <img src="/images/online-registration-sign-up-concept-with-man-character_268404-98.jpg" alt="Fresh Vegetables" />
+        <img
+          src="/images/online-registration-sign-up-concept-with-man-character_268404-98.jpg"
+          alt="Fresh Vegetables"
+        />
       </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-     const nameid = document.getElementById("fullname");
-const emailid = document.getElementById("email");
-const phoneid = document.getElementById("phone");
-const passid = document.getElementById("password");
-const cpassid = document.getElementById("confirm-password");
-const signupform = document.getElementById("signupform");
-const referalcode = document.getElementById("referalcode");
+      const nameid = document.getElementById("fullname");
+      const emailid = document.getElementById("email");
+      const phoneid = document.getElementById("phone");
+      const passid = document.getElementById("password");
+      const cpassid = document.getElementById("confirm-password");
+      const signupform = document.getElementById("signupform");
+      const referalcode = document.getElementById("referalcode");
 
-const togglePasswordButton = document.getElementById("toggle-password");
-const toggleConfirmPasswordButton = document.getElementById("toggle-confirm-password");
+      const togglePasswordButton = document.getElementById("toggle-password");
+      const toggleConfirmPasswordButton = document.getElementById(
+        "toggle-confirm-password"
+      );
 
-const passwordEyeIcon = document.getElementById("password-eye");
-const confirmPasswordEyeIcon = document.getElementById("confirm-password-eye");
+      const passwordEyeIcon = document.getElementById("password-eye");
+      const confirmPasswordEyeIcon = document.getElementById(
+        "confirm-password-eye"
+      );
 
-// Get error message elements
-const nameError = document.getElementById("error1");
-const emailError = document.getElementById("error2");
-const phoneError = document.getElementById("error3");
-const passwordError = document.getElementById("error4");
-const confirmPasswordError = document.getElementById("error5");
+      // Get error message elements
+      const nameError = document.getElementById("error1");
+      const emailError = document.getElementById("error2");
+      const phoneError = document.getElementById("error3");
+      const passwordError = document.getElementById("error4");
+      const confirmPasswordError = document.getElementById("error5");
 
-// Prevent copy and paste on all input fields
-const preventCopyPaste = (element) => {
-  element.addEventListener("copy", (e) => e.preventDefault());
-  element.addEventListener("paste", (e) => e.preventDefault());
-  element.addEventListener("cut", (e) => e.preventDefault());
-};
-
-function nameValidateChecking() {
-  const nameVal = nameid.value;
-  const namepattern = /^[A-Za-z\s]+$/;
-  if (nameVal.trim() === "") {
-    nameError.textContent = "Name cannot be empty.";
-    return false;
-  } else if (!namepattern.test(nameVal)) {
-    nameError.textContent = "Name can only contain alphabets and spaces.";
-    return false;
-  }
-  nameError.textContent = "";
-  return true;
-}
-
-function emailValidateChecking() {
-  const emailVal = emailid.value;
-  const emailpattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (emailVal.trim() === "") {
-    emailError.textContent = "Email cannot be empty.";
-    return false;
-  } else if (!emailpattern.test(emailVal)) {
-    emailError.textContent = "Invalid email format.";
-    return false;
-  }
-  emailError.textContent = "";
-  return true;
-}
-
-function phoneValidateChecking() {
-  const phoneVal = phoneid.value;
-  const phonepattern = /^(?!1234567890$)\d{10}$/;
-  if (phoneVal.trim() === "") {
-    phoneError.textContent = "Phone number cannot be empty.";
-    return false;
-  } else if (!phonepattern.test(phoneVal)) {
-    phoneError.textContent = "Invalid phone number.";
-    return false;
-  }
-  phoneError.textContent = "";
-  return true;
-}
-
-function passValidateChecking() {
-  const passval = passid.value;
-  const cpassval = cpassid.value;
-  if (passval.trim() === "") {
-    passwordError.textContent = "Password cannot be empty.";
-    return false;
-  } else if (
-    !/[A-Z]/.test(passval) ||
-    passval.length < 8 ||
-    !/[a-z]/.test(passval) ||
-    !/\d/.test(passval) ||
-    !/[@$!%*?&]/.test(passval)
-  ) {
-    passwordError.textContent = "Password must be at least 8 characters, include an uppercase letter, a lowercase letter, a number, and a special character.";
-    return false;
-  }
-  
-  if (cpassval !== passval) {
-    confirmPasswordError.textContent = "Passwords do not match.";
-    return false;
-  }
-  
-  passwordError.textContent = "";
-  confirmPasswordError.textContent = "";
-  return true;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Apply copy/paste prevention to all input fields
-  preventCopyPaste(nameid);
-  preventCopyPaste(emailid);
-  preventCopyPaste(phoneid);
-  preventCopyPaste(passid);
-  preventCopyPaste(cpassid);
-  preventCopyPaste(referalcode);
-
-  // Clear error messages when user starts typing
-  nameid.addEventListener("input", () => nameError.textContent = "");
-  emailid.addEventListener("input", () => emailError.textContent = "");
-  phoneid.addEventListener("input", () => phoneError.textContent = "");
-  passid.addEventListener("input", () => passwordError.textContent = "");
-  cpassid.addEventListener("input", () => confirmPasswordError.textContent = "");
-
-  signupform.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const isNameValid = nameValidateChecking();
-    const isEmailValid = emailValidateChecking();
-    const isPhoneValid = phoneValidateChecking();
-    const isPasswordValid = passValidateChecking();
-
-    if (
-      !nameid ||
-      !emailid ||
-      !phoneid ||
-      !passid ||
-      !cpassid ||
-      !signupform
-    ) {
-      console.error("One or more elements not found");
-      return;
-    }
-
-    // Submit form only if all validations pass
-    if (isNameValid && isEmailValid && isPhoneValid && isPasswordValid) {
-      // Create JSON object from form fields
-      const formData = {
-        name: nameid.value,
-        email: emailid.value,
-        phone: phoneid.value,
-        password: passid.value,
-        cpassword: cpassid.value,
-        referalcode: referalcode.value
+      // Prevent copy and paste on all input fields
+      const preventCopyPaste = (element) => {
+        element.addEventListener("copy", (e) => e.preventDefault());
+        element.addEventListener("paste", (e) => e.preventDefault());
+        element.addEventListener("cut", (e) => e.preventDefault());
       };
+
+      function nameValidateChecking() {
+        const nameVal = nameid.value;
+        const namepattern = /^[A-Za-z\s]+$/;
+        if (nameVal.trim() === "") {
+          nameError.textContent = "Name cannot be empty.";
+          return false;
+        } else if (!namepattern.test(nameVal)) {
+          nameError.textContent = "Name can only contain alphabets and spaces.";
+          return false;
+        }
+        nameError.textContent = "";
+        return true;
+      }
+
+      function emailValidateChecking() {
+        const emailVal = emailid.value;
+        const emailpattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (emailVal.trim() === "") {
+          emailError.textContent = "Email cannot be empty.";
+          return false;
+        } else if (!emailpattern.test(emailVal)) {
+          emailError.textContent = "Invalid email format.";
+          return false;
+        }
+        emailError.textContent = "";
+        return true;
+      }
+
+      function phoneValidateChecking() {
+        const phoneVal = phoneid.value;
+        const phonepattern = /^(?!1234567890$)\d{10}$/;
+        if (phoneVal.trim() === "") {
+          phoneError.textContent = "Phone number cannot be empty.";
+          return false;
+        } else if (!phonepattern.test(phoneVal)) {
+          phoneError.textContent = "Invalid phone number.";
+          return false;
+        }
+        phoneError.textContent = "";
+        return true;
+      }
+
+      function passValidateChecking() {
+        const passval = passid.value;
+        const cpassval = cpassid.value;
+        if (passval.trim() === "") {
+          passwordError.textContent = "Password cannot be empty.";
+          return false;
+        } else if (
+          !/[A-Z]/.test(passval) ||
+          passval.length < 8 ||
+          !/[a-z]/.test(passval) ||
+          !/\d/.test(passval) ||
+          !/[@$!%*?&]/.test(passval)
+        ) {
+          passwordError.textContent =
+            "Password must be at least 8 characters, include an uppercase letter, a lowercase letter, a number, and a special character.";
+          return false;
+        }
+
+        if (cpassval !== passval) {
+          confirmPasswordError.textContent = "Passwords do not match.";
+          return false;
+        }
+
+        passwordError.textContent = "";
+        confirmPasswordError.textContent = "";
+        return true;
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Apply copy/paste prevention to all input fields
       
-      console.log("Form data:", formData);
-      
-      fetch('/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => {
-        // Check if response is JSON
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-          return response.json().then(data => {
-            if (!response.ok) {
-              throw new Error(data.message || 'Unknown error occurred');
-            }
-            return data;
-          });
-        } else {
-          // Handle non-JSON response (could be redirect)
-          if (response.ok) {
-            window.location.href = response.url;
-            return null;
-          } else {
-            throw new Error('Server returned an error with no details');
+      const urlParams = new URLSearchParams(window.location.search);
+      const error = urlParams.get("error");
+      //alert(error)
+      console.log(error);
+      console.log(document.getElementById("error5"))
+      if (error) {
+        document.getElementById("error6").innerText = error;
+      }
+        preventCopyPaste(nameid);
+        preventCopyPaste(emailid);
+        preventCopyPaste(phoneid);
+        preventCopyPaste(passid);
+        preventCopyPaste(cpassid);
+        preventCopyPaste(referalcode);
+
+        // Clear error messages when user starts typing
+        nameid.addEventListener("input", () => (nameError.textContent = ""));
+        emailid.addEventListener("input", () => (emailError.textContent = ""));
+        phoneid.addEventListener("input", () => (phoneError.textContent = ""));
+        passid.addEventListener(
+          "input",
+          () => (passwordError.textContent = "")
+        );
+        cpassid.addEventListener(
+          "input",
+          () => (confirmPasswordError.textContent = "")
+        );
+
+        signupform.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          const isNameValid = nameValidateChecking();
+          const isEmailValid = emailValidateChecking();
+          const isPhoneValid = phoneValidateChecking();
+          const isPasswordValid = passValidateChecking();
+
+          if (
+            !nameid ||
+            !emailid ||
+            !phoneid ||
+            !passid ||
+            !cpassid ||
+            !signupform
+          ) {
+            console.error("One or more elements not found");
+            return;
           }
-        }
-      })
-      .then(data => {
-        // Only process if we have JSON data (not a redirect)
-        if (data) {
-          window.location.href = data.redirectUrl || '/login';
-        }
-      })
-      .catch(error => {
-        // Check if the error is "User already exists"
-        console.log("sdfh",error.message)
-        if (error.message.includes('User already exists')) {
-          console.log("sdkfjk")
-          swal.fire({
-            title: "Account Exists",
-            text: "This user already exists. Please try logging in instead.",
-            icon: "warning",
-            button: "OK",
-          }).then(() => {
-            window.location.href = "/login"; // Redirects to login page after alert
-          });
-        } else {
-          // For other errors, display error message (could use swal here too)
-          console.error('Error:', error.message);
-          swal({
-            title: "Error",
-            text: error.message,
-            icon: "error",
-            button: "OK",
-          });
-        }
+
+          // Submit form only if all validations pass
+          if (isNameValid && isEmailValid && isPhoneValid && isPasswordValid) {
+            // Create JSON object from form fields
+            const formData = {
+              name: nameid.value,
+              email: emailid.value,
+              phone: phoneid.value,
+              password: passid.value,
+              cpassword: cpassid.value,
+              referalcode: referalcode.value,
+            };
+
+            console.log("Form data:", formData);
+
+            fetch("/signup", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            })
+              .then((response) => {
+                // Check if response is JSON
+                const contentType = response.headers.get("content-type");
+                if (
+                  contentType &&
+                  contentType.indexOf("application/json") !== -1
+                ) {
+                  return response.json().then((data) => {
+                    if (!response.ok) {
+                      throw new Error(data.message || "Unknown error occurred");
+                    }
+                    return data;
+                  });
+                } else {
+                  // Handle non-JSON response (could be redirect)
+                  if (response.ok) {
+                    window.location.href = response.url;
+                    return null;
+                  } else {
+                    throw new Error("Server returned an error with no details");
+                  }
+                }
+              })
+              .then((data) => {
+                // Only process if we have JSON data (not a redirect)
+                if (data) {
+                  window.location.href = data.redirectUrl || "/login";
+                }
+              })
+              .catch((error) => {
+                // Check if the error is "User already exists"
+                console.log("sdfh", error.message);
+                if (error.message.includes("User already exists")) {
+                  console.log("sdkfjk");
+                  swal
+                    .fire({
+                      title: "Account Exists",
+                      text: "This user already exists. Please try logging in instead.",
+                      icon: "warning",
+                      button: "OK",
+                    })
+                    .then(() => {
+                      window.location.href = "/login"; // Redirects to login page after alert
+                    });
+                } else {
+                  // For other errors, display error message (could use swal here too)
+                  console.error("Error:", error.message);
+                  swal({
+                    title: "Error",
+                    text: error.message,
+                    icon: "error",
+                    button: "OK",
+                  });
+                }
+              });
+          }
+        });
+
+        // Toggle password visibility functionality
+        togglePasswordButton.addEventListener("click", () => {
+          const type = passid.type === "password" ? "text" : "password";
+          passid.type = type;
+          passwordEyeIcon.src =
+            type === "password" ? "images/hide (1).png" : "images/unhide.png";
+        });
+
+        toggleConfirmPasswordButton.addEventListener("click", () => {
+          const type = cpassid.type === "password" ? "text" : "password";
+          cpassid.type = type;
+          confirmPasswordEyeIcon.src =
+            type === "password" ? "images/hide (1).png" : "images/unhide.png";
+        });
       });
-    }
-  });
-
-  // Toggle password visibility functionality
-  togglePasswordButton.addEventListener("click", () => {
-    const type = passid.type === "password" ? "text" : "password";
-    passid.type = type;
-    passwordEyeIcon.src = type === "password" ? "images/hide (1).png" : "images/unhide.png";
-  });
-
-  toggleConfirmPasswordButton.addEventListener("click", () => {
-    const type = cpassid.type === "password" ? "text" : "password";
-    cpassid.type = type;
-    confirmPasswordEyeIcon.src = type === "password" ? "images/hide (1).png" : "images/unhide.png";
-  });
-});
     </script>
   </body>
 </html>
