@@ -578,8 +578,7 @@
 
                                    <div class="card-body">
                                         <!-- File Upload -->
-                                        <form method="POST" action="/admin/editCategory/<%= category._id%>"
-                                             onsubmit="return handleFormSubmit(event)" enctype="multipart/form-data">
+                                        <form id="updateCategoryForm">
 
                                              <div class="fallback">
                                                   <label for="imageInput" class="form-label">Category Image</label>
@@ -599,6 +598,8 @@
 
                                              <input type="hidden" id="croppedImageData" value="<%= category.image %>"
                                                   name="croppedImageData" />
+
+                                                  <input type="hidden" id="categoryId" value="<%= category._id %>">
 
                                              <div class="dz-message needsclick">
                                                   <h3 class="mt-4"><span class="text-primary">Upload or Preview
@@ -641,9 +642,10 @@
                                                                                 <button type="submit"
                                                                                      class="btn btn-success w-100">Save
                                                                                      Upload</button>
+                                                                                     
                                                                            </div>
                                                                            <div class="col-lg-2">
-                                                                                <button type="button"
+                                                                                <button type="button" onclick="window.history.back()"
                                                                                      class="btn btn-primary w-100">Cancel</button>
                                                                            </div>
                                                                       </div>
@@ -690,115 +692,117 @@
 
                <script>
             // Image cropper initialization with improved workflow
+
+
 document.addEventListener("DOMContentLoaded", function () {
-    const imageInput = document.getElementById("imageInput");
-    const imagePreview = document.getElementById("imagePreview");
-    const cropContainer = document.getElementById("cropContainer");
-    const cropButton = document.getElementById("cropButton");
-    const croppedImageData = document.getElementById("croppedImageData");
-    let cropper;
-    let imageAlreadyCropped = false;
+     const updateCategoryForm = document.getElementById("updateCategoryForm")
 
-    // Check if there's already a cropped/saved image
-    if (croppedImageData.value && croppedImageData.value.startsWith('data:image')) {
-        imageAlreadyCropped = true;
-        cropContainer.style.display = "block";
-    }
-    
-    // Only initialize cropper for a new image upload, not for an existing cropped image
-    if (imagePreview.src && !imagePreview.src.endsWith('#') && !imageAlreadyCropped) {
-        cropContainer.style.display = "block";
-        // Wait for image to load before initializing cropper
-        imagePreview.onload = function() {
-            cropper = new Cropper(imagePreview, {
-                aspectRatio: 1,
-                viewMode: 2,
-                scalable: true,
-                zoomable: true,
-            });
-        };
-        // Trigger onload if image is already loaded
-        if (imagePreview.complete) {
-            imagePreview.onload();
-        }
-    }
 
-    imageInput.addEventListener("change", function (event) {
-        const file = event.target.files[0];
-        if (!file) return;
+     updateCategoryForm.addEventListener("submit",(event)=>{
+          handleFormSubmit(event)
+     })
 
-        // Reset any existing cropped data when new image is selected
-        imageAlreadyCropped = false;
-        croppedImageData.value = "";
-        
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            // Destroy existing cropper if any
-            if (cropper) {
-                cropper.destroy();
-                cropper = null;
-            }
-            
-            imagePreview.src = e.target.result;
-            cropContainer.style.display = "block";
-            cropButton.style.display = "block"; // Show crop button
+     const imageInput = document.getElementById("imageInput");
+const imagePreview = document.getElementById("imagePreview");
+const cropContainer = document.getElementById("cropContainer");
+const cropButton = document.getElementById("cropButton");
+const croppedImageData = document.getElementById("croppedImageData");
 
-            // Initialize new cropper
-            cropper = new Cropper(imagePreview, {
-                aspectRatio: 1,
-                viewMode: 2,
-                scalable: true,
-                zoomable: true,
-            });
-        };
-        reader.readAsDataURL(file);
-    });
+let cropper;
+let imageAlreadyCropped = false;
+console.log("dfaddf")
+// Check if there's already a cropped image saved
+if (croppedImageData.value && croppedImageData.value.startsWith("data:image")) {
+    imagePreview.src = croppedImageData.value;
+    cropContainer.style.display = "block";
+    cropButton.style.display = "none"; // Hide crop button for already cropped image
+    imageAlreadyCropped = true;
+}
 
-    cropButton.addEventListener("click", function () {
+imageInput.addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    imageAlreadyCropped = false;
+    croppedImageData.value = "";
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        // Reset preview and cropper
         if (cropper) {
-            const canvas = cropper.getCroppedCanvas({
-                width: 300,
-                height: 300,
+            cropper.destroy();
+            cropper = null;
+        }
+
+        imagePreview.onload = function () {
+            cropper = new Cropper(imagePreview, {
+                aspectRatio: 1,
+                viewMode: 2,
+                scalable: true,
+                zoomable: true,
             });
 
-            if (canvas) {
-                // Store cropped image data in the hidden input
-                croppedImageData.value = canvas.toDataURL("image/jpeg");
-                
-                // Update preview with cropped image
-                imagePreview.src = croppedImageData.value;
-                
-                // Destroy cropper but keep the container visible to show cropped result
-                cropper.destroy();
-                cropper = null;
-                
-                // Mark as cropped
-                imageAlreadyCropped = true;
-                
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Image Cropped',
-                    text: 'Image has been cropped successfully. Click Save to update the category.'
-                });
-            }
-        } else {
+            // Cleanup onload to prevent multiple triggers
+            imagePreview.onload = null;
+        };
+
+        imagePreview.src = e.target.result;
+        cropContainer.style.display = "block";
+        cropButton.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+});
+
+cropButton.addEventListener("click", function () {
+    if (cropper) {
+        const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300,
+        });
+
+        if (canvas) {
+            const croppedData = canvas.toDataURL("image/jpeg");
+
+            croppedImageData.value = croppedData;
+            imagePreview.src = croppedData;
+
+            cropper.destroy();
+            cropper = null;
+            imageAlreadyCropped = true;
+            cropButton.style.display = "none"; // Hide after crop
+
             Swal.fire({
-                icon: 'warning',
-                title: 'No Image',
-                text: 'Please select an image to crop first.'
+                icon: 'success',
+                title: 'Image Cropped',
+                text: 'Image has been cropped successfully. Click Save to update the category.',
             });
         }
-    });
+    } else {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Image',
+            text: 'Please select an image to crop first.',
+        });
+    }
 });
+
+
 
 function handleFormSubmit(event) {
     event.preventDefault();
-    
+    console.log("aerfgsdg")
     const form = event.target;
-    const categoryId = form.getAttribute('action').split('/').pop();
+    const categoryId = document.getElementById("categoryId").value;
+    console.log(categoryId)
     const name = document.getElementsByName("name")[0].value.trim();
+    console.log(name)
     const description = document.getElementById("description").value.trim();
+    console.log(description)
     const croppedImageData = document.getElementById("croppedImageData").value;
+    console.log(croppedImageData)
+
+    
+
 
     // Basic validation
     if (!name || name.length < 3) {
@@ -831,6 +835,7 @@ function handleFormSubmit(event) {
             .then(res => res.blob())
             .then(blob => {
                 formData.append("image", blob, "cropped-image.jpg");
+                console.log("formdata1",formData)
                 submitForm(formData, categoryId);
             })
             .catch((error) => {
@@ -854,13 +859,18 @@ function handleFormSubmit(event) {
             return false;
         } else {
             // No new image, proceed with form submission
+            console.log("formdata2",formData)
             submitForm(formData, categoryId);
+
         }
     }
 }
 
 async function submitForm(formData, categoryId) {
     // Show loading message
+    for (let [key, value] of formData.entries()) {
+  console.log(key, value);
+}
     Swal.fire({
         title: 'Processing',
         text: 'Please wait...',
@@ -870,12 +880,14 @@ async function submitForm(formData, categoryId) {
         }
     });
 
+    console.log("form data ",formData)
     try {
         const response = await fetch(`/admin/editCategory/${categoryId}`, {
             method: "POST",
             body: formData
         });
         
+
         const data = await response.json();
         
         if (data.error) {
@@ -898,6 +910,7 @@ async function submitForm(formData, categoryId) {
         });
     }
 }
+});
                </script>
 
 

@@ -215,7 +215,10 @@ const loadplaceOrder = async (req, res) => {
         
         console.log("cartTotal", cartTotal)
         
-        const validCoupons = await Coupon.find({isActive: true});
+        const validCoupons = await Coupon.find({
+            isActive: true,
+            currentUsage: { $gt: 0 }
+          })
         
         const addressDetails = await Address.findOne({userId:userId})
         console.log("THis is cart details",cartDetails)

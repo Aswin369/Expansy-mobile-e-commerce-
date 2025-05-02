@@ -18,19 +18,20 @@ const getProfilePage = async (req, res) => {
         const id = req.session.user;
         const page = parseInt(req.query.page) || 1;
         const addressPage = parseInt(req.query.addressPage) || 1; 
+        const transactionPage = parseInt(req.query.transactionPage) || 1;
+
         const limit = 5;
         const addressLimit = 2;
+        const transactionLimit = 5;
+
         const skip = (page - 1) * limit;
         const addressSkip = (addressPage - 1) * addressLimit;
+        const transactionSkip = (transactionPage - 1) * transactionLimit;
 
-        
-        const userData = await User.findById({_id: id});
-        const walletDetails = await Wallet.find({userId: id});
-
-       
+        const userData = await User.findById({ _id: id });
+        const walletDetails = await Wallet.find({ userId: id });
         const userAddress = await Address.findOne({ userId: id });
 
-        
         let paginatedAddresses = [];
         let totalAddressPages = 0;
 
@@ -39,14 +40,19 @@ const getProfilePage = async (req, res) => {
             paginatedAddresses = userAddress.address.slice(addressSkip, addressSkip + addressLimit);
         }
 
-        const findTranscationHistory = await Transaction.find({userId:id}).sort({createdAt: -1})
-         
-        console.log("asdfkljaskdjf",findTranscationHistory)
-        
-        const totalOrders = await Order.countDocuments({userId: id});
+        const totalTransactions = await Transaction.countDocuments({ userId: id });
+        const totalTransactionPages = Math.ceil(totalTransactions / transactionLimit);
+
+        const findTranscationHistory = await Transaction.find({ userId: id })
+            .sort({ createdAt: -1 })
+            .skip(transactionSkip)
+            .limit(transactionLimit);
+
+        const totalOrders = await Order.countDocuments({ userId: id });
         const totalPages = Math.ceil(totalOrders / limit);
-        const orderDetails = await Order.find({userId: id})
-            .sort({createdAt: -1})
+
+        const orderDetails = await Order.find({ userId: id })
+            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
             .populate({
@@ -72,6 +78,12 @@ const getProfilePage = async (req, res) => {
                 totalAddressPages: totalAddressPages,
                 hasNextAddressPage: addressPage < totalAddressPages,
                 hasPrevAddressPage: addressPage > 1
+            },
+            transactionPagination: {
+                currentTransactionPage: transactionPage,
+                totalTransactionPages: totalTransactionPages,
+                hasNextTransactionPage: transactionPage < totalTransactionPages,
+                hasPrevTransactionPage: transactionPage > 1
             }
         });
 
@@ -531,28 +543,26 @@ const cancelOrder = async (req, res) => {
         const { orderId, reason, totalAmountPrice } = req.body;
         const amount = parseInt(totalAmountPrice);
 
-       
         const order = await Order.findById(orderId).populate("products.productId");
+
         if (!order) {
             return res.status(404).json({ success: false, message: "Order not found" });
         }
 
-       
         await Order.findByIdAndUpdate(orderId, {
-            $set: { 
-                status: "Cancelled", 
-                returnReason: reason, 
-                "products.$[].status": "Cancelled" 
+            $set: {
+                status: "Cancelled",
+                returnReason: reason,
+                "products.$[].status": "Cancelled"
             }
         });
 
-        
+
         for (const item of order.products) {
             const product = await Product.findById(item.productId);
+            if (!product) continue;
 
-            if (!product) continue; 
-
-            const specIndex = product.specification.findIndex(spec => 
+            const specIndex = product.specification.findIndex(spec =>
                 spec._id.toString() === item.specId.toString()
             );
 
@@ -562,29 +572,26 @@ const cancelOrder = async (req, res) => {
             }
         }
 
-  
-        let wallet = await Wallet.findOne({ userId: userId });
+        if (order.paymentStatus === 'paid' || order.paymentStatus === 'success') {
+            let wallet = await Wallet.findOne({ userId });
 
-        if (!wallet) {
-            wallet = new Wallet({
-                userId: userId,
-                balance: amount
+            if (!wallet) {
+                wallet = new Wallet({ userId, balance: amount });
+                await wallet.save();
+            } else {
+                wallet.balance += amount;
+                await wallet.save();
+            }
+
+            await Transaction.create({
+                walletId: wallet._id,
+                userId,
+                type: 'credit',
+                amount,
+                associatedOrder: orderId,
+                status: 'success'
             });
-            await wallet.save();
-        } else {
-            wallet.balance += amount;
-            await wallet.save();
         }
-
-      
-        await Transaction.create({
-            walletId: wallet._id,
-            userId: userId,
-            type: 'credit', 
-            amount: amount,
-            associatedOrder: orderId,
-            status: 'success'
-        });
 
         return res.status(201).json({ success: true });
 
@@ -593,6 +600,7 @@ const cancelOrder = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
 
 
 const returnRequest = async (req,res)=>{

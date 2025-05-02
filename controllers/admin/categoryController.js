@@ -1,5 +1,6 @@
 const express = require("express")
 const Category = require("../../models/categorySchema")
+const Product = require("../../models/productSchema")
 const {handleUpload} = require("../../config/cloudinary")
 
 const categoryInfo = async (req, res) => {
@@ -138,14 +139,17 @@ const updateCategory = async (req, res) => {
   try {
       const id = req.params.id;
       const { name, description } = req.body;
+      console.log("this body",req.body)
       const category = await Category.findById(id);
       if (!category) {
           return res.status(404).json({ message: "Category not found" });
       }
 
-      if(!req.file){
-        return res.status(404).json({ message: "Image not found" });
-      }
+      // if(!req.file){
+      //   return res.status(404).json({ message: "Image not found" });
+      // }
+
+      console.log("This is image",req.file)
 
       if (req.file) {
         const b64 = Buffer.from(req.file.buffer).toString("base64");
@@ -167,7 +171,7 @@ const updateCategory = async (req, res) => {
       console.error("Category update error:", error);
       res.status(500).json({ error: "Internal server error" });
   }
-};
+}
 
 
 module.exports = {
