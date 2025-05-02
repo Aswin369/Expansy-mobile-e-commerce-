@@ -20,7 +20,7 @@ router.get("/otpverification",userController.verification)
 router.post("/otpverification",userController.verifyOtp)
 router.post("/resendOtp",userController.resendOtp)
 
-router.get("/auth/google",passport.authenticate('google',{scope:["profile","email"]}))
+router.get("/auth/google",passport.authenticate('google',{scope:["profile","email"],prompt: 'select_account'}))
 router.get("/auth/google/callback",passport.authenticate("google",{ failureRedirect: "/auth/google/failure"}), (req, res)=>{
     res.redirect("/")
 })

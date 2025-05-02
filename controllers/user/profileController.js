@@ -59,7 +59,7 @@ const getProfilePage = async (req, res) => {
                 path: 'products.productId',
                 select: 'productName productImage'
             });
-
+            
         res.render("profilePage", {
             user: id,
             data: userData,
