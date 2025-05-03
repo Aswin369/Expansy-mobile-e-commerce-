@@ -2807,7 +2807,7 @@ input.num-product::-webkit-inner-spin-button {
   position: relative;
 }
 
-.label1::after {
+/* .label1::after {
   content: attr(data-label1);
   font-family: Poppins-Regular;
   font-size: 10px;
@@ -2825,7 +2825,7 @@ input.num-product::-webkit-inner-spin-button {
   border-radius: 7px;
   padding: 0 4px;
   background-color: #f74877;
-}
+} */
 
 .label1.rs1::after {
   top: calc(50% - 8px);

@@ -42,7 +42,11 @@ app.use(userAuth)
 
 app.use("/",userRouter)
 app.use("/admin",adminRouter)
-// app.use(userRouter);
+app.use("*", (req, res) => {
+    res.status(404).render("404page")
+  })
+  
+
 app.listen(PORT,()=>console.log("Server is running"))
 
 module.exports = app

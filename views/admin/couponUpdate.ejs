@@ -482,14 +482,13 @@
                                             <div class="mb-3">
                                                 <label for="start-date" class="form-label text-dark">Start Date</label>
                                                 <input type="text" id="start-date" class="form-control flatpickr-input active" 
-       value="<%= new Date(data.startDate).toISOString().split('T')[0] %>" readonly>
-
+                                                  value="<%= new Date(data.startDate).toISOString() %>" >
                                             </div>
                                         </div>
                                         <div class="col-lg-6">
                                             <div class="mb-3">
                                                 <label for="end-date" class="form-label text-dark">End Date</label>
-                                                <input type="text" id="end-date" class="form-control flatpickr-input active" value="<%= new Date(data.startDate).toLocaleDateString('en-GB', { timeZone: 'UTC' }) %>" readonly>
+                                                <input type="text" id="end-date" class="form-control flatpickr-input active"  value="<%= new Date(data.expirationDate).toISOString() %>">
                                             </div>
                                         </div>
                                     </div>
@@ -588,11 +587,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Flatpickr date pickers
     flatpickr("#start-date", {
-        dateFormat: "d-m-Y"
+        minDate: "today"
     });
     
     flatpickr("#end-date", {
-        dateFormat: "d-m-Y"
+        minDate: "today"
     });
     
     const form = document.getElementById('coupanAdd');
@@ -645,6 +644,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const discountValue = document.getElementById('discount-value').value;
         const couponId = document.getElementById("couponId").value;
 
+        console.log("dskfjsd",startDateStr)
+        console.log("as.df,jhkasdhf",endDateStr)
         
         // Validate all fields
         let hasErrors = false;
@@ -670,8 +671,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Date validation
         if (startDateStr && endDateStr) {
-            const startDateObj = parseDate(startDateStr);
-            const endDateObj = parseDate(endDateStr);
+            const startDateObj = new Date(startDateStr);
+            const endDateObj = new Date(endDateStr);
+
+            console.log("startDateObj",startDateObj)
+            console.log("endDateObj",endDateObj)
             
             if (startDateObj > endDateObj) {
                 addErrorMessage(document.getElementById('start-date'), 'Start Date cannot be greater than End Date');
@@ -699,9 +703,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Convert dates to actual Date objects for backend
-        const startDate = startDateStr ? formatDateForBackend(startDateStr) : "";
-        const endDate = endDateStr ? formatDateForBackend(endDateStr) : "";
+        const startDate = startDateStr ? new Date(startDateStr) : "";
+        const endDate = endDateStr ? new Date(endDateStr) : "";
         
+        console.log("startDate",startDate);
+        console.log("endDate",endDate);
         // If validation passes, submit form data via fetch
         const formData = {
             startDate,

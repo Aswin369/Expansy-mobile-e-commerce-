@@ -14,7 +14,7 @@ const getcouponList = async (req,res)=>{
         const totalCoupons = await Coupon.countDocuments()
 
         const totalPages = Math.ceil(totalCoupons/limit)
-
+        console.log("coupon data", couponData)
         res.render("couponList",{
             data:couponData,
             currentPage: page,
@@ -40,9 +40,11 @@ const getCouponData = async(req,res)=>{
     try {
         console.log("this is req.bosy",req.body)
         const {startDate, endDate, couponCode, couponLimits, minDiscountValue, maxDiscountValue, discountValue} = req.body
-        const convertexpirationDate = moment(endDate, "DD-MM-YYYY").toDate();
-        const ConvertstartDate = moment(startDate, "DD-MM-YYYY").toDate();
+        const ConvertstartDate =new Date(startDate)
+        const convertexpirationDate = new Date(endDate)
 
+        console.log("startdate", ConvertstartDate)
+        console.log("enddate", convertexpirationDate)
         const couponData = new Coupon({
             code:couponCode,
             startDate:ConvertstartDate,
@@ -103,6 +105,7 @@ const getEditCoupon = async (req,res)=>{
             res.redirect("/pageerror")
         }
         const coupondata = await Coupon.findOne({_id:couponId})
+        console.log("dslfkj",coupondata)
         if(!coupondata){
             res.redirect("/pageerror")
         }
@@ -119,10 +122,10 @@ const updateCoupon = async(req,res)=>{
     try {
         console.log("sdlfjklas", req.body)
         const {startDate, endDate, couponCode, couponLimits, minDiscountValue, maxDiscountValue, discountValue, couponId} = req.body
-        const formattedStartDate = new Date(startDate);
-        const formattedEndDate = new Date(endDate);
-        console.log("enddate",typeof formattedEndDate)
-        console.log("start date",typeof formattedStartDate)
+        // const formattedStartDate = new Date(startDate);
+        // const formattedEndDate = new Date(endDate);
+        console.log("enddate", startDate)
+        console.log("start date", endDate)
         if(!couponId){
             return res.status(400).json({success:false, message:"Coupon ID is required"})
         }
@@ -131,8 +134,8 @@ const updateCoupon = async(req,res)=>{
             code:couponCode,
             minDiscountValue:minDiscountValue,
             maxDiscountValue:maxDiscountValue,
-            startDate:formattedStartDate,
-            expirationDate:formattedEndDate,
+            startDate:startDate,
+            expirationDate:endDate,
             maxUsage:couponLimits,
             discountValue:discountValue
         }})

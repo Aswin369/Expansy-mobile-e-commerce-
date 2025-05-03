@@ -381,23 +381,25 @@
 					</div>
 					<input type="hidden" id="OrderIdVal" value="<%= orderData._id %>">
 					<div class="col-md-2 text-end">
-						<button class="cancel-btn" id="cancelOrder" 
-							<%= orderData.status === "Cancelled" ? "disabled" : "" %>>
+						<%if(orderData.status === "Ordered" && oderData.status !== "success"){%>
+						<button class="cancel-btn" id="cancelOrder">
 							Cancel Order
 						</button>
+						<%}%>
 					</div>
 				</div>
 				
     
                 <!-- Payment Alert -->
 				
-                <% if (orderData.paymentStatus === 'pending' && orderData.status !== "Cancelled") { %>
+                <% if (orderData.paymentStatus === 'pending') { %>
 					<button class="payment-alert p-3 m-3 d-flex align-items-center border border-primary rounded"
 					  onclick="continuePayment('<%= orderData._id %>', '<%= orderData.payableAmount %>')">
 					  <i class="bi bi-exclamation-circle text-primary me-2"></i>
 					  <span>Continue Payment</span>
 					</button>
 				  <% } %>
+				  
 				  
 				
                 <!-- Order Info -->
