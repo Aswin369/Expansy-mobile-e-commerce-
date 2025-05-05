@@ -12,6 +12,7 @@ const Transaction = require("../../models/walletTransaction")
 const PDFDocument = require('pdfkit');
 const razorpay = require("../../config/razorpay")
 const crypto = require("crypto")
+const StatusCode = require("../../constants/statusCode")
 
 const getProfilePage = async (req, res) => {
     try {   
@@ -99,13 +100,13 @@ const editUserProfile = async (req,res)=>{
     try {
         const userId = req.session.user
         if(!userId){
-            return res.status(401).JSON({message:"User not found"})
+            return res.status(StatusCode.UNAUTHORIZED).JSON({message:"User not found"})
         }
         
         const {name, phone} = req.body
         const userData = await User.updateOne({_id:userId},{$set:{name:name,phone:phone }})
 
-        return res.status(201).json({ message: "User updated successfully" });
+        return res.status(StatusCode.CREATED).json({ message: "User updated successfully" });
     } catch (error) {
         console.error("Error occured in profilUpdat",error)
         res.redirect("/pageerror")
@@ -118,7 +119,7 @@ const addUserAddress = async (req,res)=>{
         const userId = req.session.user
 
         if(!userId){
-            return res.status(401).json({message:"User not found"})
+            return res.status(StatusCode.UNAUTHORIZED).json({message:"User not found"})
         }
         
         const {address, city, landmark, state, pincode, phone, altPhone} = req.body
@@ -140,14 +141,14 @@ const addUserAddress = async (req,res)=>{
        if(userAddress){
         userAddress.address.push(newAddress);
         await userAddress.save()
-        return res.status(201).json({message:"Address added successfully",success:true})
+        return res.status(StatusCode.CREATED).json({message:"Address added successfully",success:true})
        }else{
         const addressData = new Address({
             userId:userId,
             address:[newAddress]
         })
         await addressData.save()
-        return res.status(201).json({message:"Address added successfully",success:true})
+        return res.status(StatusCode.CREATED).json({message:"Address added successfully",success:true})
        }
         
     } catch (error) {
@@ -166,9 +167,9 @@ const deleteAddress = async (req,res)=>{
 
          const updatedUser = await Address.findOneAndUpdate({userId:objectIdUser},{$pull:{address:{_id: id}}},{new:true})
         if(!updatedUser){
-            return res.status(404).json({message:"Address not found", success:false})
+            return res.status(StatusCode.NOT_FOUND).json({message:"Address not found", success:false})
         }
-        return res.status(200).json({message:"Address deleted successfully", success:true})
+        return res.status(StatusCode.OK).json({message:"Address deleted successfully", success:true})
     } catch (error) {
         console.error("This error occured in deleteAdress",error)
         res.redirect("/pageerror")
@@ -222,10 +223,10 @@ const updateAddress = async (req,res)=>{
     console.log("completed");
     
     if(!updateAddress){
-        return res.status(404).json({message:"Address not found"})
+        return res.status(StatusCode.NOT_FOUND).json({message:"Address not found"})
     }
 
-    res.status(200).json({message:"Address updated successfully", success:true})
+    res.status(StatusCode.OK).json({message:"Address updated successfully", success:true})
 
     } catch (error) {
         console.error("This error occured in updateAddress",error)
@@ -298,7 +299,7 @@ const forgotEmailValid = async (req, res) => {
         const findUser = await User.findOne({ email });
 
         if (!findUser) {
-            return res.status(400).json({ success: false, message: "User with this email does not exist" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "User with this email does not exist" });
         }
 
         const otp = generateOtp();
@@ -310,14 +311,14 @@ const forgotEmailValid = async (req, res) => {
             req.session.email = email;
             req.session.otpExpiry = otpExpiry;
             console.log("This is the otp forgot email",otp)
-            return res.status(200).json({ success: true });
+            return res.status(StatusCode.OK).json({ success: true });
         } else {
-            return res.status(500).json({ success: false, message: "Failed to send OTP. Please try again." });
+            return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to send OTP. Please try again." });
         }
 
     } catch (error) {
         console.error("Error in forgot password email sending:", error);
-        return res.status(500).json({ success: false, message: "Server error occurred." });
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error occurred." });
     }
 };
 
@@ -330,11 +331,11 @@ const verifyForgotPassOtp = async (req, res) => {
         
         
         if( Date.now() > otpExpiry){
-            return res.status(400).json({success:false, message:"OTP expired. Please try again"})
+            return res.status(StatusCode.BAD_REQUEST).json({success:false, message:"OTP expired. Please try again"})
         }
 
         if (!otp || !userOtp) {
-            return res.status(400).json({
+            return res.status(StatusCode.BAD_REQUEST).json({
                 success: false,
                 message: "OTP is required"
             });
@@ -351,7 +352,7 @@ const verifyForgotPassOtp = async (req, res) => {
         }
     } catch (error) {
         console.error("Error occurred in verify OTP:", error);
-        return res.status(500).json({success: false, message: "An error occurred. Please try again"})
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({success: false, message: "An error occurred. Please try again"})
     }
 }
 
@@ -362,7 +363,7 @@ const verifyPasswordResendOTP = async (req, res) => {
         const {email} = userData
         
         if (!email || !userData) {
-            return res.status(400).json({success: false, message: "You has expried. Please try agian"})
+            return res.status(StatusCode.BAD_REQUEST).json({success: false, message: "You has expried. Please try agian"})
         }
         const otp = generateOtp();  
         const otpExpiry = Date.now() + 1 * 60 * 1000;
@@ -371,7 +372,7 @@ const verifyPasswordResendOTP = async (req, res) => {
         console.log("this is resend otp", otp)
         const sentEmail = await sendVerificationEmail(email,otp);
         if (!sentEmail) {
-            return res.status(500).json({success: false, message: "Failed to send OTP. Please try again."})
+            return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({success: false, message: "Failed to send OTP. Please try again."})
         }
         return res.json({
             success: true,
@@ -380,7 +381,7 @@ const verifyPasswordResendOTP = async (req, res) => {
 
     } catch (error) {
         console.error("Error in verifyPasswordResendOTP:", error);
-        return res.status(500).json({
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "An error occurred. Please try again."
         });
@@ -414,22 +415,22 @@ const changePassword = async (req,res)=>{
         const {email} = req.session
         
         if(!confirmPassword){
-             res.status(400).json({success:false, message:"Please try again"})
+             res.status(StatusCode.BAD_REQUEST).json({success:false, message:"Please try again"})
         }
         const hashPassword = await securePassword(confirmPassword)
         if(!hashPassword){
-            res.status(400).json({success:false, message:"Please try again"})
+            res.status(StatusCode.BAD_REQUEST).json({success:false, message:"Please try again"})
         }
         const finduser = await User.findOneAndUpdate({email:email}, {$set:{password:hashPassword}})
         
         console.log("This is findUser", finduser)
 
         if(!finduser){
-            res.status(400).json({success:false, message:"Password not saved please try again"})
+            res.status(StatusCode.BAD_REQUEST).json({success:false, message:"Password not saved please try again"})
         }
 
         console.log("saved password")
-        res.status(200).json({success:true})
+        res.status(StatusCode.OK).json({success:true})
         
     } catch (error) {
         console.error("This error occured in change password", error)
@@ -448,7 +449,7 @@ const loadOrderDetailPage = async (req, res) => {
 
         if (!orderDetails) {
             
-            return res.status(404).json({ message: "Order not found" });
+            return res.status(StatusCode.NOT_FOUND).json({ message: "Order not found" });
         }
         
         res.render("oderDetailPage", {  
@@ -530,7 +531,7 @@ const deleteOrder = async(req,res)=>{
         }
         
 
-        return res.status(201).json({success:true})
+        return res.status(StatusCode.CREATED).json({success:true})
     } catch (error) {
         console.error("This error found in deleteOrder", error)
         res.redirect("/pagerror")
@@ -546,7 +547,7 @@ const cancelOrder = async (req, res) => {
         const order = await Order.findById(orderId).populate("products.productId");
 
         if (!order) {
-            return res.status(404).json({ success: false, message: "Order not found" });
+            return res.status(StatusCode.NOT_FOUND).json({ success: false, message: "Order not found" });
         }
 
         await Order.findByIdAndUpdate(orderId, {
@@ -593,11 +594,11 @@ const cancelOrder = async (req, res) => {
             });
         }
 
-        return res.status(201).json({ success: true });
+        return res.status(StatusCode.CREATED).json({ success: true });
 
     } catch (error) {
         console.error("Error in cancelOrder:", error);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error" });
     }
 };
 
@@ -612,10 +613,10 @@ const returnRequest = async (req,res)=>{
         const changeOrderStatus = await Order.updateOne({_id:orderId, "products._id":id},{$set:{"products.$.status":"Return Requested","products.$.reason":reason}})
 
         if(changeOrderStatus.modifiedCount === 0){
-            return res.status(400).json({success:false, message: "Failed to request return"})
+            return res.status(StatusCode.BAD_REQUEST).json({success:false, message: "Failed to request return"})
         }
 
-        return res.status(200).json({success:true,message: "Return request submitted successfully"})
+        return res.status(StatusCode.OK).json({success:true,message: "Return request submitted successfully"})
     } catch (error) {
         console.error("This error occured in return request function", error)
         res.redirect("/pagerror")
@@ -630,20 +631,20 @@ const profilePageChangePassword = async (req, res) => {
         const user = await User.findOne({ _id: userId });
         console.log("user", user)
         if (!user) {
-            return res.status(404).json({ message: "User not found" })
+            return res.status(StatusCode.NOT_FOUND).json({ message: "User not found" })
         }
         const isMatch = await bcrypt.compare(oldPassword, user.password)
         if (!isMatch) {
-            return res.status(400).json({ success:false, message: "Old password is incorrect" })
+            return res.status(StatusCode.BAD_REQUEST).json({ success:false, message: "Old password is incorrect" })
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10)
         await User.updateOne({ _id: userId }, { $set: { password: hashedPassword }})
         console.log("updated ")
-        res.status(200).json({success:true, message: "Password updated successfully"})
+        res.status(StatusCode.OK).json({success:true, message: "Password updated successfully"})
 
     } catch (error) {
         console.error("Error updating password:", error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
     }
 };
 
@@ -659,7 +660,7 @@ const generateInvoice = async (req, res) => {
             .populate('userId', 'name email'); 
         
         if (!orderData) {
-            return res.status(404).json({ message: 'Order not found' });
+            return res.status(StatusCode.NOT_FOUND).json({ message: 'Order not found' });
         }
         
       
@@ -848,7 +849,7 @@ const generateInvoice = async (req, res) => {
         
     } catch (error) {
         console.error('Error generating invoice:', error);
-        res.status(500).json({ message: 'Error generating invoice', error: error.message });
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: 'Error generating invoice', error: error.message });
     }
 };
 
@@ -892,7 +893,7 @@ const orderDetailRazorpay = async (req,res)=>{
 
         const order = await razorpay.orders.create(options);
         console.log(order)
-        res.status(200).json(order);
+        res.status(StatusCode.OK).json(order);
     } catch (err) {
         console.log("This error occured in razorpayOrder",err)
         res.redirect("/pageerror")
@@ -909,7 +910,7 @@ const orderVerifyPayment = async (req,res)=>{
             
     
             if (!razorpayOrderId || !paymentId || !signature) {
-                return res.status(400).json({ error: "Missing payment information" });
+                return res.status(StatusCode.BAD_REQUEST).json({ error: "Missing payment information" });
             }
     
             const sign = razorpayOrderId + '|' + paymentId;
@@ -920,19 +921,19 @@ const orderVerifyPayment = async (req,res)=>{
             if (signature === expectedSign) {
                 const orderData = await Order.findById(orderId);
                 if (!orderData) {
-                    return res.status(404).json({ error: 'Order not found' });
+                    return res.status(StatusCode.NOT_FOUND).json({ error: 'Order not found' });
                 }
     
                 orderData.paymentStatus = "success";
                 await orderData.save();
     
-                res.status(200).json({success: true, message: 'Payment verified successfully', orderId});
+                res.status(StatusCode.OK).json({success: true, message: 'Payment verified successfully', orderId});
             } else {
-                res.status(400).json({ error: 'Invalid payment signature' });
+                res.status(StatusCode.BAD_REQUEST).json({ error: 'Invalid payment signature' });
             }
         } catch (err) {
             console.error(err);
-            res.status(500).json({ error: err.message });
+            res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ error: err.message });
         }
 }
 

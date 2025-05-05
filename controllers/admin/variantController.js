@@ -1,7 +1,7 @@
 const express = require("express")
 const Variant = require("../../models/variantSchema")
 const { findByIdAndUpdate, updateOne } = require("../../models/userSchema")
-
+const StatusCode = require("../../constants/statusCode")
 
 const getVariantList = async (req,res)=>{
     try {
@@ -33,7 +33,7 @@ const addVariants = async (req,res)=>{
     try {
         const {variantType, variantValue, variantPrice} = req.body
         if(!variantType || !variantValue || !variantPrice){
-            return res.status(400).json({message:"variantType, VariantValue and VariantPrice are required"})
+            return res.status(StatusCode.BAD_REQUEST).json({message:"variantType, VariantValue and VariantPrice are required"})
         }
 
         const newVariant = new Variant({

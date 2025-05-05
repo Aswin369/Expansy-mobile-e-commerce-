@@ -6,6 +6,7 @@ const Variant = require("../../models/variantSchema")
 const User = require("../../models/userSchema")
 const {handleUpload } = require("../../config/cloudinary")
 const streamifier = require("streamifier");
+const StatusCode = require('../../constants/statusCode')
 const { json } = require("body-parser")
 
 
@@ -40,7 +41,7 @@ const addProducts = async (req, res) => {
         })
 
         if(!brand){
-            return res.status(400).json({
+            return res.status(StatusCode.BAD_REQUEST).json({
                 success:false,
                 message:"Brand is not exists"
             })
@@ -53,7 +54,7 @@ const addProducts = async (req, res) => {
        
         
         if(!categoryId){
-            return res.status(400).json({
+            return res.status(StatusCode.BAD_REQUEST).json({
                 success:false,
                 message: "Category is not exists"
             })
@@ -96,7 +97,7 @@ const addProducts = async (req, res) => {
             productImage: imagePaths
         });
         await newProduct.save();
-        return res.status(201).json({
+        return res.status(StatusCode.CREATED).json({
             success: true,
             message: 'Product added successfully',
             product: newProduct
@@ -104,7 +105,7 @@ const addProducts = async (req, res) => {
 
     } catch (error) {
         console.error('Error adding product:', error);
-        return res.status(500).json({
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: 'Error adding product',
             error: error.message
@@ -223,12 +224,12 @@ const updateImage = async (req,res)=>{
         const imageIndex = req.body.index;
         
         if(!req.file){
-            return res.status(400).json({error: "No image file provided"})
+            return res.status(StatusCode.BAD_REQUEST).json({error: "No image file provided"})
         }
 
         const productData = await Product.findById({_id:id})
         if(!productData){
-            return res.status(404).json({error:"Product not found"})
+            return res.status(StatusCode.NOT_FOUND).json({error:"Product not found"})
         }
         
         const b64 = Buffer.from(req.file.buffer).toString("base64");
@@ -247,7 +248,7 @@ const updateImage = async (req,res)=>{
 
     } catch (error) {
         console.error("Error updating image:",error)
-        return res.status(500).json({
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
             error: "Failed to update image",
             details:error.message
         })
@@ -259,7 +260,7 @@ const updateForm = async (req,res)=>{
         const id = req.params.productId
         console.log("update form id", id);
         if(!id){
-            return res.status(400).json({message:"Product id not found"})
+            return res.status(StatusCode.BAD_REQUEST).json({message:"Product id not found"})
         }
 
         const {name,
@@ -296,7 +297,7 @@ const updateForm = async (req,res)=>{
 
     } catch (error) {
         console.error("error form validate form",error)
-        return res.status(500).json({
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
             message:"Internal server error"
         })
     }
@@ -364,7 +365,7 @@ const updateStocks = async(req,res)=>{
 
         await Product.findByIdAndUpdate(id,{$push:{specification:stocksObject}})
         
-        res.status(201).json({success:true, message:"Added successfull"})
+        res.status(StatusCode.CREATED).json({success:true, message:"Added successfull"})
         console.log("1");
         
     } catch (error) {
@@ -378,11 +379,11 @@ const deleteVariantEditProduct = async (req,res)=>{
         
         const {variantId, productId} = req.body
         if(!variantId || !productId){
-            return res.status(400).json({success:false, message:"Please try again"})
+            return res.status(StatusCode.BAD_REQUEST).json({success:false, message:"Please try again"})
         }
         
         await Product.findByIdAndUpdate(productId,{$pull:{"specification":{_id:variantId}}})
-        res.status(201).json({success:true})
+        res.status(StatusCode.CREATED).json({success:true})
         console.log("1")
     } catch (error) {
         console.error("This error occured in deleteVariantEditProduct",error)
@@ -436,7 +437,7 @@ const editVariant = async(req,res)=>{
         const product = await Product.findOne({_id:productId})
 
         if(!product){
-            return res.status(400).json({success:false, message: "Product not found"})
+            return res.status(StatusCode.BAD_REQUEST).json({success:false, message: "Product not found"})
         }
 
         let specIndex = -1
@@ -449,7 +450,7 @@ const editVariant = async(req,res)=>{
         console.log("product.specification.length", product.specification.length)
         console.log("sperdid",specIndex)
         if(specIndex === -1 ||  specIndex >= product.specification.length ){
-            return res.status(400).json({success: false, message: "Specification is not found"})
+            return res.status(StatusCode.BAD_REQUEST).json({success: false, message: "Specification is not found"})
         }
 
         if (ram) product.specification[specIndex].ram = ram;
@@ -461,7 +462,7 @@ const editVariant = async(req,res)=>{
 
         await product.save()
 
-        return res.status(200).json({success:true, message: "Variant updated successfully"})
+        return res.status(StatusCode.CREATED).json({success:true, message: "Variant updated successfully"})
 
     } catch (error) {
         console.error("This error found in Editvariant",error)

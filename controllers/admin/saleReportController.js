@@ -2,6 +2,7 @@ const Order = require("../../models/orderSchema")
 const PDFDocument = require("pdfkit")
 const ExcelJS = require("exceljs")
 const Offer = require("../../models/offerSchema")
+const StatusCode = require("../../constants/statusCode")
 
 const getSaleReport = async (req, res) => {
     try {
@@ -95,7 +96,7 @@ const generatePdfReport = async (req, res) => {
 
         
         if (!startDate || !endDate) {
-            return res.status(400).json({
+            return res.status(StatusCode.BAD_REQUEST).json({
                 success: false,
                 message: 'Start date and end date are required'
             });
@@ -248,7 +249,7 @@ const generatePdfReport = async (req, res) => {
         doc.end();
     } catch (error) {
         console.error('Error generating PDF report:', error);
-        return res.status(500).json({
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: 'An error occurred while generating PDF report'
         });
@@ -260,7 +261,7 @@ const generateExcelReport = async (req, res) => {
         const { startDate, endDate } = req.query;
 
         if (!startDate || !endDate) {
-            return res.status(400).json({
+            return res.status(StatusCode.BAD_REQUEST).json({
                 success: false,
                 message: 'Start date and end date are required'
             });
@@ -500,7 +501,7 @@ const generateExcelReport = async (req, res) => {
         res.end();
     } catch (error) {
         console.error('Error generating Excel report:', error);
-        return res.status(500).json({
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: 'An error occurred while generating Excel report'
         });

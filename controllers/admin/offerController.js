@@ -1,7 +1,7 @@
 const Product = require('../../models/productSchema')
 const Category = require("../../models/categorySchema")
 const Offer = require("../../models/offerSchema")
-
+const StatusCode = require("../../constants/statusCode")
 
 const getOfferList = async (req,res)=>{
     try {
@@ -85,7 +85,7 @@ const createOffer = async (req, res) => {
             );
 
             if (!productOffer) {
-                return res.status(400).json({ success: false, message: "Product not found" });
+                return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Product not found" });
             }
             console.log("Product offer updated successfully");
 
@@ -98,12 +98,12 @@ const createOffer = async (req, res) => {
             );
 
             if (!categoryOffer) {
-                return res.status(400).json({ success: false, message: "Category not found" });
+                return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Category not found" });
             }
             console.log("Category offer updated successfully");
         }
 
-        res.status(201).json({ success: true });
+        res.status(StatusCode.CREATED).json({ success: true });
     } catch (error) {
         console.error("Error in createOffer:", error);
         res.redirect("/pageerror");
@@ -179,7 +179,7 @@ const editOffer = async (req, res) => {
         const { start_date, end_date, offer_name, offer_type, offer_item, description, discount_value, offerId } = req.body;
 
         if (!offerId) {
-            return res.status(400).json({ success: false, message: "Cannot find offerId" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Cannot find offerId" });
         }
 
         
@@ -203,7 +203,7 @@ const editOffer = async (req, res) => {
    
         const updatedOffer = await Offer.findByIdAndUpdate(offerId, { $set: updateData }, { new: true });
         if (!updatedOffer) {
-            return res.status(400).json({ success: false, message: "Offer update failed, please try again" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Offer update failed, please try again" });
         }
         console.log("Offer updated successfully:", updatedOffer);
 
@@ -217,7 +217,7 @@ const editOffer = async (req, res) => {
             );
 
             if (!updateProductOffer) {
-                return res.status(400).json({ success: false, message: "Product not found, select another product" });
+                return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Product not found, select another product" });
             }
             console.log("Product offer updated successfully");
 
@@ -230,12 +230,12 @@ const editOffer = async (req, res) => {
             );
 
             if (!updateCategoryOffer) {
-                return res.status(400).json({ success: false, message: "Category not found, select another category" });
+                return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Category not found, select another category" });
             }
             console.log("Category offer updated successfully");
         }
 
-        res.status(200).json({ success: true });
+        res.status(StatusCode.OK).json({ success: true });
     } catch (error) {
         console.error("Error in editOffer:", error);
         res.redirect("/pageerror");

@@ -1,5 +1,6 @@
 const Transaction = require("../../models/walletTransaction")
 const Wallet = require("../../models/walletSchema")
+const StatusCode = require("../../constants/statusCode")
 
 const getWalletList = async (req,res)=>{
     try {

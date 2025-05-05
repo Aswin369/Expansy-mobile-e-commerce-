@@ -9,6 +9,7 @@ const crypto = require("crypto")
 const Coupon = require("../../models/couponSchema")
 const Wallet = require('../../models/walletSchema');
 const Transaction = require('../../models/walletTransaction');
+const StatusCode = require("../../constants/statusCode")
 
 const getShoppingCart = async (req, res) => {
     try {
@@ -45,7 +46,7 @@ const getShoppingCart = async (req, res) => {
         });
     } catch (error) {
         console.error("Error found in shopping cart", error);
-        res.status(500).send("Something went wrong!");
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).send("Something went wrong!");
     }
 };
 
@@ -53,29 +54,29 @@ const getShoppingCart = async (req, res) => {
 const productAddToCart = async (req, res) => {
     try {
         if (!req.session.user) {
-            return res.status(401).json({ success: false, message: "Login first" })
+            return res.status(StatusCode.UNAUTHORIZED).json({ success: false, message: "Login first" })
         }
 
         const userId = req.session.user;
         const { productId, quantity, salePrice, discountPrice, selectedSpecId, appliedOfferId } = req.body
 
         if (!userId) {
-            return res.status(400).json({ success: false, message: "User not found" })
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "User not found" })
         }
 
         if (!productId || !selectedSpecId || quantity <= 0) {
-            return res.status(400).json({ success: false, message: "Invalid product details" })
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Invalid product details" })
         }
 
         
         const productDetail = await Product.findOne({ _id: productId });
         if (!productDetail) {
-            return res.status(404).json({ success: false, message: "Product not found" });
+            return res.status(StatusCode.NOT_FOUND).json({ success: false, message: "Product not found" });
         }
 
         const spec = productDetail.specification.find(s => s._id.toString() === selectedSpecId)
         if (!spec) {
-            return res.status(404).json({ success: false, message: "Specification not found" })
+            return res.status(StatusCode.NOT_FOUND).json({ success: false, message: "Specification not found" })
         }
 
         const offerApplied = mongoose.Types.ObjectId.isValid(appliedOfferId) ? appliedOfferId : null
@@ -93,11 +94,11 @@ const productAddToCart = async (req, res) => {
         const totalQuantity = currentCartQuantity + quantity;
        
         if(totalQuantity > 5){
-            return res.status(400).json({ success: false, message: "Quantity cannot greater than 5" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Quantity cannot greater than 5" });
         }
 
         if (totalQuantity > availableStock) {
-            return res.status(400).json({ success: false, message: "Not enough stock available!" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Not enough stock available!" });
         }
 
         const totalPrice = salePrice * quantity;
@@ -137,11 +138,11 @@ const productAddToCart = async (req, res) => {
             await newCart.save();
         }
 
-        return res.status(201).json({ success: true, message: "Product added to cart successfully" });
+        return res.status(StatusCode.CREATED).json({ success: true, message: "Product added to cart successfully" });
 
     } catch (error) {
         console.error("Error in productAddToCart:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal Server Error" });
     }
 };
 
@@ -152,7 +153,7 @@ const deleteProductFromCart = async(req,res)=>{
         const userId = req.session.user
         const cartId = req.params.productId
         if(!cartId){
-            return res.status(400).json({success:true, message:"There is no product please add any product to cart"})
+            return res.status(StatusCode.BAD_REQUEST).json({success:true, message:"There is no product please add any product to cart"})
         }
         
         const updateCart = await Cart.updateOne({ userId: userId },{$pull:{items:{_id:cartId}}})
@@ -160,10 +161,10 @@ const deleteProductFromCart = async(req,res)=>{
         console.log("thskdfk",updateCart)
 
         if(!updateCart){
-            return res.status(400).json({success:false, message:"Please add a product to cart"})
+            return res.status(StatusCode.BAD_REQUEST).json({success:false, message:"Please add a product to cart"})
         }
 
-        res.status(201).json({success:true, message:"Product deleted successfully"})
+        res.status(StatusCode.CREATED).json({success:true, message:"Product deleted successfully"})
 
     } catch (error) {
         
@@ -177,7 +178,7 @@ const updateCart = async (req,res)=>{
         console.log("sakjdfh",quantity);
         
         if(!cartId){
-            return res.status(400).json({success:false, message:"Something went wrong"})
+            return res.status(StatusCode.BAD_REQUEST).json({success:false, message:"Something went wrong"})
         }
         const updatedCart = await Cart.findOneAndUpdate({ _id: cartId },{ 
                 $set: { 
@@ -187,7 +188,7 @@ const updateCart = async (req,res)=>{
                     [`items.${itemIndex}.totalPrice`]:totalPrice}
                 },{ new: true })
 
-        res.status(201).json({success:true})        
+        res.status(StatusCode.CREATED).json({success:true})        
     } catch (error) {
         console.error("This error occured in updateCart",error)
         res.redirect("/pageerror")
@@ -247,7 +248,7 @@ const loadplaceOrder = async (req, res) => {
 const loadCheckOutPage = async(req,res)=>{
     try {
         const { cartId } = req.query;
-        res.status(200).json({ success: true, redirectUrl: `/checkout?cartId=${cartId}`});
+        res.status(StatusCode.OK).json({ success: true, redirectUrl: `/checkout?cartId=${cartId}`});
     } catch (error) {
         console.error("This error occured in loadCheckOutPage",error)
         res.redirect("/pageerror")
@@ -281,7 +282,7 @@ const addOrderDetails = async (req, res) => {
         );
 
         if (!addressData) {
-            return res.status(400).json({ success: false, message: "Invalid delivery address" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Invalid delivery address" });
         }
 
         const deliveryAddress = { ...addressData.address[0] };
@@ -290,11 +291,11 @@ const addOrderDetails = async (req, res) => {
         if (couponCode) {
             const coupon = await Coupon.findOne({ _id: couponId, code: couponCode, isActive: true });
             if (!coupon) {
-                return res.status(400).json({ success: false, message: "Invalid or inactive coupon." });
+                return res.status(StatusCode.NOT_FOUND).json({ success: false, message: "Invalid or inactive coupon." });
             }
 
             if (coupon.maxUsage <= 0) {
-                return res.status(400).json({ success: false, message: "Coupon usage limit has been reached." });
+                return res.status(StatusCode.NOT_FOUND).json({ success: false, message: "Coupon usage limit has been reached." });
             }
 
             await Coupon.findByIdAndUpdate(coupon._id, { $inc: { currentUsage: 1, maxUsage: -1 } });
@@ -345,7 +346,7 @@ const addOrderDetails = async (req, res) => {
         );
 
         if (outOfStockProducts.length > 0) {
-            return res.status(400).json({
+            return res.status(StatusCode.NOT_FOUND).json({
                 success: false,
                 message: "Some products are out of stock",
                 outOfStockProducts
@@ -360,7 +361,7 @@ const addOrderDetails = async (req, res) => {
             const wallet = await Wallet.findOne({ userId });
 
             if (!wallet || wallet.balance < payableAmount) {
-                return res.status(400).json({
+                return res.status(StatusCode.NOT_FOUND).json({
                     success: false,
                     message: "Insufficient wallet balance"
                 });
@@ -441,7 +442,7 @@ const addOrderDetails = async (req, res) => {
         
         // await Cart.deleteOne({ userId });
 
-        res.status(200).json({
+        res.status(StatusCode.OK).json({
             success: true,
             message: "Order placed successfully",
             orderId: newOrder.orderId,
@@ -450,7 +451,7 @@ const addOrderDetails = async (req, res) => {
 
     } catch (error) {
         console.error("This error occurred in addOrderDetails:", error);
-        res.status(500).json({ success: false, message: error.message });
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
     }
 };
 
@@ -485,7 +486,7 @@ const razorpayOrder = async (req,res)=>{
 
         const order = await razorpay.orders.create(options);
         console.log(order)
-        res.status(200).json(order);
+        res.status(StatusCode.OK).json(order);
     } catch (err) {
         console.log("This error occured in razorpayOrder",err)
         res.redirect("/pageerror")
@@ -500,7 +501,7 @@ const verifiyPayment = async (req,res) =>{
         console.log("verifuy payment", req.body)
 
         if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-            return res.status(400).json({ error: "Missing payment information" });
+            return res.status(StatusCode.BAD_REQUEST).json({ error: "Missing payment information" });
         }
 
         const sign = razorpayOrderId + '|' + razorpayPaymentId;
@@ -511,19 +512,19 @@ const verifiyPayment = async (req,res) =>{
         if (razorpaySignature === expectedSign) {
             const orderData = await Order.findById(id);
             if (!orderData) {
-                return res.status(404).json({ error: 'Order not found' });
+                return res.status(StatusCode.NOT_FOUND).json({ error: 'Order not found' });
             }
 
             orderData.paymentStatus = "success";
             await orderData.save();
 
-            res.status(200).json({success: true, message: 'Payment verified successfully', orderId, id});
+            res.status(StatusCode.OK).json({success: true, message: 'Payment verified successfully', orderId, id});
         } else {
-            res.status(400).json({ error: 'Invalid payment signature' });
+            res.status(StatusCode.BAD_REQUEST).json({ error: 'Invalid payment signature' });
         }
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: err.message });
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ error: err.message });
     }
 }
  
@@ -534,7 +535,7 @@ const applyCoupon = async (req, res) => {
         const { couponCode, cartId } = req.body;
 
         if (!cartId) {
-            return res.status(400).json({ success: false, message: "CartId is not defined, please try again" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "CartId is not defined, please try again" });
         }
 
         let totalCartPrice = 0;
@@ -543,7 +544,7 @@ const applyCoupon = async (req, res) => {
         const cartData = await Cart.findOne({ _id: cartId });
 
         if (!cartData || !cartData.items || cartData.items.length === 0) {
-            return res.status(400).json({ success: false, message: "Cart not found or empty" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Cart not found or empty" });
         }
 
         cartData.items.forEach((val) => {
@@ -555,21 +556,21 @@ const applyCoupon = async (req, res) => {
         console.log("Total Product Discounts:", totalDiscount);
 
         if (isNaN(totalCartPrice) || totalCartPrice === 0) {
-            return res.status(400).json({ success: false, message: "Invalid total cart price" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Invalid total cart price" });
         }
 
         const couponData = await Coupon.findOne({ code: couponCode, isActive: true });
         if (!couponData) {
-            return res.status(400).json({ success: false, message: "Invalid coupon, please try another" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Invalid coupon, please try another" });
         }
 
         let discountValue = Number(couponData.discountValue);
         if (isNaN(discountValue)) {
-            return res.status(400).json({ success: false, message: "Invalid discount value in coupon" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Invalid discount value in coupon" });
         }
 
         if (totalCartPrice < couponData.minDiscountValue) {
-            return res.status(400).json({ success: false, message: `Coupon is only valid for purchases above ${couponData.minDiscountValue}` });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: `Coupon is only valid for purchases above ${couponData.minDiscountValue}` });
         }
 
         let couponDiscountAmount = ((totalCartPrice - totalDiscount) * discountValue) / 100;
@@ -583,7 +584,7 @@ const applyCoupon = async (req, res) => {
         console.log("Coupon Discount Amount:", couponDiscountAmount);
         console.log("Final Price After All Discounts:", finalPrice);
 
-        return res.status(200).json({
+        return res.status(StatusCode.OK).json({
             success: true,
             message: "Coupon applied successfully",
             totalCartPrice,

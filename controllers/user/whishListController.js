@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Whishlist = require("../../models/whishlistSchema")
 const Cart = require("../../models/cartSchema")
+const StatusCode = require("../../constants/statusCode")
 
 const getWhishList = async (req,res)=>{
     try {
@@ -26,7 +27,7 @@ const getWhishList = async (req,res)=>{
 const addTOWhishlistFromProductDetail = async (req,res)=>{
     try {
         if(!req.session.user){
-            return  res.status(401).json({success:false ,message : "Login first"})
+            return  res.status(StatusCode.UNAUTHORIZED).json({success:false ,message : "Login first"})
           }
           const userId = req.session.user
         console.log("kjf",req.body)
@@ -37,11 +38,11 @@ const addTOWhishlistFromProductDetail = async (req,res)=>{
         if(userWhishlist){
             const productExists = userWhishlist.products.some(p => p.productId.equals(productId));
             if (productExists) {
-                return res.status(400).json({ success: false, message: "Product already in wishlist" });
+                return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Product already in wishlist" });
             }
             userWhishlist.products.push({ productId })
             await userWhishlist.save()
-            return res.status(201).json({success:true, message:"WhishList added"})
+            return res.status(StatusCode.CREATED).json({success:true, message:"WhishList added"})
         }
 
         let whishListSave = new Whishlist({
@@ -49,7 +50,7 @@ const addTOWhishlistFromProductDetail = async (req,res)=>{
             products:[{productId}]
         })
         await whishListSave.save()
-        return  res.status(200).json({success:true, message: "whishlist added"})
+        return  res.status(StatusCode.OK).json({success:true, message: "whishlist added"})
     } catch (error) {
         console.error("This error occured in addTOWhishlistFromProductDetail",error)
         res.redirect("/pageerror")
@@ -98,7 +99,7 @@ const addToCartFromWhishlist = async (req, res) => {
             const existingItem = cartDetail.items.find(item => item.productId.toString() === productId);
             console.log("exist in cart", existingItem);
             if (existingItem) {
-                return res.status(400).json({ success: false, message: "Product already in cart" });
+                return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Product already in cart" });
             }
             // Push new item into the existing cart
             cartDetail.items.push(newCartDetail);
@@ -123,10 +124,10 @@ const addToCartFromWhishlist = async (req, res) => {
 
         
         if (whishListDetails.modifiedCount === 0) {
-            return res.status(400).json({ success: false, message: "Wishlist item not found or already removed" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Wishlist item not found or already removed" });
         }
 
-        return res.status(201).json({ success: true });
+        return res.status(StatusCode.CREATED).json({ success: true });
 
     } catch (error) {
         console.error("Error in addToCartFromWhishlist", error);

@@ -2,7 +2,7 @@ const express = require("express")
 const Product = require("../../models/productSchema")
 const Brand = require("../../models/brandSchema")
 const Category = require("../../models/categorySchema")
-
+const StatusCode = require("../../constants/statusCode")
 
 const getShopPage = async (req, res) => {
     try {
@@ -151,10 +151,10 @@ const getShopPage = async (req, res) => {
         console.error('Shop page error:', error);
 
         if (req.query.ajax === 'true') {
-            return res.status(500).json({ error: 'Error fetching products' });
+            return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ error: 'Error fetching products' });
         }
 
-        res.status(500).render('error', {
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).render('error', {
             message: 'Something went wrong fetching products'
         });
     }

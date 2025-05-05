@@ -2,7 +2,7 @@ const { query } = require("express")
 const Brand = require("../../models/brandSchema")
 const product = require("../../models/productSchema")
 const {handleUpload} = require("../../config/cloudinary")
-
+const StatusCode = require("../../constants/statusCode")
 
 const getBrandPage = async (req, res) => {
     try {
@@ -47,7 +47,7 @@ const addBrand = async (req, res) => {
             console.log("Findsafjksdjk",findBrand)
 
             if (findBrand) {
-                return res.status(400).json({ message: "Brand already exists" });
+                return res.status(StatusCode.BAD_REQUEST).json({ message: "Brand already exists" });
             }
     
             
@@ -67,7 +67,7 @@ const addBrand = async (req, res) => {
             return res.json({ message: "Brand added successfully" });
         } catch (error) {
             console.error("Error adding brand:", error.message);
-            return res.status(500).json({ error: "Internal server error" });
+            return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
         }
     };
     
@@ -111,7 +111,7 @@ const editBrand = async (req, res) => {
         const existingBrand = await Brand.findOne({brandName:brandName})
 
         if(existingBrand){
-            return res.status(400).json({error:"Brand already exists, please use another name"})
+            return res.status(StatusCode.BAD_REQUEST).json({error:"Brand already exists, please use another name"})
 
         }
         const updateBrand = await Brand.findByIdAndUpdate(id,{
@@ -130,7 +130,7 @@ const editBrand = async (req, res) => {
         
     } catch (error) {
         console.error("Error adding category:", error.message);
-        return res.status(500).json({ error: "Internal server error" });
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
     }
 };
 module.exports = {

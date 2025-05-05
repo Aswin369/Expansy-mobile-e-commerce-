@@ -1,6 +1,9 @@
 const User = require("../../models/userSchema")
 const Coupon = require("../../models/couponSchema")
 const moment = require('moment')
+const StatusCode = require("../../constants/statusCode")
+
+
 const getcouponList = async (req,res)=>{
     try {
         const page = parseInt(req.query.page) || 1
@@ -55,7 +58,7 @@ const getCouponData = async(req,res)=>{
             discountValue:discountValue
         })
         await couponData.save()
-        return res.status(201).json({success:true, message:"Coupon added successfully"})
+        return res.status(StatusCode.CREATED).json({success:true, message:"Coupon added successfully"})
     } catch (error) {
         console.error("This is occured in getCouponData", error)
         res.redirect("/pageerror")
@@ -127,7 +130,7 @@ const updateCoupon = async(req,res)=>{
         console.log("enddate", startDate)
         console.log("start date", endDate)
         if(!couponId){
-            return res.status(400).json({success:false, message:"Coupon ID is required"})
+            return res.status(StatusCode.BAD_REQUEST).json({success:false, message:"Coupon ID is required"})
         }
 
         const couponData = await Coupon.updateOne({_id:couponId},{$set:{
@@ -141,10 +144,10 @@ const updateCoupon = async(req,res)=>{
         }})
 
         if(!couponData){
-            return res.status(400).json({success:false, message: "Something went wrong!, Not Updated please try again"})
+            return res.status(StatusCode.BAD_REQUEST).json({success:false, message: "Something went wrong!, Not Updated please try again"})
         }
         console.log("23")
-         res.status(201).json({success:true,message: "Coupon update successfully"})
+         res.status(StatusCode.CREATED).json({success:true,message: "Coupon update successfully"})
 
     } catch (error) {
         console.error("This is error occured in updateCoupon",error)

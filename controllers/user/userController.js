@@ -5,6 +5,7 @@ const env = require("dotenv").config()
 const productSchema = require("../../models/productSchema")
 const Wallet = require("../../models/walletSchema")
 const Transaction = require("../../models/walletTransaction")
+const StatusCode = require("../../constants/statusCode")
 
 const loadHomepage = async (req, res) => {
     try {
@@ -48,7 +49,7 @@ const loadHomepage = async (req, res) => {
         }
     } catch (error) {
         console.error("Error loading home page:", error);
-        res.status(500).send("Server error");
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).send("Server error");
     }
 };
 
@@ -58,7 +59,7 @@ const verification = async (req,res)=>{
         return res.render("otpverification")
     }catch(error){
         console.log("Verification page not found")
-        res.status(500).send("Server Error")
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).send("Server Error")
     }
 }
 
@@ -72,7 +73,7 @@ const loadsignup = async (req,res)=>{
        
     } catch (error) {
         console.log("Signup page not found")
-        res.status(500).send("Server Error")
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).send("Server Error")
     }
 }
 
@@ -151,18 +152,18 @@ const signup = async (req, res) => {
             await transaction.save()
 
         } else {
-          return res.status(400).json({ success: false, message: "Invalid referral code" });
+          return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Invalid referral code" });
         }
       }
   
       if (password !== cpassword) {
-        return res.status(400).json({ success: false, message: "Password is not matching" });
+        return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Password is not matching" });
       }
       
       const findUser = await User.findOne({ email });
       console.log("dskf",findUser)
       if (findUser) {
-        return res.status(400).json({ success: false, message: "User already exists" });
+        return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "User already exists" });
       }
   
       const otp = generateOtp();
@@ -171,7 +172,7 @@ const signup = async (req, res) => {
       const emailSent = await sendVerificationEmail(email, otp, name);
   
       if (!emailSent) {
-        return res.status(500).json({ success: false, message: "Failed to send verification email" });
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to send verification email" });
       }
   
       req.session.userOtp = { otp, otpExpiry };
@@ -182,7 +183,7 @@ const signup = async (req, res) => {
       console.log("Otp sent", otp);
       
       
-      return res.status(200).json({ 
+      return res.status(StatusCode.OK).json({ 
         success: true, 
         message: "OTP sent successfully", 
         redirectUrl: "/otpverification" 
@@ -190,7 +191,7 @@ const signup = async (req, res) => {
   
     } catch (error) {
       console.error("signup error", error);
-      return res.status(500).json({ 
+      return res.status(StatusCode.OK).json({ 
         success: false, 
         message: "An unexpected error occurred" 
       });
@@ -220,7 +221,7 @@ const verifyOtp = async (req, res) => {
         
         if (!storedOtp || !otpExpiry || Date.now() > otpExpiry) {
             console.log("OTP expired or missing.");
-            return res.status(400).json({
+            return res.status(StatusCode.BAD_REQUEST).json({
                 success: false,
                 message: "OTP expired. Please request a new OTP.",
             });
@@ -249,20 +250,20 @@ const verifyOtp = async (req, res) => {
             
             req.session.user = saveUserData._id;
 
-            res.status(200).json({
+            res.status(StatusCode.OK).json({
                 success: true,
                 message: "OTP verified successfully!",
             });
         } else {
             console.log("OTP mismatch.");
-            return res.status(400).json({
+            return res.status(StatusCode.BAD_REQUEST).json({
                 success: false,
                 message: "OTP not verified. Please check again.",
             });
         }
     } catch (error) {
         console.error("Error verifying OTP:", error);
-        res.status(500).json({
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "Internal server error. Please try again.",
         });
@@ -275,7 +276,7 @@ const resendOtp = async (req, res) => {
         const userData = req.session.userData;
         
         if (!userData || !userData.email) {
-            return res.status(400).json({
+            return res.status(StatusCode.BAD_REQUEST).json({
                 success: false,
                 message: "Session expired. Please sign up again.",
             });
@@ -304,20 +305,20 @@ const resendOtp = async (req, res) => {
 
         if (!emailSent) {
             console.error("Failed to send verification email");
-            return res.status(500).json({
+            return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
                 success: false,
                 message: "Failed to send OTP email. Please try again.",
             });
         }
 
-        res.status(200).json({
+        res.status(StatusCode.OK).json({
             success: true,
             message: "OTP resent successfully! Please check your email.",
         });
 
     } catch (error) {
         console.error("Error resending OTP:", error);
-        res.status(500).json({
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "Internal server error. Please try again.",
         });
@@ -366,7 +367,7 @@ const loadPageNotFound = async (req,res)=>{
         return res.render("404")
     }catch(error){
         console.error("Page not found page error")
-        res.status(500).send("Internal server error")
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).send("Internal server error")
     }
 }
 
@@ -381,11 +382,11 @@ const logout = async (req,res)=>{
         res.clearCookie("Connect.sid", {path: "/"})
         console.log("Session successfully destroyed")
 
-        res.status(200).json({message: "Logged out seccusseful"})
+        res.status(StatusCode.OK).json({message: "Logged out seccusseful"})
        })
     } catch (error) {
         console.error("Unexpected error in logout", error)
-        res.status(500).json({message:"logout failed"})
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message:"logout failed"})
     }
 }
 

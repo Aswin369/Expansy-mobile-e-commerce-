@@ -3,6 +3,7 @@ const Address = require("../../models/addressSchema")
 const Product = require("../../models/productSchema")
 const Transaction = require("../../models/walletTransaction")
 const Wallet = require("../../models/walletSchema")
+const StatusCode = require("../../constants/statusCode")
 const { json } = require("body-parser")
 
 const getOrderPage = async (req,res)=>{
@@ -58,7 +59,7 @@ const changeStatus = async (req, res) => {
 
         console.log("sdsdf", req.body)
         if (!orderId || !status) {
-            return res.status(401).json({ success: false, message: "Select an option" });
+            return res.status(StatusCode.UNAUTHORIZED).json({ success: false, message: "Select an option" });
         }
 
         
@@ -66,7 +67,7 @@ const changeStatus = async (req, res) => {
             const orderData = await Order.findById(orderId);
 
             if (!orderData) {
-                return res.status(404).json({ success: false, message: "Order not found" });
+                return res.status(StatusCode.NOT_FOUND).json({ success: false, message: "Order not found" });
             }
 
             let totalRefundAmount = 0; 
@@ -137,7 +138,7 @@ const changeStatus = async (req, res) => {
             { new: true }
         );
 
-        return res.status(200).json({ success: true, updatedOrder });
+        return res.status(StatusCode.OK).json({ success: true, updatedOrder });
 
     } catch (error) {
         console.error("Error occurred in changeStatus:", error);
@@ -157,7 +158,7 @@ const changeStatusToApproveRequest = async (req, res) => {
         );
 
         if (changeProductStatus.modifiedCount === 0) {
-            return res.status(400).json({ success: false, message: "Something went wrong" });
+            return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: "Something went wrong" });
         }
        
         const changeQuantityOfProduct = await Product.updateOne(
@@ -168,7 +169,7 @@ const changeStatusToApproveRequest = async (req, res) => {
         console.log("skadhfk", changeQuantityOfProduct)
 
         if(changeQuantityOfProduct.modifiedCount === 0){
-            return res.status(400).json({success: false, message: "Something went wrong" })
+            return res.status(StatusCode.BAD_REQUEST).json({success: false, message: "Something went wrong" })
         }
 
         const findOrder = await Order.findOne({_id:orderId})
@@ -206,7 +207,7 @@ const changeStatusToApproveRequest = async (req, res) => {
 
         await transaction.save()
         console.log("transation added")
-        return res.status(200).json({ success: true, message: "Request approved successfully" });
+        return res.status(StatusCode.OK).json({ success: true, message: "Request approved successfully" });
 
     } catch (error) {
         console.error("Error in changeStatusToApproveRequest:", error);
@@ -224,10 +225,10 @@ const changeStatusTorejected = async(req,res) =>{
         );
         console.log("askdjfhjh",orderStatus)
         if(orderStatus.modifiedCount === 0){
-            return res.status(404).json({success:false, message: "Order not found"})
+            return res.status(StatusCode.NOT_FOUND).json({success:false, message: "Order not found"})
         }
 
-        return res.status(200).json({success:true, message: "Successfull"})
+        return res.status(StatusCode.OK).json({success:true, message: "Successfull"})
     } catch (error) {
         console.error("This error occured in changeStatusTorejected",error)
         res.redirect("/pageerror")

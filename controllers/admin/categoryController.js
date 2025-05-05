@@ -2,6 +2,8 @@ const express = require("express")
 const Category = require("../../models/categorySchema")
 const Product = require("../../models/productSchema")
 const {handleUpload} = require("../../config/cloudinary")
+const StatusCode = require("../../constants/statusCode")
+
 
 const categoryInfo = async (req, res) => {
     try {
@@ -53,12 +55,12 @@ const addCategory = async (req, res) => {
     try {
         
         if (!name || !description) {
-            return res.status(400).json({ error: "Name and description are required"});
+            return res.status(StatusCode.BAD_REQUEST).json({ error: "Name and description are required"});
         }
 
         const existingCategory = await Category.findOne({ name: name })
         if (existingCategory) {
-            return res.status(400).json({ message: "Category already exists" })
+            return res.status(StatusCode.BAD_REQUEST).json({ message: "Category already exists" })
         }
         const newCategory = new Category({
             name,
@@ -85,7 +87,7 @@ const addCategory = async (req, res) => {
         return res.json({ message: "Category added successfully" });
     } catch (error) {
         console.error("Error adding category:", error.message);
-        return res.status(500).json({ error: "Internal server error" });
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
     }
 };
 
@@ -142,7 +144,7 @@ const updateCategory = async (req, res) => {
       console.log("this body",req.body)
       const category = await Category.findById(id);
       if (!category) {
-          return res.status(404).json({ message: "Category not found" });
+          return res.status(StatusCode.NOT_FOUND).json({ message: "Category not found" });
       }
 
       // if(!req.file){
@@ -169,7 +171,7 @@ const updateCategory = async (req, res) => {
 
   } catch (error) {
       console.error("Category update error:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 }
 

@@ -1,6 +1,7 @@
 
 const Address = require("../../models/addressSchema")
 const User = require("../../models/userSchema")
+const StatusCode = require("../../constants/statusCode")
 
 const getPlaceOrderPage = async(req,res)=>{
     try {
@@ -31,14 +32,14 @@ const checkOutAddAddress = async (req,res)=>{
 
         if(addressDetails){
             await Address.updateOne({userId:userId},{$push:{address:address}})
-            return res.status(200).json({success:true, message:"Address addedd successfully"})
+            return res.status(StatusCode.OK).json({success:true, message:"Address addedd successfully"})
         }else{
             const newAddress = new Address({
                 userId,
                 address: [address]
             })
             await newAddress.save()
-            return res.status(201).json({success:true, message:"New address added successfully"})
+            return res.status(StatusCode.CREATED).json({success:true, message:"New address added successfully"})
         }
     } catch (error) {
         console.error("THis error occured in checkOutAddAddress",error)

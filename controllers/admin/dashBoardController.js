@@ -1,6 +1,8 @@
 const Brand = require("../../models/brandSchema")
 const Product = require("../../models/productSchema")
 const Order = require("../../models/orderSchema")
+const StatusCode = require("../../constants/statusCode")
+
 
 const getSalesReport = async (req, res) => {
     const { filter, startDate, endDate } = req.query
@@ -16,7 +18,7 @@ const getSalesReport = async (req, res) => {
     
     if (filter === 'custom') {
         if (!startDate || !endDate) {
-            return res.status(400).json({ error: 'Please provide a valid date range.' });
+            return res.status(StatusCode.BAD_REQUEST).json({ error: 'Please provide a valid date range.' });
         }
         matchCondition.createdAt = {
             $gte: new Date(startDate),
@@ -118,7 +120,7 @@ const getSalesReport = async (req, res) => {
 
     } catch (error) {
         console.error("Error fetching sales report:", error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
     }
 }
 
@@ -225,10 +227,10 @@ const getTopthings = async (req, res)=>{
             return res.json(topBrands);
         }
 
-        return res.status(400).json({ message: "Invalid filter parameter" });
+        return res.status(StatusCode.BAD_REQUEST).json({ message: "Invalid filter parameter" });
     } catch (error) {
         console.error("Error fetching top-selling data:", error);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
     }
 }
 

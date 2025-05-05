@@ -1,5 +1,6 @@
 const User = require("../../models/userSchema")
 const mongoose = require("mongoose");
+const StatusCode = require("../../constants/statusCode")
 
 const customerInfo = async (req, res) => {
     try {
@@ -54,7 +55,7 @@ const customerInfo = async (req, res) => {
         console.log("askdfjaksjf")
     } catch (error) {
         console.error("Error fetching customer data:", error);
-        res.status(500).send("Server Error");
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).send("Server Error");
     }
 };
 

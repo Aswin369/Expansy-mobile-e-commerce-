@@ -2,7 +2,7 @@ const express = require("express")
 const User = require("../../models/userSchema");
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
-
+const StatusCode = require("../../constants/statusCode")
 
 
 const loadLogin = async (req,res)=>{
@@ -14,7 +14,7 @@ const loadLogin = async (req,res)=>{
         res.render("admin-login",{message:null})
     } catch (error) {
         console.error("Admin load Login error", error)
-        res.status(500).send("server error")
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).send("server error")
     }
 }
 
@@ -25,20 +25,20 @@ const login = async (req, res) => {
         const admin = await User.findOne({ name, isAdmin: true })
         if (!admin) {
             console.log("Admin not found");
-            return res.status(401).json({ message: "Invalid admin credentials" })
+            return res.status(StatusCode.UNAUTHORIZED).json({ message: "Invalid admin credentials" })
         }
         const passwordMatch = await bcrypt.compare(password, admin.password)
         if (passwordMatch) {
             console.log("Login successful");
             req.session.admin = true;
-            return res.status(200).json({ success: true, redirectUrl: "/admin/dashboard" });
+            return res.status(StatusCode.OK).json({ success: true, redirectUrl: "/admin/dashboard" });
         } else {
             console.log("Password not matching")
-            return res.status(401).json({ message: "Invalid admin credentials" })
+            return res.status(StatusCode.UNAUTHORIZED).json({ message: "Invalid admin credentials" })
         }
     } catch (error) {
         console.error("Admin login error", error)
-        return res.status(500).json({ message: "An error occurred during login" })
+        return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: "An error occurred during login" })
     }
 }
 
@@ -67,11 +67,11 @@ const logout = async (req, res) => {
             res.clearCookie("connect.sid", { path: "/" })
             console.log("Session successfully destroyed")
 
-            res.status(200).json({ message: "Logged out successfully" })
+            res.status(StatusCode.OK).json({ message: "Logged out successfully" })
         })
     } catch (error) {
         console.error("Unexpected error in logout:", error)
-        res.status(500).json({ message: "Logout failed" })
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: "Logout failed" })
     }
 }
 
